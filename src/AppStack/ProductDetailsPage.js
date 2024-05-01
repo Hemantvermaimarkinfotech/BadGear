@@ -73,7 +73,7 @@ const renderRelatedProductItem = ({item, navigation}) => (
           fontSize: 14,
           width: 100,
           textAlign: 'center',
-          fontWeight: 600,
+          fontWeight: '600',
         }}>
         {item.text}
       </Text>
@@ -109,6 +109,7 @@ const renderRelatedProductItem = ({item, navigation}) => (
 const ProductDetailsPage = ({route}) => {
   const navigation = useNavigation();
   const {ProductId} = route.params;
+  console.log(ProductId,"hello")
 
   const goBack = () => {
     navigation.goBack();
@@ -136,7 +137,7 @@ const ProductDetailsPage = ({route}) => {
               marginTop: 10,
               marginLeft: 20,
             }}>
-            {ProductId?.text}
+       {ProductId?.text}
           </Text>
           <Text
             style={{
@@ -146,7 +147,7 @@ const ProductDetailsPage = ({route}) => {
               marginTop: 10,
               marginLeft: 20,
             }}>
-            {ProductId?.rate}
+          {ProductId?.rate}
           </Text>
           <Text
             style={{
@@ -483,7 +484,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   sizetext: {
-    fontWeight: 700,
+    fontWeight: '700',
     color: '#000000',
     fontSize: 18,
   },

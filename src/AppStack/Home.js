@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect,useContext,useState} from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,9 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {ScrollView} from 'react-native-gesture-handler';
+import axios from "react-native-axios"
+import { AuthContext } from '../Components/AuthProvider';
+
 const CatDATA = [
   {id: '1', text: 'Bad Woman', image: require('../assets/cat1.png')},
   {id: '2', text: 'Hats', image: require('../assets/cat2.png')},
@@ -21,200 +24,238 @@ const CatDATA = [
   // category data
 ];
 
-const ArrivalsDATA = [
-  {
-    id: '1',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '2',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '3',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '4',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '5',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '6',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  // NEW Arival data
-];
 
-const BestSellingDATA = [
-  {
-    id: '1',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '2',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '3',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '4',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '5',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '6',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  // Best Selling data
-];
 
-const renderCategoryItem = ({item,navigation}) => (
-  <TouchableOpacity onPress={()=>navigation.navigate("ProductDetails",{ProductId:item})}>
-    <View style={styles.catitem}>
-      <Image style={styles.image} source={item.image} />
-    </View>
-    <Text
-      style={{
-        textAlign: 'center',
-        color: '#000000',
-        fontSize: 14,
-        fontWeight: 600,
-      }}>
-      {item.text}
-    </Text>
-  </TouchableOpacity>
-);
 
-const renderArrivelItem = ({item,navigation}) => (
-  <TouchableOpacity onPress={()=>navigation.navigate("ProductDetails",{ ProductId: item })}>
-    <View style={styles.Arrivelitem}>
-      <Image style={styles.Arrivalimage} source={item.image} />
-    </View>
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        marginTop: 1,
-      }}>
-      <Text
-        numberOfLines={2}
-        style={{
-          color: '#000000',
-          fontSize: 14,
-          width: 100,
-          textAlign: 'center',
-          fontWeight: 600,
-        }}>
-        {item.text}
-      </Text>
+
+
+
+const Home = ({navigation, item}) => {
+
+  const ArrivalsDATA = [
+    {
+      id: '1',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival1.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '2',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival2.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '3',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival1.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '4',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival2.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '5',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival1.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '6',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival2.png'),
+      rate: '$39.95 - $44.95',
+    },
+    // NEW Arival data
+  ];
+
+  const BestSellingDATA = [
+    {
+      id: '1',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival1.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '2',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival2.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '3',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival1.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '4',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival2.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '5',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival1.png'),
+      rate: '$39.95 - $44.95',
+    },
+    {
+      id: '6',
+      text: 'Kenworth Teal Flag Hoodie',
+      image: require('../assets/Arrival2.png'),
+      rate: '$39.95 - $44.95',
+    },
+    // Best Selling data
+  ];
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchdataCategory();
+  }, []);
+
+  const fetchdataCategory = async () => {
+    try {
+      const response = await axios.get('http://sledpullcentral.com/wp-json/all-category/v1/categories');
+      setCategories(response?.data?.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  const renderCategoryItem = ({item, navigation}) => {
+  
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate('ProductDetails',{ProductId: item})}>
+        <View style={styles.catitem}>
+          <Image style={styles.image} source={item?.image} />
+        </View>
+        <Text
+          style={{
+            textAlign: 'center',
+            color: '#000000',
+            fontSize: 14,
+            fontWeight: 600,
+          }}>
+          {item?.name}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+  
+  const renderArrivelItem = ({item, navigation}) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('ProductDetails', {ProductId: item})}>
+      <View style={styles.Arrivelitem}>
+        <Image style={styles.Arrivalimage} source={item.image} />
+      </View>
       <View
         style={{
-          height: 30,
-          width: 30,
-          backgroundColor: '#fff',
-          borderRadius: 30,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          justifyContent: 'center',
+          paddingHorizontal: 15,
+          marginTop: 1,
         }}>
-        <Image
-          source={require('../assets/heart.png')}
-          style={{color: '#000000'}}
-        />
+        <Text
+          numberOfLines={2}
+          style={{
+            color: '#000000',
+            fontSize: 14,
+            width: 100,
+            textAlign: 'center',
+            fontWeight: 600,
+          }}>
+          {item.text}
+        </Text>
+        <View
+          style={{
+            height: 30,
+            width: 30,
+            backgroundColor: '#fff',
+            borderRadius: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Image
+            source={require('../assets/heart.png')}
+            style={{color: '#000000'}}
+          />
+        </View>
       </View>
-    </View>
-    <View
-      style={{justifyContent: 'center',marginTop: 10}}>
-      <Text style={{color: '#000000',fontSize: 17, fontWeight: 480,marginLeft:16}}>
-        {item.rate}
-      </Text>
-    </View>
-  </TouchableOpacity>
-);
-
-const renderBestSellingItem = ({item,navigation}) => (
-  <TouchableOpacity onPress={()=>navigation.navigate("ProductDetails",{ ProductId: item })}>
-    <View style={styles.Arrivelitem}>
-      <Image style={styles.Arrivalimage} source={item.image} />
-    </View>
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        marginTop: 1,
-      }}>
-      <Text
-        numberOfLines={2}
-        style={{
-          color: '#000000',
-          fontSize: 14,
-          width: 100,
-          textAlign: 'center',
-          fontWeight: 600,
-        }}>
-        {item.text}
-      </Text>
+      <View style={{justifyContent: 'center', marginTop: 10}}>
+        <Text
+          style={{
+            color: '#000000',
+            fontSize: 17,
+            fontWeight: 480,
+            marginLeft: 16,
+          }}>
+          {item.rate}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+  
+  const renderBestSellingItem = ({item, navigation}) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('ProductDetails', {ProductId: item.id})}>
+      <View style={styles.Arrivelitem}>
+        <Image style={styles.Arrivalimage} source={item.image} />
+      </View>
       <View
         style={{
-          height: 30,
-          width: 30,
-          backgroundColor: '#fff',
-          borderRadius: 30,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          justifyContent: 'center',
+          paddingHorizontal: 15,
+          marginTop: 1,
         }}>
-        <Image
-          source={require('../assets/heart.png')}
-          style={{color: '#000000'}}
-        />
+        <Text
+          numberOfLines={2}
+          style={{
+            color: '#000000',
+            fontSize: 14,
+            width: 100,
+            textAlign: 'center',
+            fontWeight: 600,
+          }}>
+          {item.text}
+        </Text>
+        <View
+          style={{
+            height: 30,
+            width: 30,
+            backgroundColor: '#fff',
+            borderRadius: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Image
+            source={require('../assets/heart.png')}
+            style={{color: '#000000'}}
+          />
+        </View>
       </View>
-    </View>
-    <View
-      style={{justifyContent: 'center', marginTop: 10}}>
-      <Text style={{color: '#000000', fontSize: 17, fontWeight: 480,marginLeft:16}}>
-        {item.rate}
-      </Text>
-    </View>
-  </TouchableOpacity>
-);
-
-const Home = ({navigation}) => {
+      <View style={{justifyContent: 'center', marginTop: 10}}>
+        <Text
+          style={{
+            color: '#000000',
+            fontSize: 17,
+            fontWeight: 480,
+            marginLeft: 16,
+          }}>
+          {item.rate}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -223,20 +264,26 @@ const Home = ({navigation}) => {
             Welcome Jack
           </Text>
         </View>
-        <View style={{flexDirection: 'row',width:"30%",justifyContent:"center",alignItems:"center"}}>
-          <TouchableOpacity onPress={()=>navigation.navigate("WishList")}>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '30%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <TouchableOpacity onPress={() => navigation.navigate('WishList')}>
             <Image
               source={require('../assets/heart2.png')}
               style={styles.headericon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate("search")}>
+          <TouchableOpacity onPress={() => navigation.navigate('search')}>
             <Image
               source={require('../assets/search.png')}
               style={styles.headericon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate("Cart")}>
+          <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
             <Image
               source={require('../assets/Cart.png')}
               style={styles.headericon}
@@ -270,7 +317,7 @@ const Home = ({navigation}) => {
             <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
               Category
             </Text>
-            <TouchableOpacity onPress={()=>navigation.navigate("Category")}>
+            <TouchableOpacity onPress={() => navigation.navigate('Category')}>
               <Text
                 style={{
                   color: '#000000',
@@ -283,10 +330,10 @@ const Home = ({navigation}) => {
           </View>
           <View>
             <FlatList
-                  showsHorizontalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
               horizontal
               data={CatDATA}
-              renderItem={({item})=>renderCategoryItem({item,navigation})}
+              renderItem={({item}) => renderCategoryItem({item, navigation})}
               keyExtractor={item => item.id}
             />
           </View>
@@ -297,7 +344,7 @@ const Home = ({navigation}) => {
             <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
               New Arrivals
             </Text>
-            <TouchableOpacity onPress={()=>navigation.navigate("NewArrivel")}>
+            <TouchableOpacity onPress={() => navigation.navigate('NewArrivel')}>
               <Text
                 style={{
                   color: '#000000',
@@ -310,10 +357,10 @@ const Home = ({navigation}) => {
           </View>
           <View>
             <FlatList
-            showsHorizontalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
               horizontal
-              data={ArrivalsDATA}
-              renderItem={({item})=>renderArrivelItem({item,navigation})}
+              data={ ArrivalsDATA}
+              renderItem={({item}) => renderArrivelItem({item, navigation})}
               keyExtractor={item => item.id}
             />
           </View>
@@ -337,10 +384,10 @@ const Home = ({navigation}) => {
           </View>
           <View>
             <FlatList
-                  showsHorizontalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
               horizontal
               data={BestSellingDATA}
-              renderItem={({item})=>renderBestSellingItem({item,navigation})}
+              renderItem={({item}) => renderBestSellingItem({item, navigation})}
               keyExtractor={item => item.id}
             />
           </View>
@@ -361,13 +408,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 20,
+    marginTop:10
   },
   headericon: {
     height: 17,
     width: 17,
-    tintColor:"#000",
-    marginHorizontal:10,
-    resizeMode:"contain"
+    tintColor: '#000',
+    marginHorizontal: 10,
+    resizeMode: 'contain',
   },
   banner: {
     width: '98%',

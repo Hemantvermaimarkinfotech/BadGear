@@ -91,7 +91,8 @@ const Category = ({navigation}) => {
             showsVerticalScrollIndicator={false}
          numColumns={2}
               data={CategoryDATA}
-              renderItem={({item})=>rendercategoryItem({item,navigation})}
+              renderItem={({ item }) => rendercategoryItem({ item, navigation: navigation })}
+
               keyExtractor={item => item.id}
             />
           </View>

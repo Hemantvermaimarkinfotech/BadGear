@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect,useState} from 'react';
 import {
   View,
   Text,
@@ -9,8 +9,51 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import { AuthContext } from '../Components/AuthProvider';
+import axios from "react-native-axios"
+import Loader from '../Components/Loader';
+
 
 const SignUp = ({navigation}) => {
+  const [name,setName]=useState()
+  const [email,setEmail]=useState()
+  const [password,setPassword]=useState()
+const [loading,setLoading]=useState(false)
+
+  const handleSignUp = async () => {
+
+    setLoading(true);
+  
+    let Data = JSON.stringify({
+      name: `${name}`,
+      email: `${email}`,
+      password: `${password}`,
+    });
+    console.log(name,email,password)
+    try {
+     
+      const response = await axios.post(
+        'https://www.funkitswap.com/wp-json/signup-api/v1/userRegister',
+        Data,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      console.log("dfjkldkdfs")
+      console.log('SignUp response:', response.data); 
+      // setUserToken(response?.data);
+      await AsyncStorage.setItem('userData', JSON.stringify(response?.data));
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log('respnse-error',error?.response);
+      alert(error?.response?.data?.error);
+    }
+  };
+  
+  
   return (
     <SafeAreaView style={styles.container}>
     <View style={{marginTop:80}}>
@@ -40,35 +83,38 @@ const SignUp = ({navigation}) => {
         }}>
              <TextInput
           style={styles.input}
-          // value={text}
-          // onChangeText={handleChangeText}
+          value={name}
+          onChangeText={(text)=>setName(text)}
           placeholder="Name"
         />
         <TextInput
           style={styles.input}
-          // value={text}
-          // onChangeText={handleChangeText}
+          value={email}
+          onChangeText={text=>setEmail(text)}
           placeholder="Email"
         />
         <TextInput
           style={styles.input}
-          // value={text}
-          // onChangeText={handleChangeText}
+          value={password}
+          onChangeText={text=>setPassword(text)}
           placeholder="Password"
         />
       </View>
      
-      <TouchableOpacity style={styles.loginbutton}>
-        <Text
-          style={{
-            color: '#fff',
-            fontSize: 20,
-            fontWeight: 700,
-            textAlign: 'center',
-          }}>
-          Sign Up
-        </Text>
-      </TouchableOpacity>
+        {loading?
+        <Loader/>:(
+          <TouchableOpacity style={styles.loginbutton} onPress={()=>handleSignUp()}>
+          <Text
+            style={{
+              color: '#fff',
+              fontSize: 20,
+              fontWeight: 700,
+              textAlign: 'center',
+            }}>
+            Sign Up
+          </Text>
+        </TouchableOpacity>
+        )}
         
         <TouchableOpacity style={styles.signup} onPress={()=>navigation.navigate("Login")}>
         <Text style={{color:"#000000",fontSize:15,marginLeft:30}}>Already have an account?</Text>

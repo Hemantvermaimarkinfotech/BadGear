@@ -22,7 +22,7 @@ const SubscriptionShop = ({navigation}) => {
         }}>
         <Text
           numberOfLines={1}
-          style={{color: '#000', fontSize: 25, fontWeight: 500}}>
+          style={{color: '#000', fontSize: 25, fontWeight: '400'}}>
           Join Our Subscription
         </Text>
         <Text
@@ -30,7 +30,7 @@ const SubscriptionShop = ({navigation}) => {
           style={{
             color: '#000000',
             fontSize: 20,
-            fontWeight: 320,
+            fontWeight: '300',
             textAlign: 'center',
             marginTop: 10,
           }}>
@@ -54,7 +54,7 @@ const SubscriptionShop = ({navigation}) => {
               color: '#fff',
               fontSize: 20,
               textAlign: 'center',
-              fontWeight: 500,
+              fontWeight: '600',
             }}>
             Subscribe
           </Text>

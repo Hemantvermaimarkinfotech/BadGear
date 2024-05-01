@@ -63,7 +63,7 @@ const Choice = ({navigation}) => {
             }}>
             <Image
               source={require('../assets/arrow.png')}
-              style={{height: 30, width: 30, color: '#fff'}}
+              style={{height: 30, width: 30, tintColor: '#fff'}}
             />
           </View>
           <View style={{justifyContent: 'center'}}>

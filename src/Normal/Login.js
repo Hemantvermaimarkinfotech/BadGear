@@ -1,4 +1,4 @@
-import React, {useEffect,useContext} from 'react';
+import React, {useEffect,useContext,useState} from 'react';
 import {
   View,
   Text,
@@ -11,15 +11,58 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import { AuthContext } from '../Components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loader from '../Components/Loader';
+import axios from "react-native-axios"
 
 const Login = ({navigation}) => {
   const {userToken, setUserToken} = useContext(AuthContext);
-  const handleLogin=()=>{
-    setUserToken('userToken'); // Replace 'userToken' with the actual user token obtained from login
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    // Navigate to the home screen
-    navigation.navigate('Home');
-  }
+  const handleContinue = () => {
+      navigation.replace('DrawerNavigator'); 
+  };
+
+  const navigateToSignUp = () => {
+    navigation.navigate('SignUp'); // Assuming 'SignUp' is the name of your SignUp screen
+  };
+
+  const handleLogin = async () => {
+    setLoading(true);
+  
+    const userData = {
+      email: email,
+      password: password,
+    };
+  
+    try {
+      const response = await axios.post(
+        'http://sledpullcentral.com/wp-json/login-api/v1/userLogin',
+        userData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+  
+      console.log('Login response:', response.data);
+      setUserToken(response?.data);
+      await AsyncStorage.setItem('userData', JSON.stringify(response?.data));
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log('Login error', error.response);
+      alert(error?.response?.data?.error || 'An error occurred during login.');
+    }
+  };
+  
+
+  // const handleLogin=()=>{
+  //   setUserToken('userToken');
+  //   navigation.navigate('Home');
+  // }
  
   return (
     <SafeAreaView style={styles.container}>
@@ -36,7 +79,7 @@ const Login = ({navigation}) => {
           style={{
             color: '#000',
             fontSize: 25,
-            fontWeight: 700,
+            fontWeight: '600',
             textAlign: 'center',
           }}>
           Log In
@@ -51,14 +94,12 @@ const Login = ({navigation}) => {
         }}>
         <TextInput
           style={styles.input}
-          // value={text}
-          // onChangeText={handleChangeText}
+          onChangeText={txt=>setEmail(txt)}
           placeholder="Email"
         />
         <TextInput
           style={styles.input}
-          // value={text}
-          // onChangeText={handleChangeText}
+          onChangeText={txt=>setPassword(txt)} 
           placeholder="Password"
         />
       </View>
@@ -71,26 +112,29 @@ const Login = ({navigation}) => {
         }}>
         <View></View>
         <TouchableOpacity onPress={()=>navigation.navigate("ForgetPassword")}>
-        <Text style={{color: '#000000', fontSize: 15, fontWeight: 450}}>
+        <Text style={[styles.forgettext,{color: '#000000', fontSize: 15,fontWeight: "400"}]}>
           Forgot password?
         </Text>
         </TouchableOpacity>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.loginbutton} onPress={()=>handleLogin()} >
-        <Text
-          style={{
-            color: '#fff',
-            fontSize: 20,
-            fontWeight: 700,
-            textAlign: 'center',
-          }}>
-          Log in
-        </Text>
-      </TouchableOpacity>
+          {loading?
+          <Loader/>:(
+            <TouchableOpacity style={styles.loginbutton} onPress={()=>handleLogin()} >
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 20,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}>
+              Log in
+            </Text>
+          </TouchableOpacity>
+          )}
         
         <TouchableOpacity style={styles.signup} onPress={()=>navigation.navigate("SignUp")}>
         <Text style={{color:"#000000",fontSize:15,marginLeft:30}}>Don't have an account? </Text>
-        <Text style={{color:"#000000",fontSize:15,fontWeight:600,textAlign:"center"}}>sign up</Text>
+        <Text style={{color:"#000000",fontSize:15,fontWeight:'600',textAlign:"center"}}>sign up</Text>
         </TouchableOpacity>
       </View>
 
@@ -145,5 +189,6 @@ const styles = StyleSheet.create({
     alignItems:"center",
     marginTop:20,
    
-  }
+  },
+
 });

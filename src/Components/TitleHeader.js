@@ -49,7 +49,7 @@ const TitleHeader = ({title}) => {
         <TouchableOpacity onPress={()=>navigation.navigate("search")}>
           <Image
             source={require('../assets/search.png')}
-            style={styles.headericon}
+            style={[styles.headericon,{tintColor:"#000000"}]}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={()=>navigation.navigate("Cart")}>
@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 6,
+        marginTop:10
       },
       headericon: {
         height: 20,

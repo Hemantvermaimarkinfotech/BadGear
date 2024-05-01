@@ -112,6 +112,7 @@ const Cart = () => {
           borderBottomWidth: 2,
           borderBottomColor: '#E5E5E5',
           height: 50,
+          marginTop:10
         }}>
         <View style={styles.mainheader}>
           <View
