@@ -14,12 +14,13 @@ import Category from '../AppStack/Category';
 import NewArrival from '../AppStack/NewArrival';
 import ProductDetailsPage from '../AppStack/ProductDetailsPage';
 import WishList from '../AppStack/WishList';
-
+import colors from "../Utils/Colors"
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
 const AppScreenStack = () => {
+
   return (
     <Stack.Navigator initialRouteName={'BottomTab'}>
       <Stack.Screen
@@ -96,112 +97,127 @@ const AppScreenStack = () => {
 
 export default AppScreenStack;
 
-// const DrawerNavigator = () => {
-//   return (
-//     <Drawer.Navigator
-//       initialRouteName="Home"
-//       drawerContent={props => <DrawerContent {...props} />}>
-//       <Drawer.Screen
-//         name="Home"
-//         component={Home}
-//         options={{ headerShown: false }}
-//       />
-//     </Drawer.Navigator>
-//   );
-// };
+const BottomTabNav = ({ navigation }) => (
+  <Tab.Navigator
+    initialRouteName="Home"
+    screenOptions={{
+      tabBarActiveTintColor: colors.red,
+      tabBarInactiveTintColor: colors.darkGrey,
+      tabBarStyle: {
+        backgroundColor: 'white', // Set background color here
+        borderWidth: 0,
+        shadowColor: colors.shadowColor, // Add shadow color
+        shadowOpacity: 0.25, // Adjust shadow opacity as needed
+        shadowRadius: 2, // Adjust shadow radius as needed
+        elevation: 5,
+        height:60 // Android only, adjust elevation as needed
+      },
+    }}>
 
-const BottomTabNav = ({}) => {
-  const [focusedTab, setFocusedTab] = useState('Home');
+    <Tab.Screen name="Home" component={Home}
 
-  return (
-    <Tab.Navigator
-      initialRouteName="Drawer"
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused}) => {
-          let iconName;
-          let tintColor;
-          let label;
-          // Set icon and tint color based on the route and focus state
-          if (route.name === 'Home') {
-            iconName = require('../assets/house.png');
-            tintColor = focused ? 'red' : 'black'; // Change tint color to blue when focused
-            label = 'Home';
-          } else if (route.name === 'Search') {
-            iconName = require('../assets/search.png');
-            tintColor = focused ? 'red' : 'black'; // Change tint color to blue when focused
-            label = 'Search';
-          } else if (route.name === 'Notification') {
-            iconName = require('../assets/notification.png');
-            tintColor = focused ? 'red' : 'black'; // Change tint color to blue when focused
-            label = 'Notification';
-          } else if (route.name === 'Setting') {
-            iconName = require('../assets/account.png');
-            tintColor = focused ? 'red' : 'black'; // Change tint color to blue when focused
-            label = 'Setting';
-          }
+      options={{
+        tabBarIcon: ({focused}) => (
+          <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            <Image
+              source={require('../assets/house.png')}
+              style={{
+                height: 20,
+                width: 20,
+                resizeMode: 'contain',
+                tintColor: focused ? colors.primary : colors.black,
+              }}
+            />
+            <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black}}>Home</Text>
+          </View>
+        ),
+        tabBarLabel: () => null,
+        headerStyle: {
+          height: 120, // Set the desired height value
+          shadowColor: '#fff',
+        },
+        // headerTitle: (props) => <TopHeader />
+    // Custom header component
+    headerShown: false,
+      }}/>
 
-          return (
-            <View style={{alignItems: 'center'}}>
+    <Tab.Screen name="Search" component={Search} 
+      options={{
+        tabBarIcon: ({focused}) => (
+          <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            <Image
+              source={require('../assets/search.png')}
+              style={{
+                height: 20,
+                width: 20,
+                resizeMode: 'contain',
+                tintColor: focused ? colors.primary : colors.black,
+              }}
+            />
+            <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black}}>Search</Text>
+          </View>
+        ),
+        tabBarLabel: () => null,
+        headerStyle: {
+          height: 120, // Set the desired height value
+          shadowColor: '#fff',
+        },
+        // headerTitle: (props) => <TopHeader />
+        // Custom header component
+        headerShown: false
+      }}/>
+
+    <Tab.Screen name="Notification" component={Notification}
+      options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
               <Image
-                source={iconName}
+                source={require('../assets/notification.png')}
                 style={{
-                  width: 24,
-                  height: 24,
-                  tintColor,
+                  height: 20,
+                  width: 20,
                   resizeMode: 'contain',
+                  tintColor: focused ? colors.primary : colors.black,
                 }}
               />
-              <Text style={{color: 'black', marginTop: 5}}>{label}</Text>
+              <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black}}>Notification</Text>
+            </View>
+          ),
+          tabBarLabel: () => null,
+          headerStyle: {
+            height: 120, // Set the desired height value
+            shadowColor: '#fff',
+          },
+          // headerTitle: (props) => <TopHeader />
+          // Custom header component
+          headerShown: false
+      }}
+      
+      />
+
+<Tab.Screen name="Settings" component={Setting}
+      options={{
+        tabBarIcon: ({ focused }) => {
+          return (
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Image
+                source={require('../assets/account.png')}
+                style={{
+                  height: 20,
+                  width: 20,
+                  resizeMode: 'contain',
+                  tintColor: focused ? colors.primary : colors.black,
+                }}
+              />
+              <Text style={{ fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black }}>Settings</Text>
             </View>
           );
         },
-      })}
-      tabBarOptions={{
-        keyboardHidesTabBar: true,
-        showLabel: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: '#ADD8E6', // Light blue background color
-          height: 80,
-          borderTopRadius: 20,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          justifyContent: 'center',
-          alignItems: 'center',
-        },
-      }}>
-      <Tab.Screen
-        name="Home"
-        component={Home}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="Search"
-        component={Search}
-        options={{
-          headerShown: false,
-        }}
-    
-      />
+        tabBarLabel: () => null,
+        headerShown: false,
+      }}
+    />
       
-      <Tab.Screen
-        name="Notification"
-        component={Notification}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="Setting"
-        component={Setting}
-        options={{
-          headerShown: false,
-        }}
-        
-      />
-    </Tab.Navigator>
-  );
-};
+  </Tab.Navigator>
+);
 const styles = StyleSheet.create({});

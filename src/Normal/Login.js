@@ -29,35 +29,33 @@ const Login = ({navigation}) => {
   };
 
   const handleLogin = async () => {
+console.log("hello")
     setLoading(true);
   
-    const userData = {
-      email: email,
-      password: password,
-    };
-  
+    let Data = JSON.stringify({
+      email: `${email}`,
+      password: `${password}`,
+    });
     try {
       const response = await axios.post(
         'http://sledpullcentral.com/wp-json/login-api/v1/userLogin',
-        userData,
+        Data,
         {
           headers: {
             'Content-Type': 'application/json',
-          }
-        }
+          },
+        },
       );
-  
-      console.log('Login response:', response.data);
+      console.log('Login response:', response.data); 
       setUserToken(response?.data);
       await AsyncStorage.setItem('userData', JSON.stringify(response?.data));
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log('Login error', error.response);
-      alert(error?.response?.data?.error || 'An error occurred during login.');
+      console.log("error-response",error?.response);
+      alert(error?.response?.data?.error);
     }
   };
-  
 
   // const handleLogin=()=>{
   //   setUserToken('userToken');
@@ -92,6 +90,7 @@ const Login = ({navigation}) => {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
+           
         <TextInput
           style={styles.input}
           onChangeText={txt=>setEmail(txt)}
@@ -131,6 +130,18 @@ const Login = ({navigation}) => {
             </Text>
           </TouchableOpacity>
           )}
+
+{/* <TouchableOpacity style={styles.loginbutton} onPress={()=>handleLogin()} >
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 20,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}>
+              Log in
+            </Text>
+          </TouchableOpacity> */}
         
         <TouchableOpacity style={styles.signup} onPress={()=>navigation.navigate("SignUp")}>
         <Text style={{color:"#000000",fontSize:15,marginLeft:30}}>Don't have an account? </Text>

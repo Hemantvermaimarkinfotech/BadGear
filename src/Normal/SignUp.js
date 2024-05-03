@@ -20,38 +20,35 @@ const SignUp = ({navigation}) => {
   const [password,setPassword]=useState()
 const [loading,setLoading]=useState(false)
 
-  const handleSignUp = async () => {
-
-    setLoading(true);
-  
-    let Data = JSON.stringify({
-      name: `${name}`,
-      email: `${email}`,
-      password: `${password}`,
-    });
-    console.log(name,email,password)
-    try {
-     
-      const response = await axios.post(
-        'https://www.funkitswap.com/wp-json/signup-api/v1/userRegister',
-        Data,
-        {
-          headers: {
-            'Content-Type': 'application/json',
+const handleSignUp = async () => {
+  console.log("hello")
+      setLoading(true);
+    
+      let Data = JSON.stringify({
+        name: `${name}`,
+        email: `${email}`,
+        password: `${password}`,
+      });
+      try {
+        const response = await axios.post(
+          'http://sledpullcentral.com/wp-json/signup-api/v1/user_signup',
+          Data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
           },
-        },
-      );
-      console.log("dfjkldkdfs")
-      console.log('SignUp response:', response.data); 
-      // setUserToken(response?.data);
-      await AsyncStorage.setItem('userData', JSON.stringify(response?.data));
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.log('respnse-error',error?.response);
-      alert(error?.response?.data?.error);
-    }
-  };
+        );
+        console.log('SignUp response:', response.data); 
+        setUserToken(response?.data);
+        await AsyncStorage.setItem('userData', JSON.stringify(response?.data));
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log("error-response",error?.response);
+        alert(error?.response?.data?.error);
+      }
+    };
   
   
   return (
@@ -83,19 +80,19 @@ const [loading,setLoading]=useState(false)
         }}>
              <TextInput
           style={styles.input}
-          value={name}
-          onChangeText={(text)=>setName(text)}
+          // value={name}
+          onChangeText={text=>setName(text)}
           placeholder="Name"
         />
         <TextInput
           style={styles.input}
-          value={email}
+          // value={email}
           onChangeText={text=>setEmail(text)}
           placeholder="Email"
         />
         <TextInput
           style={styles.input}
-          value={password}
+          // value={password}
           onChangeText={text=>setPassword(text)}
           placeholder="Password"
         />
@@ -115,6 +112,18 @@ const [loading,setLoading]=useState(false)
           </Text>
         </TouchableOpacity>
         )}
+
+{/* <TouchableOpacity style={styles.loginbutton} onPress={()=>handleSignUp()}>
+          <Text
+            style={{
+              color: '#fff',
+              fontSize: 20,
+              fontWeight: 700,
+              textAlign: 'center',
+            }}>
+            Sign Up
+          </Text>
+        </TouchableOpacity> */}
         
         <TouchableOpacity style={styles.signup} onPress={()=>navigation.navigate("Login")}>
         <Text style={{color:"#000000",fontSize:15,marginLeft:30}}>Already have an account?</Text>

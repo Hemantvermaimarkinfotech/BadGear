@@ -1,4 +1,4 @@
-import React, {useEffect,useContext,useState} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,8 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {ScrollView} from 'react-native-gesture-handler';
-import axios from "react-native-axios"
-import { AuthContext } from '../Components/AuthProvider';
+import axios from 'react-native-axios';
+import {AuthContext} from '../Components/AuthProvider';
 
 const CatDATA = [
   {id: '1', text: 'Bad Woman', image: require('../assets/cat1.png')},
@@ -24,14 +24,7 @@ const CatDATA = [
   // category data
 ];
 
-
-
-
-
-
-
 const Home = ({navigation, item}) => {
-
   const ArrivalsDATA = [
     {
       id: '1',
@@ -113,25 +106,38 @@ const Home = ({navigation, item}) => {
   ];
 
   const [categories, setCategories] = useState([]);
+  const {userToken} = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchdataCategory();
-  }, []);
-
-  const fetchdataCategory = async () => {
+  const getCategory = async () => {
     try {
-      const response = await axios.get('http://sledpullcentral.com/wp-json/all-category/v1/categories');
-      setCategories(response?.data?.result);
+      const response = await axios.get(
+        `http://sledpullcentral.com/wp-json/all-category/v1/categories`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userToken?.accessToken}`, // Include token in header
+          },
+        },
+      );
+      setCategories(response.data.data);
+      console.log('response-category', response.data.data);
+      setLoading(false); // Set loading state to false after data is fetched
     } catch (error) {
-      console.log(error);
+      console.log(error?.response, 'error');
+      setLoading(false); // Set loading state to false in case of error as well
     }
   };
-  
+
+  useEffect(() => {
+    getCategory();
+  }, []); // Run once on component mount
+
   const renderCategoryItem = ({item, navigation}) => {
-  
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('ProductDetails',{ProductId: item})}>
+        onPress={() =>
+          navigation.navigate('ProductDetails', {ProductId: item})
+        }>
         <View style={styles.catitem}>
           <Image style={styles.image} source={item?.image} />
         </View>
@@ -140,14 +146,14 @@ const Home = ({navigation, item}) => {
             textAlign: 'center',
             color: '#000000',
             fontSize: 14,
-            fontWeight: 600,
+            fontWeight: '600',
           }}>
-          {item?.name}
+          {item?.text}
         </Text>
       </TouchableOpacity>
     );
   };
-  
+
   const renderArrivelItem = ({item, navigation}) => (
     <TouchableOpacity
       onPress={() => navigation.navigate('ProductDetails', {ProductId: item})}>
@@ -169,7 +175,7 @@ const Home = ({navigation, item}) => {
             fontSize: 14,
             width: 100,
             textAlign: 'center',
-            fontWeight: 600,
+            fontWeight: '600',
           }}>
           {item.text}
         </Text>
@@ -184,7 +190,7 @@ const Home = ({navigation, item}) => {
           }}>
           <Image
             source={require('../assets/heart.png')}
-            style={{color: '#000000'}}
+            style={{tintColor: '#000000'}}
           />
         </View>
       </View>
@@ -193,7 +199,7 @@ const Home = ({navigation, item}) => {
           style={{
             color: '#000000',
             fontSize: 17,
-            fontWeight: 480,
+            fontWeight: '500',
             marginLeft: 16,
           }}>
           {item.rate}
@@ -201,10 +207,12 @@ const Home = ({navigation, item}) => {
       </View>
     </TouchableOpacity>
   );
-  
+
   const renderBestSellingItem = ({item, navigation}) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('ProductDetails', {ProductId: item.id})}>
+      onPress={() =>
+        navigation.navigate('ProductDetails', {ProductId: item.id})
+      }>
       <View style={styles.Arrivelitem}>
         <Image style={styles.Arrivalimage} source={item.image} />
       </View>
@@ -238,7 +246,7 @@ const Home = ({navigation, item}) => {
           }}>
           <Image
             source={require('../assets/heart.png')}
-            style={{color: '#000000'}}
+            style={{tintColor: '#000000'}}
           />
         </View>
       </View>
@@ -247,7 +255,7 @@ const Home = ({navigation, item}) => {
           style={{
             color: '#000000',
             fontSize: 17,
-            fontWeight: 480,
+            fontWeight: 500,
             marginLeft: 16,
           }}>
           {item.rate}
@@ -255,12 +263,12 @@ const Home = ({navigation, item}) => {
       </View>
     </TouchableOpacity>
   );
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
+          <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
             Welcome Jack
           </Text>
         </View>
@@ -314,7 +322,7 @@ const Home = ({navigation, item}) => {
         </View>
         <View style={styles.category}>
           <View style={styles.categoryheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
+            <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
               Category
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Category')}>
@@ -330,18 +338,18 @@ const Home = ({navigation, item}) => {
           </View>
           <View>
             <FlatList
-              showsHorizontalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
               horizontal
               data={CatDATA}
-              renderItem={({item}) => renderCategoryItem({item, navigation})}
-              keyExtractor={item => item.id}
+              renderItem={renderCategoryItem}
+              keyExtractor={item => item.cat_id} // Use cat_id as key
             />
           </View>
         </View>
 
         <View style={styles.NewArrivel}>
           <View style={styles.Arrivelheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
+            <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
               New Arrivals
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('NewArrivel')}>
@@ -359,7 +367,7 @@ const Home = ({navigation, item}) => {
             <FlatList
               showsHorizontalScrollIndicator={false}
               horizontal
-              data={ ArrivalsDATA}
+              data={ArrivalsDATA}
               renderItem={({item}) => renderArrivelItem({item, navigation})}
               keyExtractor={item => item.id}
             />
@@ -368,7 +376,7 @@ const Home = ({navigation, item}) => {
 
         <View style={styles.NewArrivel}>
           <View style={styles.Arrivelheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
+            <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
               Best Selling
             </Text>
             <TouchableOpacity>
@@ -408,7 +416,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 20,
-    marginTop:10
+    marginTop: 10,
   },
   headericon: {
     height: 17,
