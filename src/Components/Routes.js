@@ -8,8 +8,6 @@ import AppScreenStack from './AppScreensStack';
 
 const Routes = () => {
   const { userToken } = useContext(AuthContext);
-  const [splash, setSplash] = useState(true);
-
 
     return (
       <NavigationContainer>

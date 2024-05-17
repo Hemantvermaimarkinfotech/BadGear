@@ -26,17 +26,20 @@ const Welcome = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-      <View style={{ alignSelf: 'center' }}>
+      <View style={{ alignSelf: 'center',paddingHorizontal:20}}>
         <Text
           numberOfLines={3}
           style={{
-            fontSize: 25,
-            color: '#000',
-            fontWeight: '500',
+            fontSize: 23,
+            color: '#000000',
+            // fontWeight: 600,
+            lineHeight:30,
             alignSelf: 'center',
             alignItems: 'center',
             textAlign: 'center',
             marginTop: 20,
+            fontFamily:"Gilroy-SemiBold"
+          
           }}>
           Welcome to the World’s Largest Retailer of Diesel and Tractor Pulling Apparel!!!
         </Text>
@@ -73,8 +76,8 @@ const Welcome = ({ navigation }) => {
    <TouchableOpacity onPress={handleSkip}>
         <Text
           style={{
-            color: '#000',
-            fontSize: 20,
+            color: '#000000',
+            fontSize: 18,
             textAlign: 'center',
             textDecorationLine: 'underline',
             
@@ -92,6 +95,6 @@ export default Welcome;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   
+   backgroundColor:"#FBFCFC"
   },
 });

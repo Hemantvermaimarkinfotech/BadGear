@@ -1,0 +1,117 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Gilroy/ARIAL.TTF",
+      "sha1": "66154062e9902d6664f9855bfc04138e8b0c7c53"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALBD 1.TTF",
+      "sha1": "03ea55d42903c041b1ff64c2bd593fb7b9d3a843"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALBD.TTF",
+      "sha1": "03ea55d42903c041b1ff64c2bd593fb7b9d3a843"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALBI 1.TTF",
+      "sha1": "706d164d403264f8ba313e82efcd6e356b6cee29"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALBI.TTF",
+      "sha1": "706d164d403264f8ba313e82efcd6e356b6cee29"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALBLACKITALIC.TTF",
+      "sha1": "e72c3388d2948e3632e5f5beb25fee0928a7d644"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALI 1.TTF",
+      "sha1": "c04eaf9e6eb0b462049309bf670a49a4ed7e6725"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALI.TTF",
+      "sha1": "c04eaf9e6eb0b462049309bf670a49a4ed7e6725"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALLGT.TTF",
+      "sha1": "1cf3ca8ca39443abf23f865b90e7b427d90083dc"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALLGTITL.TTF",
+      "sha1": "984e98502d7180aba52c5132aaf4a40f559ccc73"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALN.TTF",
+      "sha1": "66e81e620ae96df1f1b35d8ef57ea42a7f327265"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALNB.TTF",
+      "sha1": "2bb165b1c58956eb4d4416eb2abb0329d40a282c"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALNBI.TTF",
+      "sha1": "a7f30de11ed80c14b3d6716c82b392a920df5df5"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIALNI.TTF",
+      "sha1": "780fc5059f6d5a272cb2f04c4c81bc8660b57328"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ARIBLK.TTF",
+      "sha1": "e6528182997a46a5daf8008fab9ec5fed0a84ce2"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ArialCE.ttf",
+      "sha1": "f78257e5b1fd556dbaf87052a48f9211123a4aef"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ArialCEBoldItalic.ttf",
+      "sha1": "b40a612ab8031fcbce0361bd049cfd1f60477df0"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ArialCEItalic.ttf",
+      "sha1": "c50f938f2f47428ae712939b53f3f93c29c1403c"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ArialCEMTBlack.ttf",
+      "sha1": "830da1099561ee305c5e5b9b8f74b6e033cc84a7"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ArialMdm.ttf",
+      "sha1": "f500ce2af19b434fcca06e91ac27747155bf2f91"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/ArialMdmItl.ttf",
+      "sha1": "e2cfa57bfc4f0302582f14857d3b038c39be8700"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/Gilroy-Bold.ttf",
+      "sha1": "eeda33cebb0c6cb6cdbf2af87ef0cebfcb9e9f99"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/Gilroy-Heavy.ttf",
+      "sha1": "6a2631b0af0b75a60e8d887d867f95578bb6e1f6"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/Gilroy-Light.ttf",
+      "sha1": "3a3bc2fff8192fb3d99827c17eb37a6eb0f8d821"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/Gilroy-Medium.ttf",
+      "sha1": "a05d394f3550b31324c7ef6eda6bd09a6bcfb4bd"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/Gilroy-Regular.ttf",
+      "sha1": "eae0f6aa553643ae5c2b4da46a422f8d26255bb1"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/Gilroy-SemiBold.ttf",
+      "sha1": "8663a356eb9bc23b77696208f74376daf59687ea"
+    },
+    {
+      "path": "src/assets/fonts/Gilroy/arialceb.ttf",
+      "sha1": "a5dd06bcebc6af7351393fbbced597c2a0e408a3"
+    }
+  ]
+}

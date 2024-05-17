@@ -21,7 +21,7 @@ import {
         style={[
           styles.primaryBtn,
           {
-            width: width ? width : '95%',
+            width: width ? width : '100%',
             backgroundColor: backgroundColor ? backgroundColor : '#fff',
             borderWidth: borderWidth ? borderWidth : 1,
             ...rest,
@@ -30,7 +30,7 @@ import {
         onPress={() => onPress()}>
         <ActivityIndicator
           size="large"
-          color="#550000"
+          color="#F10C18"
           style={styles.activityIndicator}
         />
         {/* <Text style={[styles.primaryBtnTxt,{ color: color ? color : '#000',}]}>{title}</Text> */}
@@ -46,14 +46,13 @@ import {
       justifyContent: 'center',
       alignItems: 'center',
       width: '45%',
-      height: 50,
+      height: 55,
       backgroundColor: '#ffffff',
       elevation: 6,
-      borderRadius: 30,
+      borderRadius: 8,
       borderWidth: 1,
-      borderColor: '#000',
+      borderColor: '#F10C18',
       alignSelf: 'center',
-      marginVertical: 15,
     },
     primaryBtnTxt: {
       fontSize: 18,

@@ -1,139 +1,113 @@
-import React, {useEffect} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   SafeAreaView,
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ForgetPassword = ({navigation}) => {
+const ForgotPassword = ({navigation}) => {
+  const [email, setEmail] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(false);
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
+    setIsEmailValid(isValidEmail);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-    <View style={{marginTop:80}}>
-    <View
-        style={{
-          width: '90%',
-          alignSelf: 'center',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text
-          style={{
-            color: '#000',
-            fontSize: 25,
-            fontWeight: 700,
-            textAlign: 'center',
-          }}>
-          Forgot Password?
-        </Text>
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Forgot Password?</Text>
+        <View style={styles.inputContainer}>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              onChangeText={handleEmailChange}
+              placeholder="Email"
+              placeholderTextColor="#23233C"
+              color="#23233C"
+            />
+            <TouchableOpacity>
+              {isEmailValid ? (
+                <AntDesign name="checkcircle" size={20} color="#6CC57C" />
+              ) : (
+                <MaterialCommunityIcons
+                  name="information"
+                  size={20}
+                  color="red"
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.submitButton}>
+          <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
+      
       </View>
-      <View
-        style={{
-          alignSelf: 'center',
-          width: '90%',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <TextInput
-          style={styles.input}
-          // value={text}
-          // onChangeText={handleChangeText}
-          placeholder="Email"
-        />
-      </View>
-
-      <TouchableOpacity style={styles.loginbutton}>
-        <Text
-          style={{
-            color: '#fff',
-            fontSize: 20,
-            fontWeight: 700,
-            textAlign: 'center',
-          }}>
-          Submit
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.signup}
-        onPress={() => navigation.navigate('SignUp')}>
-        <Text style={{color: '#000000', fontSize: 15, marginLeft: 30}}>
-          Don't have an account?{' '}
-        </Text>
-        <Text
-          style={{
-            color: '#000000',
-            fontSize: 15,
-            fontWeight: 600,
-            textAlign: 'center',
-          }}>
-          sign up
-        </Text>
-      </TouchableOpacity>
-    </View>
-
-      <Text
-        style={{
-          textDecorationLine: 'underline',
-          fontSize: 20,
-          textAlign: 'center',
-          marginTop: 20,
-          color: '#000000',
-          position:"absolute",
-          bottom:100,
-          left:"45%"
-        }}>
-        Skip
-      </Text>
+     
     </SafeAreaView>
   );
 };
 
-export default ForgetPassword;
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 80,
   },
-  input: {
-    width: '95%',
-    height: 50,
+  formContainer: {
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 29,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#000000',
+    fontFamily:"Gilroy-SemiBold"
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: 55,
     borderRadius: 5,
     paddingHorizontal: 10,
+    backgroundColor: '#FFFFFF',
+    elevation: 5,
     marginTop: 20,
-    backgroundColor: '#fff',
-    elevation: 1,
-    color: '#23233C',
-    fontSize: 12,
-    shadowColor: 'rgba(0, 0, 0, 0.3)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  loginbutton: {
-    width: '86%',
-    marginTop: 10,
-    alignSelf: 'center',
+  passwordInput: {
+    flex: 1,
+    fontSize: 12,
+  },
+  submitButton: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F10C18',
-    height: 50,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginTop: 20,
-    elevation: 1,
-    color: '#23233C',
-    fontSize: 12,
-  },
-  signup: {
-    flexDirection: 'row',
-    width: '70%',
-    alignSelf: 'center',
-    alignItems: 'center',
+    height: 55,
+    borderRadius: 10,
     marginTop: 20,
   },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily:"Gilroy",
+  },
+
+
 });

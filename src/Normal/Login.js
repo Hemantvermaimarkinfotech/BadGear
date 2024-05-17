@@ -1,4 +1,4 @@
-import React, {useEffect,useContext,useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   View,
   Text,
@@ -7,149 +7,157 @@ import {
   SafeAreaView,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import { AuthContext } from '../Components/AuthProvider';
+import {AuthContext} from '../Components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../Components/Loader';
-import axios from "react-native-axios"
+import axios from 'react-native-axios';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Login = ({navigation}) => {
-  const {userToken, setUserToken} = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const { setUserToken } = useContext(AuthContext);
 
-  const handleContinue = () => {
-      navigation.replace('DrawerNavigator'); 
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
+    setIsEmailValid(isValidEmail);
   };
 
-  const navigateToSignUp = () => {
-    navigation.navigate('SignUp'); // Assuming 'SignUp' is the name of your SignUp screen
-  };
+  
 
   const handleLogin = async () => {
-console.log("hello")
+    // Validate input fields
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+  
     setLoading(true);
   
-    let Data = JSON.stringify({
-      email: `${email}`,
-      password: `${password}`,
+    const data = JSON.stringify({
+      email: email.trim(),
+      password: password.trim(),
     });
+  
     try {
+      // Send the login request to the server
       const response = await axios.post(
-        'http://sledpullcentral.com/wp-json/login-api/v1/userLogin',
-        Data,
+        'https://sledpullcentral.com/wp-json/login-api/v1/userLogin',
+        data,
         {
           headers: {
             'Content-Type': 'application/json',
           },
         },
       );
-      console.log('Login response:', response.data); 
-      setUserToken(response?.data);
-      await AsyncStorage.setItem('userData', JSON.stringify(response?.data));
+  
+      // Log the response from the server
+      console.log('Login response:', response.data);
+  
+      // Check if the response indicates a successful login
+      if (response.data.status !== "error") {
+        // Save the response data to local storage
+        await AsyncStorage.setItem('userData', JSON.stringify(response.data));
+  
+        // Set the user token
+        setUserToken(response.data.token);
+      } else {
+        // Handle unsuccessful login
+        Alert.alert('Login Failed', response.data.errormsg || 'Incorrect email or password');
+      }
+  
+      // Set loading state to false
       setLoading(false);
     } catch (error) {
+      // Set loading state to false
       setLoading(false);
-      console.log("error-response",error?.response);
-      alert(error?.response?.data?.error);
+  
+      // Handle and log errors
+      console.error('Error:', error);
+  
+      // Check if the error response is available
+      if (error.response) {
+        console.error('Server Error Response:', error.response.data);
+        Alert.alert('Error', error.response.data.errormsg || 'An error occurred. Please try again.');
+      } else if (error.request) {
+        console.error('No Server Response:', error.request);
+        Alert.alert('Network Error', 'No response from server. Please check your internet connection.');
+      } else {
+        console.error('Request Error:', error.message);
+        Alert.alert('Unexpected Error', 'An unexpected error occurred. Please try again later.');
+      }
     }
   };
+  
 
-  // const handleLogin=()=>{
-  //   setUserToken('userToken');
-  //   navigation.navigate('Home');
-  // }
- 
+
   return (
     <SafeAreaView style={styles.container}>
+     <View style={{marginTop:80}}>
+     <View style={styles.header}>
+        <Text style={styles.title}>Log In</Text>
+      </View>
       
-      <View style={{marginTop:80}}>
-      <View
-        style={{
-          width: '90%',
-          alignSelf: 'center',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text
-          style={{
-            color: '#000',
-            fontSize: 25,
-            fontWeight: '600',
-            textAlign: 'center',
-          }}>
-          Log In
-        </Text>
-      </View>
-      <View
-        style={{
-          alignSelf: 'center',
-          width: '90%',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-           
-        <TextInput
-          style={styles.input}
-          onChangeText={txt=>setEmail(txt)}
-          placeholder="Email"
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={txt=>setPassword(txt)} 
-          placeholder="Password"
-        />
-      </View>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          width: '90%',
-          marginTop: 10,
-        }}>
-        <View></View>
-        <TouchableOpacity onPress={()=>navigation.navigate("ForgetPassword")}>
-        <Text style={[styles.forgettext,{color: '#000000', fontSize: 15,fontWeight: "400"}]}>
-          Forgot password?
-        </Text>
-        </TouchableOpacity>
-      </TouchableOpacity>
-          {loading?
-          <Loader/>:(
-            <TouchableOpacity style={styles.loginbutton} onPress={()=>handleLogin()} >
-            <Text
-              style={{
-                color: '#fff',
-                fontSize: 20,
-                fontWeight: '600',
-                textAlign: 'center',
-              }}>
-              Log in
-            </Text>
-          </TouchableOpacity>
+      <View style={styles.inputContainer}>
+      <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            onChangeText={handleEmailChange}
+            placeholder="Email"
+            placeholderTextColor="#23233C"
+            color="#23233C"
+          />
+          <TouchableOpacity>
+          {isEmailValid ? (
+            <AntDesign name="checkcircle" size={20} color="#6CC57C" />
+          ) : (
+            null
           )}
-
-{/* <TouchableOpacity style={styles.loginbutton} onPress={()=>handleLogin()} >
-            <Text
-              style={{
-                color: '#fff',
-                fontSize: 20,
-                fontWeight: '600',
-                textAlign: 'center',
-              }}>
-              Log in
-            </Text>
-          </TouchableOpacity> */}
-        
-        <TouchableOpacity style={styles.signup} onPress={()=>navigation.navigate("SignUp")}>
-        <Text style={{color:"#000000",fontSize:15,marginLeft:30}}>Don't have an account? </Text>
-        <Text style={{color:"#000000",fontSize:15,fontWeight:'600',textAlign:"center"}}>sign up</Text>
-        </TouchableOpacity>
+          
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.passwordContainer,{marginTop:30}]}>
+          <TextInput
+            style={styles.passwordInput}
+            secureTextEntry={!showPassword}
+            onChangeText={txt => setPassword(txt)}
+            placeholder="Password"
+            placeholderTextColor="#23233C"
+            color="#23233C"
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Image
+               source={showPassword ? require('../assets/eye.png') : require('../assets/view.png')}
+              style={styles.eyeIcon}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-
-        <Text style={{textDecorationLine:"underline",fontSize:20,textAlign:"center",color:"#000000",position:"absolute",bottom:100,left:"45%"}}>Skip</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgetPassword')}>
+        <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+      </TouchableOpacity>
+      {loading ? (
+        <Loader />
+      ) : (
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Log in</Text>
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={{justifyContent:"center",alignItems:"center"}}>
+        <Text style={styles.signupText}>
+          Don't have an account? <Text style={styles.signupLink}>Sign up</Text>
+        </Text>
+      </TouchableOpacity>
+     </View>
+      <Text style={styles.skipText}>Skip</Text>
      
     </SafeAreaView>
   );
@@ -159,47 +167,103 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  input: {
-    width: '95%',
-    height: 50,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginTop: 20,
-    backgroundColor: '#fff',
-    elevation: 1,
-    color: '#23233C',
-    fontSize: 12,
-    shadowColor: 'rgba(0, 0, 0, 0.3)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
+    paddingHorizontal: 20,
+    flex:1,
+    backgroundColor:"#FBFCFC"
     
   },
-  loginbutton: {
-    width: '86%',
-    marginTop: 10,
-    alignSelf: 'center',
+  header: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  title: {
+    fontSize: 29,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#000000',
+    fontFamily:"Gilroy-SemiBold"
+  },
+ 
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: 55,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    elevation: 5,
+    alignSelf:"center",
+    paddingHorizontal:20,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 12,
+    
+  },
+  eyeIcon: {
+    height: 24,
+    width: 24,
+  },
+  forgotPasswordText: {
+    fontSize: 16,
+    textAlign: 'right',
+    marginVertical: 20,
+    color: '#000000',
+    width:"90%",
+    alignSelf:"center",
+    fontWeight:"600",
+    fontFamily:"Gilroy-Medium"
+
+    
+  },
+  loginButton: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F10C18',
-    height: 50,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginTop: 20,
-    elevation: 1,
-    color: '#23233C',
-    fontSize: 12,
+    height: 55,
+    borderRadius: 10,
+    width:"100%",
+    alignSelf:"center",
     
   },
-  signup:{
-    flexDirection:"row",
-    width:"70%",
-    alignSelf:"center",
-    alignItems:"center",
-    marginTop:20,
-   
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily:"Gilroy"
   },
+  signupText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#000000',
+    marginVertical:30,
+    // fontWeight:"600",
+    fontFamily:"Gilroy-SemiBold"
 
+  },
+  inputContainer:{
+    marginHorizontal:20,
+    width:"100%",
+    alignSelf:"center"
+  },
+  signupLink: {
+    fontWeight: '600',
+    marginTop:5,
+    fontSize:16,
+    fontFamily:"Gilroy-Bold"
+  },
+  skipText: {
+    textDecorationLine:"underline",
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#000000',
+    fontFamily:"Gilroy-Medium",
+  },
 });

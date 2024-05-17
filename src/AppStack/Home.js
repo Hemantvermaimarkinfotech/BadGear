@@ -8,11 +8,15 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import {ScrollView} from 'react-native-gesture-handler';
-import axios from 'react-native-axios';
 import {AuthContext} from '../Components/AuthProvider';
+import SkeletonLoader from '../Components/SkeletonLoader';
+import {getNewArrivals, getCategory, getBanner} from '../Components/ApiService';
+import AntDesign from "react-native-vector-icons/Feather";
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
+import LinearGradient from 'react-native-linear-gradient';
+
+const ShimmerPlaceholder=createShimmerPlaceholder(LinearGradient)
 
 const CatDATA = [
   {id: '1', text: 'Bad Woman', image: require('../assets/cat1.png')},
@@ -25,45 +29,12 @@ const CatDATA = [
 ];
 
 const Home = ({navigation, item}) => {
-  const ArrivalsDATA = [
-    {
-      id: '1',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival1.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '2',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival2.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '3',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival1.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '4',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival2.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '5',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival1.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '6',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival2.png'),
-      rate: '$39.95 - $44.95',
-    },
-    // NEW Arival data
-  ];
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [banner, setBanner] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const {userToken} = useContext(AuthContext);
+  const [Arrivals, setArrivals] = useState([]);
+ 
 
   const BestSellingDATA = [
     {
@@ -105,116 +76,102 @@ const Home = ({navigation, item}) => {
     // Best Selling data
   ];
 
-  const [categories, setCategories] = useState([]);
-  const {userToken} = useContext(AuthContext);
-
-  const getCategory = async () => {
-    try {
-      const response = await axios.get(
-        `http://sledpullcentral.com/wp-json/all-category/v1/categories`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userToken?.accessToken}`, // Include token in header
-          },
-        },
-      );
-      setCategories(response.data.data);
-      console.log('response-category', response.data.data);
-      setLoading(false); // Set loading state to false after data is fetched
-    } catch (error) {
-      console.log(error?.response, 'error');
-      setLoading(false); // Set loading state to false in case of error as well
-    }
-  };
 
   useEffect(() => {
-    getCategory();
-  }, []); // Run once on component mount
+    const fetchData = async () => {
+      try {
+        setLoading(true); // Set loading state to true
+  
+        // Fetch banner
+        const bannerResponse = await getBanner(userToken);
+        if (bannerResponse.status === 'success') {
+          setBanner(bannerResponse);
+        } else {
+          console.log('Error fetching banner:', bannerResponse);
+        }
+  
+        // Fetch categories
+        const categoriesResponse = await getCategory(userToken);
+        setCategories(categoriesResponse);
+  
+        // Fetch new arrivals
+        const newArrivalsResponse = await getNewArrivals(userToken);
+        setArrivals(newArrivalsResponse);
+  
+        setLoading(false); // Set loading state to false after all data is fetched
+      } catch (error) {
+        console.log('Error fetching data:', error);
+        setLoading(false); // Ensure loading state is set to false even if there's an error
+      }
+    };
+  
+    fetchData(); // Call the combined fetchData function
+  
+  }, [userToken]);
+  
 
-  const renderCategoryItem = ({item, navigation}) => {
+ 
+  
+
+  const renderCategoryItem = ({ item }) => {
+    const catDataItem = CatDATA.find(
+      dataItem => dataItem.text === item.cat_name,
+    );
+    const imageSource = catDataItem
+      ? catDataItem.image
+      : require('../assets/cat1.png');
+
     return (
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('ProductDetails', {ProductId: item})
-        }>
+        // onPress={() =>
+        //   navigation.navigate('ProductDetails', {ProductId: item.cat_id})
+        // }
+        style={styles.categoryItem}
+        key={item.cat_id}>
         <View style={styles.catitem}>
-          <Image style={styles.image} source={item?.image} />
+          {loading ? ( // Check if loading
+            <ShimmerPlaceholder
+              style={styles.image}
+              duration={1000} // Duration of the shimmer animation
+            />
+          ) : (
+            <Image style={styles.image} source={imageSource} />
+          )}
         </View>
         <Text
           style={{
             textAlign: 'center',
             color: '#000000',
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: '600',
+            fontFamily:"Gilroy-SemiBold"
           }}>
-          {item?.text}
+          {loading ? ( // Check if loading
+            <ShimmerPlaceholder
+              style={{ width: 100, marginTop: 5 }}
+              duration={1000} // Duration of the shimmer animation
+            />
+          ) : (
+            item.cat_name
+          )}
         </Text>
       </TouchableOpacity>
     );
   };
 
-  const renderArrivelItem = ({item, navigation}) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('ProductDetails', {ProductId: item})}>
-      <View style={styles.Arrivelitem}>
-        <Image style={styles.Arrivalimage} source={item.image} />
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingHorizontal: 15,
-          marginTop: 1,
-        }}>
-        <Text
-          numberOfLines={2}
-          style={{
-            color: '#000000',
-            fontSize: 14,
-            width: 100,
-            textAlign: 'center',
-            fontWeight: '600',
-          }}>
-          {item.text}
-        </Text>
-        <View
-          style={{
-            height: 30,
-            width: 30,
-            backgroundColor: '#fff',
-            borderRadius: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Image
-            source={require('../assets/heart.png')}
-            style={{tintColor: '#000000'}}
-          />
-        </View>
-      </View>
-      <View style={{justifyContent: 'center', marginTop: 10}}>
-        <Text
-          style={{
-            color: '#000000',
-            fontSize: 17,
-            fontWeight: '500',
-            marginLeft: 16,
-          }}>
-          {item.rate}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  
 
   const renderBestSellingItem = ({item, navigation}) => (
     <TouchableOpacity
-      onPress={() =>
-        navigation.navigate('ProductDetails', {ProductId: item.id})
-      }>
+     
+      key={item.id} // Assign a unique key to the TouchableOpacity
+    >
       <View style={styles.Arrivelitem}>
-        <Image style={styles.Arrivalimage} source={item.image} />
+        <Image
+          style={styles.Arrivalimage}
+          source={item.image}
+          key={`${item.id}_image`}
+        />
       </View>
       <View
         style={{
@@ -228,11 +185,13 @@ const Home = ({navigation, item}) => {
           numberOfLines={2}
           style={{
             color: '#000000',
-            fontSize: 14,
+            fontSize: 15,
             width: 100,
             textAlign: 'center',
             fontWeight: 600,
-          }}>
+            fontFamily:"Gilroy-SemiBold"
+          }}
+          key={`${item.id}_text`}>
           {item.text}
         </Text>
         <View
@@ -243,7 +202,8 @@ const Home = ({navigation, item}) => {
             borderRadius: 30,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+          key={`${item.id}_heart`}>
           <Image
             source={require('../assets/heart.png')}
             style={{tintColor: '#000000'}}
@@ -256,8 +216,10 @@ const Home = ({navigation, item}) => {
             color: '#000000',
             fontSize: 17,
             fontWeight: 500,
-            marginLeft: 16,
-          }}>
+            marginLeft: 18,
+            fontFamily:"Gilroy-SemiBold"
+          }}
+          key={`${item.id}_rate`}>
           {item.rate}
         </Text>
       </View>
@@ -268,7 +230,7 @@ const Home = ({navigation, item}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
+          <Text style={{color: '#000000', fontSize: 22,fontFamily:"Gilroy-SemiBold"}}>
             Welcome Jack
           </Text>
         </View>
@@ -286,10 +248,7 @@ const Home = ({navigation, item}) => {
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('search')}>
-            <Image
-              source={require('../assets/search.png')}
-              style={styles.headericon}
-            />
+          <AntDesign name="search" size={22} color={"#000"}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
             <Image
@@ -300,37 +259,63 @@ const Home = ({navigation, item}) => {
         </View>
       </View>
       <ScrollView>
-        <View style={styles.banner}>
-          <Image
-            source={require('../assets/homebanner.png')}
-            style={{height: 200, resizeMode: 'cover', width: '100%'}}
-          />
-          <Text
-            numberOfLines={3}
-            style={{
-              color: '#fff',
-              fontWeight: 600,
-              fontSize: 20,
-              top: 15,
-              width: '80%',
-              textAlign: 'center',
-              position: 'absolute',
-            }}>
-            The Best Place to Find and Purchase the Best Diesel Swag on the
-            Planet !!!
-          </Text>
-        </View>
+
+
+<View style={styles.banner}>
+  {loading ? (
+    <ShimmerPlaceholder
+      style={{ width: '98%', height: 200, borderRadius: 20 }}
+      duration={1000}
+      colors={['#CCCCCC', '#DDDDDD', '#CCCCCC']} 
+    />
+  ) : (
+    <>
+      <View style={{ height: 200, width: '98%' }}>
+        <Image
+          source={{ uri: banner?.banner_image }}
+          style={{
+            resizeMode: 'stretch',
+            width: '98%',
+            height: 200,
+            borderRadius: 10,
+          }}
+        />
+      </View>
+      <Text
+        numberOfLines={3}
+        style={{
+          color: '#FFFFFF',
+          fontWeight: '600',
+          fontSize: 18,
+          top: 15,
+          width: '60%',
+          textAlign: 'center',
+          position: 'absolute',
+          height: 200, // Set the same height as the banner image,
+          fontFamily:"Gilroy-Bold"
+        }}
+      >
+        {banner?.banner_heading}
+      </Text>
+    </>
+  )}
+</View>
+
+
+
+
         <View style={styles.category}>
           <View style={styles.categoryheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
+            <Text style={{color: '#000000', fontSize: 24, fontWeight: 600,fontFamily:"Gilroy-SemiBold"}}>
               Category
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Category')}>
               <Text
                 style={{
                   color: '#000000',
-                  fontSize: 16,
+                  fontSize: 15,
                   textDecorationLine: 'underline',
+                  fontFamily:"Gilroy-Medium",
                 }}>
                 See all
               </Text>
@@ -338,26 +323,27 @@ const Home = ({navigation, item}) => {
           </View>
           <View>
             <FlatList
-            showsHorizontalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
               horizontal
-              data={CatDATA}
-              renderItem={renderCategoryItem}
-              keyExtractor={item => item.cat_id} // Use cat_id as key
+              data={categories} 
+              renderItem={({item}) => renderCategoryItem({item, navigation})}
+              keyExtractor={item => item.cat_id.toString()} 
             />
           </View>
         </View>
 
         <View style={styles.NewArrivel}>
           <View style={styles.Arrivelheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
+            <Text style={{color: '#000000', fontSize: 24, fontWeight: 600,fontFamily:"Gilroy-SemiBold"}}>
               New Arrivals
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('NewArrivel')}>
               <Text
                 style={{
                   color: '#000000',
-                  fontSize: 16,
+                  fontSize: 15,
                   textDecorationLine: 'underline',
+                  fontFamily:"Gilroy-Medium"
                 }}>
                 See all
               </Text>
@@ -367,24 +353,115 @@ const Home = ({navigation, item}) => {
             <FlatList
               showsHorizontalScrollIndicator={false}
               horizontal
-              data={ArrivalsDATA}
-              renderItem={({item}) => renderArrivelItem({item, navigation})}
-              keyExtractor={item => item.id}
+              data={
+                loading ? Array.from(Array(7).keys()) : Arrivals.slice(0, 7)
+              } 
+              renderItem={({item}) => {
+                return (
+                  <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ProductDetails', {
+                      productId: item.product_id,
+                    })
+                  }>
+                  <View style={styles.Arrivelitem}>
+                    {loading ? ( 
+                      <ShimmerPlaceholder
+                        style={[styles.Arrivalimage,{height:150}]}
+                        duration={1000}
+                      />
+                    ) : (
+                      item?.product_img && (
+                        <Image
+                          style={styles.Arrivalimage}
+                          source={{ uri: item.product_img }}
+                        />
+                      )
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingHorizontal: 10,
+                      marginTop: 1,
+                    }}>
+                    {loading ? ( // Check if loading
+                      <ShimmerPlaceholder
+                        style={{
+                          color: '#000000',
+                          fontSize: 14,
+                          width: 120,
+                          textAlign: 'center',
+                          fontWeight: '600',
+                        }}
+                        duration={1000}
+                      />
+                    ) : (
+                      <Text
+                     
+                        style={{
+                          color: '#000000',
+                          fontSize: 15,
+                          width: 120,
+                          textAlign: 'center',
+                          fontWeight: '600',
+                          fontFamily:"Gilroy-SemiBold",
+                          lineHeight:18
+                          
+                        }}>
+                        {item.product_name}
+                      </Text>
+                    )}
+                    <View
+                      style={{
+                        height: 30,
+                        width: 30,
+                        backgroundColor: '#fff',
+                        borderRadius: 30,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Image
+                        source={require('../assets/heart.png')}
+                        style={{ tintColor: '#000000' }}
+                      />
+                    </View>
+                  </View>
+                  <View style={{ justifyContent: 'center', marginTop: 10 }}>
+                    <Text
+                      style={{
+                        color: '#000000',
+                        fontSize: 17,
+                        fontWeight: '500',
+                        marginLeft: 18,
+                        fontFamily:"Gilroy-SemiBold"
+                      }}>
+                      {item.price}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                
+                
+                );
+              }}
+              keyExtractor={(item, index) => index.toString()}
             />
           </View>
         </View>
 
-        <View style={styles.NewArrivel}>
+        <View style={{marginBottom:20}}>
           <View style={styles.Arrivelheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 600}}>
+            <Text style={{color: '#000000', fontSize: 24, fontWeight: 600,fontFamily:"Gilroy-SemiBold"}}>
               Best Selling
             </Text>
             <TouchableOpacity>
               <Text
                 style={{
                   color: '#000000',
-                  fontSize: 16,
+                  fontSize: 15,
                   textDecorationLine: 'underline',
+                  fontFamily:"Gilroy-Medium"
                 }}>
                 See all
               </Text>
@@ -392,11 +469,11 @@ const Home = ({navigation, item}) => {
           </View>
           <View>
             <FlatList
+              keyExtractor={(item, index) => `${item.id}_${index}`} // Unique key extractor
               showsHorizontalScrollIndicator={false}
               horizontal
               data={BestSellingDATA}
               renderItem={({item}) => renderBestSellingItem({item, navigation})}
-              keyExtractor={item => item.id}
             />
           </View>
         </View>
@@ -410,17 +487,19 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"#FBFCFC",
+
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 20,
-    marginTop: 10,
+   marginVertical:15,
   },
   headericon: {
-    height: 17,
-    width: 17,
+    height: 20,
+    width: 20,
     tintColor: '#000',
     marginHorizontal: 10,
     resizeMode: 'contain',
@@ -430,14 +509,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
   },
   categoryheader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '98%',
-    marginTop: 10,
-    paddingHorizontal: 20,
+    width: '100%',
+    marginTop: 15,
+    paddingHorizontal: 10,
   },
 
   catitem: {
@@ -457,18 +535,19 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     // resizeMode:"contain"
   },
+ 
   Arrivelheader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '98%',
+    width: '100%',
     marginTop: 30,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   Arrivelitem: {
     margin: 10,
     alignItems: 'center',
-    height: 165,
-    width: 165,
+    height: 170,
+    width: 170,
     borderRadius: 20,
     backgroundColor: '#fff',
     borderColor: '#E5E5E5',
@@ -476,8 +555,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   Arrivalimage: {
-    width: 120,
-    height: 140,
+    width: 125,
+    height: 145,
     borderRadius: 50,
+  },
+  gradientContainer: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+  },
+  shimmerPlaceholder: {
+    flex: 1,
   },
 });

@@ -7,116 +7,151 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import TitleHeader from '../Components/TitleHeader';
+import {getNewArrivals} from '../Components/ApiService';
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
+import LinearGradient from 'react-native-linear-gradient';
 
-// This is Arrival data
-const ArrivalDATA = [
-  {
-    id: '1',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '2',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '3',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '4',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '5',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '6',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-];
+const ShimmerPlaceholder=createShimmerPlaceholder(LinearGradient)
 
-//   This is renderCategoryitme
-const renderArrivelItem = ({item,navigation}) => (
-  <TouchableOpacity onPress={()=>navigation.navigate("ProductDetails",{ProductId:item})}> 
-    <View style={styles.Catitem}>
-      <Image style={styles.Catimage} source={item.image} />
-    </View>
-
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        marginTop: 1,
-      }}>
-      <Text
-        numberOfLines={2}
-        style={{
-          color: '#000000',
-          fontSize: 14,
-          width: 100,
-          textAlign: 'center',
-          fontWeight: 600,
-        }}>
-        {item.text}
-      </Text>
-      <View
-        style={{
-          height: 30,
-          width: 30,
-          backgroundColor: '#fff',
-          borderRadius: 30,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Image
-          source={require('../assets/heart.png')}
-          style={{color: '#000000'}}
-        />
-      </View>
-    </View>
-    <View
-      style={{justifyContent: 'center',marginTop: 10,}}>
-      <Text style={{color: '#000000', fontSize: 17, fontWeight: 480,marginLeft:16}}>
-        {item.rate}
-      </Text>
-    </View>
-  </TouchableOpacity>
-);
+const ITEMS_PER_PAGE = 6;
 
 const NewArrival = ({navigation}) => {
-  const goBack = () => {
-    navigation.goBack();
+  const [arrivalData, setArrivalData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [allLoaded, setAllLoaded] = useState(false);
+
+  useEffect(() => {
+    fetchNewArrivals();
+  }, []);
+
+  const fetchNewArrivals = async () => {
+    if (loading || allLoaded) return;
+
+    try {
+      setLoading(true);
+      const response = await getNewArrivals(currentPage, ITEMS_PER_PAGE);
+      setArrivalData(prevData => [...prevData, ...response]);
+      if (response.length < ITEMS_PER_PAGE) {
+        setAllLoaded(true);
+      }
+    } catch (error) {
+      console.error('Error fetching new arrivals:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (!loading && !allLoaded) {
+      setCurrentPage(currentPage + 1);
+      fetchNewArrivals();
+    }
+  };
+
+  const renderArrivelItem = ({item}) => {
+    return (
+      <TouchableOpacity   onPress={() =>
+        navigation.navigate('ProductDetails', {
+          productId: item.product_id,
+        })
+      }>
+      <View style={styles.Catitem}>
+        {loading ? ( // Check if loading
+          <ShimmerPlaceholder
+            style={styles.Catimage}
+            duration={1000} // Duration of the shimmer animation
+          />
+        ) : (
+          <Image style={styles.Catimage} source={{uri: item?.product_img}} />
+        )}
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          // justifyContent: 'space-between',
+          paddingHorizontal: 10,
+          marginTop: 1,
+        }}>
+        <Text
+          style={{
+            color: '#000000',
+            fontSize: 15,
+            width: 120,
+            fontWeight: 600,
+            fontFamily:"Gilroy-SemiBold",
+            lineHeight:18
+          }}>
+          {loading ? ( // Check if loading
+            <ShimmerPlaceholder
+              style={{ width: 100 }}
+              duration={1000} // Duration of the shimmer animation
+            />
+          ) : (
+            item?.product_name
+          )}
+        </Text>
+        <View
+          style={{
+            height: 30,
+            width: 30,
+            backgroundColor: '#fff',
+            borderRadius: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft:10
+          }}>
+          <Image
+            source={require('../assets/heart.png')}
+            style={{tintColor: '#000000'}}
+          />
+        </View>
+      </View>
+      <View style={{justifyContent: 'center',marginTop:5}}>
+        <Text
+          style={{
+            color: '#000000',
+            fontSize: 17,
+            fontWeight: 500,
+            marginLeft: 18,
+            fontFamily:"Gilroy-SemiBold"
+          }}>
+          {loading ? ( // Check if loading
+            <ShimmerPlaceholder
+              style={{ width: 80 }}
+              duration={1000} // Duration of the shimmer animation
+            />
+          ) : (
+            item?.price
+          )}
+        </Text>
+      </View>
+    </TouchableOpacity>
+    );
+  };
+
+  const renderFooter = () => {
+    return loading ? <ActivityIndicator size="large" color="#F10C18" /> : null;
   };
 
   return (
     <SafeAreaView style={styles.container}>
-     <TitleHeader title={"New Arrivals"}/>
-      {/* renderitem of category */}
+      <TitleHeader title={'New Arrivals'} />
       <View style={{alignSelf: 'center'}}>
         <FlatList
-        showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           numColumns={2}
-          data={ArrivalDATA}
-          renderItem={({item})=>renderArrivelItem({item,navigation})}
-          keyExtractor={item => item.id}
+          data={arrivalData}
+          renderItem={({item}) => renderArrivelItem({item})}
+          keyExtractor={(item, index) =>
+            item.id ? item.id.toString() : index.toString()
+          }
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={renderFooter}
         />
       </View>
     </SafeAreaView>
@@ -128,18 +163,10 @@ export default NewArrival;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  mainheader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 6,
-  },
-  headericon: {
-    height: 20,
-    width: 20,
-    tintColor: '#000',
-    marginHorizontal: 10,
-    resizeMode: 'contain',
+    borderWidth:1,
+    width:"100%",
+    paddingHorizontal:10,
+    backgroundColor:"#FBFCFC"
   },
   Catitem: {
     margin: 10,
@@ -151,26 +178,11 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     borderWidth: 1,
     justifyContent: 'center',
+    borderWidth:1
   },
   Catimage: {
-    width: 120,
-    height: 140,
-    borderRadius: 50,
-  },
-  Arrivelitem: {
-    margin: 10,
-    alignItems: 'center',
-    height: 165,
-    width: 165,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    borderColor: '#E5E5E5',
-    borderWidth: 1,
-    justifyContent: 'center',
-  },
-  Arrivalimage: {
-    width: 120,
-    height: 140,
+    width: 125,
+    height: 145,
     borderRadius: 50,
   },
 });

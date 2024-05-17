@@ -1,10 +1,8 @@
-import React, {useEffect} from 'react';
-import {View, Text, Image, StyleSheet,SafeAreaView} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React,{useEffect} from 'react';
+import { SafeAreaView, View, Image, StyleSheet } from 'react-native';
 
-const Splash = () => {
-  const navigation = useNavigation();
-  useEffect(() => {
+const Splash = ({navigation}) => {
+   useEffect(() => {
     const navigateAfterDelay = setTimeout(() => {
       // Navigate to the Welcome screen
       navigation.navigate('Welcome');
@@ -13,35 +11,44 @@ const Splash = () => {
     // Clean up the setTimeout when the component unmounts
     return () => clearTimeout(navigateAfterDelay);
   }, []);
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{backgroundColor: '#000'}}>
-        <Image
-          source={require('../assets/image0.png')}
-          style={{height: '100%', width: '100%'}}
-        />
-      </View>
-      <View>
+      <Image
+        source={require('../assets/image0.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
+      <View style={styles.logoContainer}>
         <Image
           source={require('../assets/splashlogo.png')}
-          style={{
-            height: 160,
-            width: 190,
-            // position: 'absolute',
-            top:-450,
-            alignSelf: 'center',
-          }}
+          style={styles.logo}
+          resizeMode="contain"
         />
       </View>
     </SafeAreaView>
   );
 };
 
-export default Splash;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
+  logoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: '60%', // Adjust as per your requirement
+    aspectRatio: 0.8, // Width:Height ratio of your logo image
   },
 });
+
+export default Splash;

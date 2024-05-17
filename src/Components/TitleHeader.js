@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, Text, Image, StyleSheet,SafeAreaView,TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-
+import AntDesign from "react-native-vector-icons/Feather"
 const TitleHeader = ({title}) => {
   const navigation = useNavigation();
  
@@ -15,6 +15,8 @@ const TitleHeader = ({title}) => {
       borderBottomWidth: 2,
       borderBottomColor: '#E5E5E5',
       height: 50,
+  
+         
     }}>
     <View style={styles.mainheader}>
       <View
@@ -22,6 +24,7 @@ const TitleHeader = ({title}) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
+          
         }}>
         <TouchableOpacity onPress={goBack}>
           <Image
@@ -47,10 +50,11 @@ const TitleHeader = ({title}) => {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={()=>navigation.navigate("search")}>
-          <Image
+          {/* <Image
             source={require('../assets/search.png')}
             style={[styles.headericon,{tintColor:"#000000"}]}
-          />
+          /> */}
+          <AntDesign name="search" size={22} color={"#000"}/>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=>navigation.navigate("Cart")}>
           <Image
@@ -71,8 +75,7 @@ const styles = StyleSheet.create({
     mainheader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 6,
-        marginTop:10
+       marginVertical:10,
       },
       headericon: {
         height: 20,

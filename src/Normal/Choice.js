@@ -32,7 +32,7 @@ const Choice = ({navigation}) => {
   return (
  
     <SafeAreaView style={styles.container}>
-      <View style={{flex:1,marginTop:20}}>
+      <View style={{flex:1,marginTop:80}}>
 
      <Swiper
       showsPagination={true}
@@ -54,8 +54,8 @@ const Choice = ({navigation}) => {
           }}>
           <View
             style={{
-              height: 45,
-              width: 45,
+              height: 35,
+              width: 35,
               backgroundColor: '#F10207',
               borderRadius: 30,
               justifyContent: 'center',
@@ -67,7 +67,7 @@ const Choice = ({navigation}) => {
             />
           </View>
           <View style={{justifyContent: 'center'}}>
-            <Text style={{color: '#000', fontSize: 25, fontWeight: 700,marginLeft:10}}>
+            <Text style={{color: '#000000', fontSize: 20, fontWeight: 700,marginLeft:10}}>
               {item.description}
             </Text>
           </View>
@@ -81,7 +81,7 @@ const Choice = ({navigation}) => {
     
    <View style={{position: "absolute", bottom: 80, left: "45%",zIndex:10}}>
    <TouchableOpacity onPress={() => navigation.navigate('Subscription')}>
-      <Text style={{ color: "#000", fontSize: 20, textAlign: "center", marginTop: 20, textDecorationLine: 'underline', 
+      <Text style={{ color: "#000000", fontSize: 18, textAlign: "center", marginTop: 20, textDecorationLine: 'underline', 
       }}>Skip</Text>
     </TouchableOpacity>
    </View>
@@ -93,7 +93,8 @@ const Choice = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container:{
-flex:1
+flex:1,
+backgroundColor:'#FFFFFF'
   },
   slide: {
  
@@ -101,20 +102,23 @@ flex:1
     alignItems: 'center',
   },
   image: {
-    width: 400,
-    height: 300,
+    width: 480,
+    height: 360,
     resizeMode: 'contain',
     marginTop:20
   },
   name: {
-    fontSize: 30,
-    fontWeight: '600'
+    fontSize: 29,
+    fontWeight: '600',
+    color:"#000000",
+    fontFamily: 'Gilroy-SemiBold', 
    
   },
   description: {
     fontSize: 16,
     marginTop: 10,
     textAlign: 'center',
+    fontFamily: 'Swis721HvBT-Heavy', 
   },
   dot: {
     backgroundColor: '#ccc',

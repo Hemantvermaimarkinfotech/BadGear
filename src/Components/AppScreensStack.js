@@ -110,7 +110,8 @@ const BottomTabNav = ({ navigation }) => (
         shadowOpacity: 0.25, // Adjust shadow opacity as needed
         shadowRadius: 2, // Adjust shadow radius as needed
         elevation: 5,
-        height:60 // Android only, adjust elevation as needed
+        height:60 ,
+     
       },
     }}>
 
@@ -128,7 +129,8 @@ const BottomTabNav = ({ navigation }) => (
                 tintColor: focused ? colors.primary : colors.black,
               }}
             />
-            <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black}}>Home</Text>
+            <Text style={{fontSize: 15, fontWeight: 500, marginTop: 5, color:"#000000"}}>Home</Text>
+          
           </View>
         ),
         tabBarLabel: () => null,
@@ -151,10 +153,10 @@ const BottomTabNav = ({ navigation }) => (
                 height: 20,
                 width: 20,
                 resizeMode: 'contain',
-                tintColor: focused ? colors.primary : colors.black,
+                tintColor: "#000000"
               }}
             />
-            <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black}}>Search</Text>
+            <Text style={{fontSize: 15, fontWeight: 500, marginTop: 5,color:"#000000"}}>Search</Text>
           </View>
         ),
         tabBarLabel: () => null,
@@ -177,10 +179,10 @@ const BottomTabNav = ({ navigation }) => (
                   height: 20,
                   width: 20,
                   resizeMode: 'contain',
-                  tintColor: focused ? colors.primary : colors.black,
+                  tintColor: "#000000"
                 }}
               />
-              <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black}}>Notification</Text>
+              <Text style={{fontSize: 15, fontWeight: 500, marginTop: 5, color:"#000000"}}>Notification</Text>
             </View>
           ),
           tabBarLabel: () => null,
@@ -206,10 +208,10 @@ const BottomTabNav = ({ navigation }) => (
                   height: 20,
                   width: 20,
                   resizeMode: 'contain',
-                  tintColor: focused ? colors.primary : colors.black,
+                  tintColor: "#000000"
                 }}
               />
-              <Text style={{ fontSize: 14, fontWeight: 500, marginTop: 5, color: focused ? colors.primary : colors.black }}>Settings</Text>
+              <Text style={{ fontSize: 15, fontWeight: 500, marginTop: 5,color:"#000000"}}>Settings</Text>
             </View>
           );
         },
