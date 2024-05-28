@@ -54,7 +54,7 @@ const SignUp = ({ navigation }) => {
     try {
       // Send the signup request to the server
       const response = await axios.post(
-        'https://sledpullcentral.com/wp-json/signup-api/v1/user_signup',
+        'https://bad-gear.com/wp-json/signup-api/v1/user_signup',
         formData,
         {
           headers: {
@@ -62,30 +62,17 @@ const SignUp = ({ navigation }) => {
           },
         },
       );
-
-      // Log the response from the server
       console.log('SignUp response:', response.data);
 
-      // Save the response data to local storage
       await AsyncStorage.setItem('userData', JSON.stringify(response.data));
 
-      // Set loading state to false
       setLoading(false);
-
-      // Set the user token
       setUserToken(response.data.token);
     } catch (error) {
-      // Set loading state to false
       setLoading(false);
-
-      // Handle and log errors
       console.error('Error:', error);
-
-      // Check if the error response is available
       if (error.response) {
         console.error('Server Error Response:', error.response.data);
-
-        // Display appropriate error message to the user
         Alert.alert('Error', error.response.data.errormsg || 'An error occurred. Please try again.');
       } else if (error.request) {
         console.error('No Server Response:', error.request);
@@ -99,7 +86,7 @@ const SignUp = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ marginTop: 80 }}>
+      <View style={{ marginTop: 80,width:"100%",paddingHorizontal:20 }}>
         <View style={styles.header}>
           <Text style={styles.title}>Sign Up</Text>
         </View>
@@ -165,7 +152,6 @@ export default SignUp;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
     flex: 1,
     backgroundColor: "#FBFCFC"
   },

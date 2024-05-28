@@ -12,6 +12,7 @@ const Routes = () => {
     return (
       <NavigationContainer>
         {userToken ? <AppScreenStack/> : <AppNavigator />}
+        {/* <AppScreenStack/> */}
       </NavigationContainer>
     );
   }

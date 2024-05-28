@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet,Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
+import { Platform } from 'react-native';
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
 const data = [
   {
     id: '1',
@@ -28,112 +29,118 @@ const data = [
   // Add more data as needed
 ];
 
-const Choice = ({navigation}) => {
+const Choice = ({ navigation }) => {
   return (
- 
     <SafeAreaView style={styles.container}>
-      <View style={{flex:1,marginTop:80}}>
-
-     <Swiper
-      showsPagination={true}
-      dot={<View style={styles.dot} />}
-      activeDot={<View style={[styles.dot, styles.activeDot]} />}
-    
-    >
-      {data.map((item) => (
-        <View key={item.id} style={styles.slide}>
-            <Text style={styles.name}>{item.name}</Text>
-          <Image source={item.image} style={styles.image} />
-          <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignSelf: 'center',
-      
-            marginTop: 20,
-          }}>
-          <View
-            style={{
-              height: 35,
-              width: 35,
-              backgroundColor: '#F10207',
-              borderRadius: 30,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={require('../assets/arrow.png')}
-              style={{height: 30, width: 30, tintColor: '#fff'}}
-            />
-          </View>
-          <View style={{justifyContent: 'center'}}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 700,marginLeft:10}}>
-              {item.description}
-            </Text>
-          </View>
-        </View>
-    
-        </View>
-      ))}
-    </Swiper>
-   
-   
-    
-   <View style={{position: "absolute", bottom: 80, left: "45%",zIndex:10}}>
-   <TouchableOpacity onPress={() => navigation.navigate('Subscription')}>
-      <Text style={{ color: "#000000", fontSize: 18, textAlign: "center", marginTop: 20, textDecorationLine: 'underline', 
-      }}>Skip</Text>
-    </TouchableOpacity>
-   </View>
-   </View>
+      <View style={{ flex: Platform.OS === 'ios' ? 0.75 : 0.7 }}>
+        <Swiper
+          showsPagination={true}
+          dot={<View style={styles.dot} />}
+          activeDot={<View style={[styles.dot, styles.activeDot]} />}
+          paginationStyle={{ bottom: screenHeight * 0.01 }} // Adjust pagination position
+        >
+          {data.map((item) => (
+            <View key={item.id} style={styles.slide}>
+              <Text style={styles.name}>{item.name}</Text>
+              <Image source={item.image} style={styles.image} />
+              <View style={styles.descriptionContainer}>
+                <View style={styles.arrowContainer}>
+                  <Image
+                    source={require('../assets/arrow.png')}
+                    style={styles.arrow}
+                  />
+                </View>
+                <Text style={styles.description}>
+                  {item.description}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </Swiper>
+      </View>
+      <View style={styles.skipContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Subscription')}>
+          <Text style={styles.skipText}>Skip</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
- 
   );
 };
 
 const styles = StyleSheet.create({
-  container:{
-flex:1,
-backgroundColor:'#FFFFFF'
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
   },
   slide: {
- 
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: screenHeight * 0.1,
+  },
+  image: {
+    width: screenWidth * 0.8,
+    height: screenHeight * 0.4,
+    resizeMode: 'contain',
+    marginTop: screenHeight * 0.02,
+  },
+  name: {
+    fontSize: screenWidth * 0.07,
+    fontWeight: '600',
+    color: '#000000',
+    textAlign: 'center',
+    fontFamily: 'Gilroy-SemiBold',
+  },
+  descriptionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: screenHeight * 0.02,
+    marginBottom: screenHeight * 0.1, // Added marginBottom to ensure space for dots
+  },
+  arrowContainer: {
+    height: screenWidth * 0.09,
+    width: screenWidth * 0.09,
+    backgroundColor: '#F10207',
+    borderRadius: (screenWidth * 0.09) / 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
-    width: 480,
-    height: 360,
-    resizeMode: 'contain',
-    marginTop:20
-  },
-  name: {
-    fontSize: 29,
-    fontWeight: '600',
-    color:"#000000",
-    fontFamily: 'Gilroy-SemiBold', 
-   
+  arrow: {
+    height: screenWidth * 0.075,
+    width: screenWidth * 0.075,
+    tintColor: '#fff',
   },
   description: {
-    fontSize: 16,
-    marginTop: 10,
-    textAlign: 'center',
-    fontFamily: 'Swis721HvBT-Heavy', 
+    color: '#000000',
+    fontSize: screenWidth * 0.05,
+    fontWeight: '700',
+    marginLeft: screenWidth * 0.025,
+    fontFamily: 'Gilroy-SemiBold',
   },
   dot: {
     backgroundColor: '#ccc',
-    width: 10, // Adjust the size based on screen width
-    height: 10, // Adjust the size based on screen width
-    borderRadius:10, // Adjust the size based on screen width
-    marginLeft: 8,
-    marginRight: 8,
-    marginTop: 0,
-    marginBottom: screenHeight * 0.3,
-
-   
+    width: screenWidth * 0.025,
+    height: screenWidth * 0.025,
+    borderRadius: (screenWidth * 0.025) / 2,
+    marginHorizontal: screenWidth * 0.02,
   },
   activeDot: {
     backgroundColor: '#F10C18',
+  },
+  skipContainer: {
+    position: 'absolute',
+    bottom: screenHeight * 0.05,
+    left: '45%',
+    zIndex: 10,
+  },
+  skipText: {
+    color: '#000000',
+    fontSize: screenWidth * 0.04,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+    fontFamily: 'Gilroy-Medium',
   },
 });
 

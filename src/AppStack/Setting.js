@@ -31,9 +31,9 @@ const Setting = () => {
           <Text
             style={{
               fontSize: 20,
-              fontWeight: 600,
               color: '#000000',
               marginLeft: 10,
+              fontFamily:"Gilroy-Medium"
             }}>
             Logout
           </Text>
@@ -48,5 +48,6 @@ export default Setting;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"#FBFCFC"
   },
 });

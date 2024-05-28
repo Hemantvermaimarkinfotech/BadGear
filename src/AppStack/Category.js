@@ -7,11 +7,13 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import TitleHeader from '../Components/TitleHeader';
 import {getCategory} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
+
 // This is Category data
 const CategoryDATA = [
   {
@@ -79,15 +81,20 @@ const rendercategoryItem = ({item, navigation}) => (
 const Category = ({navigation}) => {
   const {userToken} = useContext(AuthContext);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     // Fetch categories when component mounts
     const fetchCategories = async () => {
       try {
+        setLoading(true); // Set loading to true when fetching starts
         const fetchedCategories = await getCategory(userToken);
         console.log(fetchedCategories);
         setCategories(fetchedCategories);
       } catch (error) {
         console.log('Error fetching categories:', error);
+      }
+      finally {
+        setLoading(false); // Set loading to false when fetching finishes
       }
     };
 
@@ -96,22 +103,28 @@ const Category = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TitleHeader title={'Category'} />
-      {/* renderitem of category */}
-      <View style={{alignSelf: 'center'}}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          numColumns={2}
-          data={categories}
-          renderItem={({item}) =>
-            rendercategoryItem({item, navigation: navigation})
-          }
-          keyExtractor={(item, index) =>
-            item.id ? item.id.toString() : index.toString()
-          }
-        />
-      </View>
-    </SafeAreaView>
+  <TitleHeader title={'Category'} />
+  {loading ? (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator color="#F10C18" size="large" />
+    </View>
+  ) : (
+    <View style={{ alignSelf: 'center' }}>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        numColumns={2}
+        data={categories}
+        renderItem={({ item }) =>
+          rendercategoryItem({ item, navigation: navigation })
+        }
+        keyExtractor={(item, index) =>
+          item.id ? item.id.toString() : index.toString()
+        }
+      />
+    </View>
+  )}
+</SafeAreaView>
+
   );
 };
 

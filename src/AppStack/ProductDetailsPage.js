@@ -8,11 +8,12 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  ActivityIndicator
 } from 'react-native';
 import CustomDropdownPicker from '../Components/CustomDropDownPicker';
 import TitleHeader from '../Components/TitleHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {AddCart} from '../Components/ApiService';
+import { AddCart } from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
 
 const RelatedProductDATA = [
@@ -72,10 +73,11 @@ const renderRelatedProductItem = ({item, navigation}) => (
         numberOfLines={2}
         style={{
           color: '#000000',
-          fontSize: 14,
+          fontSize: 15,
           width: 100,
           textAlign: 'center',
           fontWeight: '600',
+          fontFamily:"Gilroy-SemiBold"
         }}>
         {item.text}
       </Text>
@@ -98,9 +100,9 @@ const renderRelatedProductItem = ({item, navigation}) => (
       <Text
         style={{
           color: '#000000',
-          fontSize: 17,
-          fontWeight: 500,
+          fontSize: 18,
           marginLeft: 16,
+          fontFamily:"Gilroy-SemiBold"
         }}>
         {item.rate}
       </Text>
@@ -109,13 +111,13 @@ const renderRelatedProductItem = ({item, navigation}) => (
 );
 
 const ProductDetailsPage = ({route, navigation}) => {
-  // console.log('route', route);
   const {productId} = route.params;
-  // console.log('productId', productId);
+  console.log('productId', productId);
   const [productDetails, setProductDetails] = useState();
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken} = useContext(AuthContext);
+  const [loading, setLoading] = useState(true); 
 
   console.log('size', selectedSize);
   console.log('quantity', selectedQuantity);
@@ -128,7 +130,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   const fetchProductDetails = async productId => {
     try {
       const response = await fetch(
-        `https://sledpullcentral.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
+        `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
       );
       if (!response.ok) {
         throw new Error('Failed to fetch product details');
@@ -139,6 +141,8 @@ const ProductDetailsPage = ({route, navigation}) => {
     } catch (error) {
       console.error('Error fetching product details:', error);
       setProductDetails(null);
+    }finally {
+      setLoading(false); // Set loading to false after fetching is done
     }
   };
   useEffect(() => {
@@ -152,8 +156,8 @@ const ProductDetailsPage = ({route, navigation}) => {
       const response = await AddCart(
         productId,
         selectedSize,
-        productDetails?.price,
         selectedQuantity,
+        productDetails?.price,
       );
       console.log('Product added to cart:', response);
     } catch (error) {
@@ -161,343 +165,369 @@ const ProductDetailsPage = ({route, navigation}) => {
     }
   };
 
+ 
+
+
   return (
     <SafeAreaView style={styles.container}>
       {/* This is headerpart */}
       <TitleHeader title={'ProductDetails'} />
       {/* header part end */}
-
-      <ScrollView>
-        {/* Upper image */}
-        <View style={styles.productbox}>
+      {loading ? (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator color="#F10C18" size="large" />
+    </View>
+  ) : (
+    <ScrollView>
+    {/* Upper image */}
+    <View style={styles.productbox}>
+    {productDetails?.product_img ? (
           <Image
-            source={{uri: productDetails?.product_img}}
+            source={{ uri: productDetails?.product_img }}
             style={styles.productimage}
           />
-        </View>
-        {/* Upper image end */}
+        ) : (
+          <Text style={{color:"#000000"}}>No Image Available</Text>
+        )}
+    </View>
+  
+    {/* Upper image end */}
 
-        <View style={{marginTop: 10, width: '95%'}}>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 20,
-              fontWeight: 700,
-              marginTop: 10,
-              marginLeft: 20,
-              fontFamily: 'Gilroy-SemiBold',
-            }}>
-            {productDetails?.product_name}
-          </Text>
-          <Text
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              color: '#000000',
-              marginTop: 5,
-              marginLeft: 20,
-              fontFamily: 'Gilroy-SemiBold',
-            }}>
-            ${productDetails?.price}
-          </Text>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 16,
-              marginTop: 5,
-              marginLeft: 20,
-              fontFamily: 'Gilroy-Regular',
-            }}>
-            SKU: AGDH
-          </Text>
-        </View>
+    <View style={{marginTop: 10, width: '95%'}}>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 20,
+          fontWeight: 700,
+          marginTop: 10,
+          marginLeft: 20,
+          fontFamily: 'Gilroy-SemiBold',
+        }}>
+        {productDetails?.product_name}
+      </Text>
+      <Text
+        style={{
+          fontSize: 22,
+          fontWeight: 700,
+          color: '#000000',
+          marginTop: 5,
+          marginLeft: 20,
+          fontFamily: 'Gilroy-SemiBold',
+        }}>
+        ${productDetails?.price}
+      </Text>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 16,
+          marginTop: 5,
+          marginLeft: 20,
+          fontFamily: 'Gilroy-Regular',
+        }}>
+        SKU: AGDH
+      </Text>
+    </View>
 
-        {/* Product Size */}
-        <View style={{marginTop: 20}}>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 18,
-              fontWeight: 700,
-              marginLeft: 20,
-              fontFamily: 'Gilroy-SemiBold',
-            }}>
-            Size:
-          </Text>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            style={styles.productSize}>
-            {productDetails?.attributes.split(' | ').map((size, index) => (
-              <TouchableOpacity
-                style={styles.sizebox}
-                key={index}
-                onPress={() => setSelectedSize(size)}>
-                <Text style={styles.sizetext}>{size}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Product Size end */}
-
-        {/* Product Qty */}
-        <View style={{marginTop: 20}}>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 18,
-              fontWeight: 700,
-              marginLeft: 20,
-              fontFamily: 'Gilroy-SemiBold',
-            }}>
-            QTY:
-          </Text>
-          <View style={styles.qty}>
-            {/* <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center',marginTop:5}}>
-              <CustomDropdownPicker items={dropdownItems} />
-            </View> */}
-            <TouchableOpacity
-              style={styles.quantityButton}
-              onPress={() => setSelectedQuantity(selectedQuantity - 1)}>
-              <Text style={styles.quantityButtonText}>-</Text>
-            </TouchableOpacity>
-            <Text style={styles.quantityText}>{selectedQuantity}</Text>
-            <TouchableOpacity
-              style={styles.quantityButton}
-              onPress={() => setSelectedQuantity(selectedQuantity + 1)}>
-              <Text style={styles.quantityButtonText}>+</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        {/* Product Qty end/}
-
-        {/* Wishlist & AddCart Button */}
+    {/* Product Size */}
+    <View style={{marginTop: 20}}>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 18,
+          fontWeight: 700,
+          marginLeft: 20,
+          fontFamily: 'Gilroy-SemiBold',
+        }}>
+        Size:
+      </Text>
+      <ScrollView
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        style={styles.productSize}>
+        {productDetails?.attributes.split(' | ').map((size, index) => (
         <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            height: 70,
-            width: '95%',
-            alignSelf: 'center',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: 10,
-            marginTop: 20,
-          }}>
-          <TouchableOpacity
-            style={[styles.button, {justifyContent: 'space-evenly'}]}
-            onPress={() => navigation.navigate('WishList')}>
-            <Image
-              source={require('../assets/heart2.png')}
-              style={{
-                height: 20,
-                width: 20,
-                tintColor: '#000000',
-                resizeMode: 'contain',
-              }}
-            />
-            <Text
-              style={{
-                color: '#000000',
-                fontSize: 20,
-                fontWeight: 600,
-                fontFamily: 'Gilroy-SemiBold',
-              }}>
-              Wishlist
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              {
-                backgroundColor: '#F10C18',
-                borderColor: '#F10C18',
-                paddingHorizontal: 20,
-              },
-            ]}
-            onPress={addToCart}>
-            <Image
-              source={require('../assets/Cart.png')}
-              style={{
-                height: 20,
-                width: 20,
-                tintColor: '#fff',
-                resizeMode: 'contain',
-              }}
-            />
-            <Text
-              style={{
-                color: '#fff',
-                fontSize: 18,
-                fontWeight: 600,
-                fontFamily: 'Gilroy-SemiBold',
-              }}>
-              Add To Cart
-            </Text>
-          </TouchableOpacity>
-        </TouchableOpacity>
-        {/* Wishlist $ AddCart Button End */}
+        style={[
+          styles.sizebox,
+          selectedSize === size && styles.selectedSizebox // Apply selected style if size is selected
+        ]}
+        key={index}
+        onPress={() => setSelectedSize(selectedSize === size ? null : size)} // Toggle selection
+      >
+        <Text
+          style={[
+            styles.sizetext,
+            selectedSize === size && styles.selectedSizetext // Apply selected text style if size is selected
+          ]}
+        >
+          {size}
+        </Text>
+      </TouchableOpacity>
+      
+        
+        ))}
+      </ScrollView>
+    </View>
 
-        {/* Product Description */}
-        <View style={styles.productDescription}>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 20,
-              fontFamily: 'Gilroy-SemiBold',
-            }}>
-            Product Description
-          </Text>
+    {/* Product Size end */}
+
+    {/* Product Qty */}
+    <View style={{marginTop: 20}}>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 18,
+          marginLeft: 20,
+          fontFamily: 'Gilroy-SemiBold',
+        }}>
+        QTY:
+      </Text>
+      <View style={styles.qty}>
+        <TouchableOpacity
+          style={styles.quantityButton}
+          onPress={() => setSelectedQuantity(selectedQuantity - 1)}>
+          <Text style={styles.quantityButtonText}>-</Text>
+        </TouchableOpacity>
+        <Text style={styles.quantityText}>{selectedQuantity}</Text>
+        <TouchableOpacity
+          style={styles.quantityButton}
+          onPress={() => setSelectedQuantity(selectedQuantity + 1)}>
+          <Text style={styles.quantityButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+    {/* Product Qty end/}
+
+    {/* Wishlist & AddCart Button */}
+    <TouchableOpacity
+      style={{
+        flexDirection: 'row',
+        height: 70,
+        width: '95%',
+        alignSelf: 'center',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        marginTop: 20,
+      }}>
+      <TouchableOpacity
+        style={[styles.button, {justifyContent: 'space-evenly'}]}
+        onPress={() => navigation.navigate('WishList')}>
+        <Image
+          source={require('../assets/heart2.png')}
+          style={{
+            height: 20,
+            width: 20,
+            tintColor: '#000000',
+            resizeMode: 'contain',
+          }}
+        />
+        <Text
+          style={{
+            color: '#000000',
+            fontSize: 20,
+            fontWeight: 600,
+            fontFamily: 'Gilroy-SemiBold',
+          }}>
+          Wishlist
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            backgroundColor: '#F10C18',
+            borderColor: '#F10C18',
+            paddingHorizontal: 20,
+          },
+        ]}
+        onPress={addToCart}>
+        <Image
+          source={require('../assets/Cart.png')}
+          style={{
+            height: 20,
+            width: 20,
+            tintColor: '#FFFFFF',
+            resizeMode: 'contain',
+          }}
+        />
+        <Text
+          style={{
+            color: '#FFFFFF',
+            fontSize: 18,
+            fontFamily: 'Gilroy-SemiBold',
+          }}>
+          Add To Cart
+        </Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+    {/* Wishlist $ AddCart Button End */}
+
+    {/* Product Description */}
+    <View style={styles.productDescription}>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 20,
+          fontFamily: 'Gilroy-SemiBold',
+        }}>
+        Product Description
+      </Text>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 15,
+          marginTop: 10,
+          marginLeft: 20,
+          lineHeight: 25,
+          fontFamily: 'Gilroy-Regular',
+          paddingHorizontal: 5,
+        }}>
+        {productDetails?.description}
+      </Text>
+    </View>
+    {/* Product Description End */}
+
+    {/* Related Product */}
+    <View>
+      <View style={styles.RelatedProductlheader}>
+        <Text style={{color: '#000000', fontSize: 20,fontFamily:"Gilroy-SemiBold"}}>
+          Related Product
+        </Text>
+        <TouchableOpacity>
           <Text
             style={{
               color: '#000000',
               fontSize: 15,
-              marginTop: 10,
-              marginLeft: 20,
-              lineHeight: 25,
-              fontFamily: 'Gilroy-Regular',
-              paddingHorizontal: 5,
+              textDecorationLine: 'underline',
+              fontFamily:"Gilroy-SemiBold"
             }}>
-            {productDetails?.description}
+            View All
           </Text>
-        </View>
-        {/* Product Description End */}
+        </TouchableOpacity>
+      </View>
+      <View>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={RelatedProductDATA}
+          renderItem={renderRelatedProductItem}
+          keyExtractor={item => item.id}
+        />
+      </View>
+    </View>
+    {/* Related Product End */}
 
-        {/* Related Product */}
-        <View>
-          <View style={styles.RelatedProductlheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
-              Related Product
-            </Text>
-            <TouchableOpacity>
-              <Text
-                style={{
-                  color: '#000000',
-                  fontSize: 16,
-                  textDecorationLine: 'underline',
-                }}>
-                See all
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              data={RelatedProductDATA}
-              renderItem={renderRelatedProductItem}
-              keyExtractor={item => item.id}
-            />
-          </View>
-        </View>
-        {/* Related Product End */}
+    {/* Review Section */}
 
-        {/* Review Section */}
-
-        <View style={styles.Review}>
-          <View style={styles.RelatedProductlheader}>
-            <Text style={{color: '#000000', fontSize: 20, fontWeight: 700}}>
-              Ratings & Reviews
-            </Text>
-            <TouchableOpacity>
-              <Text
-                style={{
-                  color: '#F10C18',
-                  fontSize: 16,
-                  textDecorationLine: 'underline',
-                }}>
-                Write review
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <Image
-            source={require('../assets/Reviewstar.png')}
-            style={{marginLeft: 20, marginTop: 10}}
-          />
-          <View
+    <View style={styles.Review}>
+      <View style={styles.RelatedProductlheader}>
+        <Text style={{color: '#000000', fontSize: 20, fontFamily:"Gilroy-Medium"}}>
+          Ratings & Reviews
+        </Text>
+        <TouchableOpacity>
+          <Text
             style={{
-              marginTop: 10,
-              borderRadius: 10,
-              alignSelf: 'center',
-              width: '90%',
+              color: '#F10C18',
+              fontSize: 15,
+              textDecorationLine: 'underline',
+              fontFamily:"Gilroy-Medium"
             }}>
+            Write review
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <Image
+        source={require('../assets/Reviewstar.png')}
+        style={{marginLeft: 20, marginTop: 10}}
+      />
+      <View
+        style={{
+          marginTop: 10,
+          borderRadius: 10,
+          alignSelf: 'center',
+          width: '90%',
+        }}>
+        <View
+          style={{
+            height: 100,
+            borderBottomColor: '#D6D6D6',
+            borderBottomWidth: 0.4,
+            width: '100%',
+          }}>
+          <View>
+            <Text style={{color: '#000000', fontSize: 14, fontWeight: 500,fontFamily:"Gilroy-Medium"}}>
+              26 ratings and 24 reviews
+            </Text>
             <View
               style={{
-                height: 100,
-                borderBottomColor: '#D6D6D6',
-                borderBottomWidth: 0.4,
-                width: '100%',
+                marginTop: 10,
+                height: 200,
+                borderRadius: 10,
+                alignSelf: 'center',
+                width: '99%',
+                flexDirection: 'row',
+                justifyContent:"space-between"
               }}>
-              <View>
-                <Text style={{color: '#000000', fontSize: 15, fontWeight: 500}}>
-                  26 ratings and 24 reviews
+              <View
+                style={{
+                  height: 28,
+                  width: 60,
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 25,
+                  borderColor: '#707070',
+                  borderWidth: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  alignItems: 'center',
+                }}>
+                <Text
+                  style={{color: '#000000', fontSize: 13, fontWeight: 600}}>
+                  5
+                </Text>
+                <Image
+                  source={require('../assets/star.png')}
+                  style={{height: 15, width: 15, resizeMode: 'contain'}}
+                />
+              </View>
+
+              <View style={{width: 250, height: 50}}>
+                <Text style={{fontSize: 15, fontWeight: 500, marginTop: 5,color:"#000000",fontFamily:"Gilroy-Medium"}}>
+                  Cozy Comfort and Style Combined!
                 </Text>
                 <View
                   style={{
-                    marginTop: 10,
-                    height: 200,
-                    borderRadius: 10,
-                    alignSelf: 'center',
-                    width: '99%',
                     flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                    width:250,
+                    paddingRight:10
                   }}>
-                  <View
+                  <Text
                     style={{
-                      height: 28,
-                      width: 60,
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: 25,
-                      borderColor: '#707070',
-                      borderWidth: 1,
-                      flexDirection: 'row',
-                      justifyContent: 'space-around',
-                      alignItems: 'center',
+                      color: '#000000',
+                      fontSize: 14,
+                      fontWeight: 700,
                     }}>
-                    <Text
-                      style={{color: '#000000', fontSize: 13, fontWeight: 600}}>
-                      5
-                    </Text>
-                    <Image
-                      source={require('../assets/star.png')}
-                      style={{height: 15, width: 15, resizeMode: 'contain'}}
-                    />
-                  </View>
-
-                  <View style={{width: 230, marginLeft: 10, height: 50}}>
-                    <Text style={{fontSize: 13, fontWeight: 500, marginTop: 5}}>
-                      Cozy Comfort and Style Combined!
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        marginTop: 10,
-                      }}>
-                      <Text
-                        style={{
-                          color: '#000000',
-                          fontSize: 12,
-                          fontWeight: 700,
-                        }}>
-                        David
-                      </Text>
-                      <Text
-                        style={{
-                          color: '#4B4B4B',
-                          fontSize: 11,
-                          fontWeight: 300,
-                        }}>
-                        5 days ago
-                      </Text>
-                    </View>
-                  </View>
+                    David
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#4B4B4B',
+                      fontSize: 13,
+                      fontWeight: 300,
+                    }}>
+                    5 days ago
+                  </Text>
                 </View>
               </View>
             </View>
           </View>
         </View>
-      </ScrollView>
+      </View>
+    </View>
+  </ScrollView>
+  )}
+    
     </SafeAreaView>
   );
 };
@@ -653,5 +683,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000000',
     marginHorizontal: 10,
+  },
+  selectedSizebox: {
+    backgroundColor: '#F10C18', // Background color for selected size
+    borderColor: '#F10C18', // Border color for selected size
+  },
+  selectedSizetext: {
+    color: '#FFFFFF', // Text color for selected size
   },
 });

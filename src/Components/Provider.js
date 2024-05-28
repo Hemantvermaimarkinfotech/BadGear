@@ -6,7 +6,6 @@ const Provider = () => {
   return (
     <AuthProvider>
       <Routes />
-      
     </AuthProvider>
   );
 };

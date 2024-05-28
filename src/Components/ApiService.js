@@ -16,7 +16,7 @@ export const getNewArrivals = async (userToken, page = 1) => {
   const startIndex = (page - 1) * itemsPerPage;
   try {
     const response = await axios.get(
-      'https://sledpullcentral.com/wp-json/new-arrivals/v1/newarrivals_home',
+      'https://bad-gear.com/wp-json/new-arrivals/v1/newarrivals_home',
       {
         headers: {
           'Content-Type': 'application/json',
@@ -28,7 +28,9 @@ export const getNewArrivals = async (userToken, page = 1) => {
         },
       },
     );
+  
     return response.data.data; // Return the data
+    
   } catch (error) {
     console.error('Error fetching new arrivals:', error);
     throw error;
@@ -39,7 +41,7 @@ export const getNewArrivals = async (userToken, page = 1) => {
 export const getCategory = async (userToken) => {
   try {
     const response = await axios.get(
-      'https://sledpullcentral.com/wp-json/all-category/v1/categories',
+      'https://bad-gear.com/wp-json/all-category/v1/categories',
       {
         headers: {
           'Content-Type': 'application/json',
@@ -47,8 +49,9 @@ export const getCategory = async (userToken) => {
         },
       }
     );
-
+    console.log("item",response?.data)
     const categoryData = response.data.data.map((item) => {
+     
       // Check if item.cat_image is empty
       if (!item.cat_image.trim()) {
         // Find corresponding dummy data from CatDATA based on item.cat_id
@@ -75,7 +78,7 @@ export const getCategory = async (userToken) => {
 export const getBanner = async () => {
   try {
     const response = await axios.get(
-      'https://sledpullcentral.com/wp-json/home-banner-api/v1/home_banner',
+      `https://bad-gear.com/wp-json/home-banner-api/v1/home_banner`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +87,7 @@ export const getBanner = async () => {
     );
     return response.data; // Return the data
   } catch (error) {
-    console.error('Error fetching new arrivals:', error);
+    console.error('Error fetching banner:', error);
     throw error;
   }
 };
@@ -92,7 +95,7 @@ export const getBanner = async () => {
 export const getProductDetails = async (productId) => {
   try {
     const response = await axios.get(
-      `https://sledpullcentral.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
+      `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -100,6 +103,7 @@ export const getProductDetails = async (productId) => {
       },
     );
     return response.data; // Return the data
+  
   } catch (error) {
     console.error('Error fetching product details:', error);
     throw error;
@@ -109,27 +113,28 @@ export const getProductDetails = async (productId) => {
 
 export const AddCart = async (productId, size, quantity, price) => {
   try {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('size', size);
+    formData.append('quantity', quantity);
+    formData.append('price', price);
+
     const response = await axios.post(
-      'https://sledpullcentral.com/wp-json/add-to-cart/v1/ProductAddToCart',
-      {
-        product_id: productId,
-        size: size,
-        quantity: quantity,
-        price: price
-      },
+      'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
+      formData,
       {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       }
     );
+    console.log("add to cart", response.data);
     return response.data; // Return the data
   } catch (error) {
     console.error('Error adding product to cart:', error);
     throw error;
   }
 };
-
 
 
 

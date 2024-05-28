@@ -1,93 +1,81 @@
 import React, { useRef, useState } from 'react';
-import { Image, StyleSheet, Text, View, StatusBar, TouchableOpacity,ScrollView ,Dimensions} from 'react-native';
+import { Image, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Video from 'react-native-video';
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const dynamicFontSize = screenHeight * 0.029;
+
 const Welcome = ({ navigation }) => {
-  const [isPaused, setIsPaused] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const videoRef = useRef(null);
 
-  const togglePlayPause = () => {
-    setIsPaused(!isPaused);
+  const playVideo = () => {
+    setIsPaused(!isPaused); // Toggle between playing and pausing the video
   };
 
   const onEnd = () => {
-    // Video ended, you can show the thumbnail photo here
+    // Video ended, navigate to the next screen
+    navigation.navigate('Choice');
   };
+
   const handleSkip = () => {
-  // Pause the video if it's currently playing
-  if (!isPaused && videoRef.current && videoRef.current.pause) {
-    videoRef.current.pause();
-  }
-  // Navigate to the next screen
-  navigation.navigate('Choice');
-};
+    // Pause the video if it's currently playing
+    if (!isPaused && videoRef.current && videoRef.current.pause) {
+      videoRef.current.pause();
+    }
+    // Navigate to the next screen
+    navigation.navigate('Choice');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-      <View style={{ alignSelf: 'center',paddingHorizontal:20}}>
-        <Text
-          numberOfLines={3}
-          style={{
-            fontSize: 23,
-            color: '#000000',
-            // fontWeight: 600,
-            lineHeight:30,
-            alignSelf: 'center',
-            alignItems: 'center',
-            textAlign: 'center',
-            marginTop: 20,
-            fontFamily:"Gilroy-SemiBold"
-          
-          }}>
-          Welcome to the World’s Largest Retailer of Diesel and Tractor Pulling Apparel!!!
-        </Text>
-      </View>
-
-
-<View style={{marginTop: 30,width:"95%",alignSelf:"center"}}>
-  <TouchableOpacity onPress={togglePlayPause} style={{ alignItems: 'center', alignSelf: 'center', width: '95%'}}>
-    {isPaused ? (
-      <View style={{ position: 'relative' }}>
-        <Image source={require('../assets/tractor.png')} style={{ height: "88%", width: 350, borderRadius: 20 }} />
-        <Image source={require('../assets/playbutton.png')} style={{ position: 'absolute', top: '40%', left: '40%', transform: [{ translateX: -15 }, { translateY: -15 }], height: 70, width: 70 }} />
-      </View>
-    ) : (
-      <Video
-        source={require('../assets/welcomevideo.mp4')} // Change to your video source
-        ref={videoRef}
-        style={{ height: "85%", width: 350, borderRadius: 20 }} // Adjust dimensions as needed
-        resizeMode="cover"
-        paused={isPaused}
-        onEnd={onEnd}
-      />
-    )}
-  </TouchableOpacity>
-</View>
-      </View>
-
-
-   <View style={{position: 'absolute',
-        bottom:onEnd,
-            left: '45%',
-            zIndex: 999,
-            bottom:80}}>
-   <TouchableOpacity onPress={handleSkip}>
-        <Text
-          style={{
-            color: '#000000',
-            fontSize: 18,
-            textAlign: 'center',
-            textDecorationLine: 'underline',
-            
-          }}>
-          Skip
-        </Text>
-      </TouchableOpacity>
-   </View>
+      {isPaused ? (
+        <ImageBackground source={require('../assets/tracter3x.png')} style={styles.backgroundImage}>
+          <View style={styles.overlay}>
+            <View style={styles.header}>
+              <Text
+                numberOfLines={3}
+                adjustsFontSizeToFit
+                style={styles.welcomeText}>
+                Welcome to the World’s Largest Retailer of Diesel and Tractor Pulling Apparel!!!
+              </Text>
+            </View>
+            <TouchableOpacity onPress={playVideo} style={styles.videoContainer}>
+              {/* Show play button */}
+              <Image
+                source={require('../assets/playbutton.png')}
+                style={styles.playButton}
+              />
+            </TouchableOpacity>
+            <View style={styles.skipContainer}>
+              <TouchableOpacity onPress={handleSkip}>
+                <Text style={styles.skipText}>
+                  Skip
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ImageBackground>
+      ) : (
+        <TouchableOpacity onPress={playVideo} style={styles.videoContainer}>
+          {/* Video component starts here */}
+          <Video
+            source={require('../assets/BadGear.mp4')}
+            ref={videoRef}
+            style={styles.fullScreenVideo}
+            resizeMode="cover"
+            paused={isPaused}
+            onEnd={onEnd}
+            onError={(error) => console.error('Video Error: ', error)} // Add error handling
+            controls={false} // Enables video controls
+          />
+          {/* End of Video component */}
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
+  
 };
 
 export default Welcome;
@@ -95,6 +83,59 @@ export default Welcome;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   backgroundColor:"#FBFCFC"
+    backgroundColor: '#e6e6e6',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 1)', // Adding white background with some transparency
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+  },
+  welcomeText: {
+    fontSize: dynamicFontSize,
+    color: '#000000', // Changing text color to black for better readability
+    lineHeight: dynamicFontSize * 1.7,
+    textAlign: 'center',
+    fontFamily: "Gilroy-SemiBold",
+  },
+  videoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButton: {
+    position: 'absolute',
+    width: screenHeight * 0.1,
+    height: screenHeight * 0.1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullScreenVideo: {
+    width: '100%',
+    height: '100%',
+  },
+  skipContainer: {
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+  },
+  skipText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
 });

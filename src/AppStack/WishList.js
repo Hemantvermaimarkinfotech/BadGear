@@ -70,10 +70,7 @@ const WishList = () => {
         <Text style={styles.headerText}>WishList</Text>
       </View>
 
-      <View style={styles.totalItemsContainer}>
-        <Text style={styles.totalItemsText}>3 Items Selected</Text>
-        <Text style={styles.totalAmountText}>$89.90</Text>
-      </View>
+     
 
       <FlatList
         numColumns={1}
@@ -120,7 +117,7 @@ const styles = StyleSheet.create({
   },
   totalItemsText: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily:"Gilroy-Medium",
     color: '#000000',
   },
   totalAmountText: {
@@ -159,19 +156,21 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 18,
     color: '#000000',
-    fontWeight: '500',
+    fontFamily:"Gilroy-Medium",
+    width:150
   },
   itemRate: {
     fontSize: 20,
     color: '#000000',
-    fontWeight: '500',
+    fontFamily:"Gilroy-Medium",
+    marginTop:10
   },
   moveToCart: {
     color: '#F10C18',
     fontSize: 14,
     textDecorationLine: 'underline',
     marginTop: 10,
-    fontWeight: '700',
+    fontFamily:"Gilroy-Medium"
   },
   removeButton: {
     position: 'absolute',

@@ -8,40 +8,42 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* BADGEARTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* BADGEARTests.m */; };
-		05C0571CF2C2BDF31433737E /* libPods-BADGEAR-BADGEARTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C749061A3FE172C725CD3A6 /* libPods-BADGEAR-BADGEARTests.a */; };
+		012D536098314F1FBB656608 /* Gilroy-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 622D4A780E2B4892B595471B /* Gilroy-Bold.ttf */; };
+		07A7E7C7BC984754AA9915E7 /* ARIALNI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 07EFDB8C9C9D41C38E8DF3E4 /* ARIALNI.TTF */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		DCDAD29C81E85557C49DC51C /* libPods-BADGEAR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F4A74E8D44E0862D1717230 /* libPods-BADGEAR.a */; settings = {ATTRIBUTES = (Required, ); }; };
-		012D536098314F1FBB656608 /* Gilroy-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 622D4A780E2B4892B595471B /* Gilroy-Bold.ttf */; };
-		86432D9EE2BF4D11BA94FDC2 /* Gilroy-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D8B72621FCC14A95B74E7D48 /* Gilroy-Heavy.ttf */; };
+		43E109ED27CE4265A4896046 /* ARIALBI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 3E3B29D973CB4CB58B73BD70 /* ARIALBI.TTF */; };
+		4AE8F5000408A0B3679EA253 /* libPods-BADGEAR-BADGEARTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 355532047AC1DF8CD3D6EDA6 /* libPods-BADGEAR-BADGEARTests.a */; };
+		4CD85B478C8D46CF98EBCC3F /* ARIALBLACKITALIC.TTF in Resources */ = {isa = PBXBuildFile; fileRef = AA23A09263EF49D3A74393E6 /* ARIALBLACKITALIC.TTF */; };
 		50A600DE966F4D22A4C59D4F /* Gilroy-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4B7B6A4F701A463E8FC5F40C /* Gilroy-Light.ttf */; };
+		53D3A39435CA49B8B482318E /* ARIBLK.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 0948BC43DC0448A1A28A133F /* ARIBLK.TTF */; };
+		58DC6CEAA31447459C2BE5F5 /* ARIAL.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 53343D7E78E84A1FB8EFA2DF /* ARIAL.TTF */; };
 		6CF0E19BA4A0481C962ECB50 /* Gilroy-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB4A00E268FE44DF82479980 /* Gilroy-Medium.ttf */; };
-		D984C9560DA7401581BC876D /* Gilroy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8EF55E95413647EDA5D0E383 /* Gilroy-Regular.ttf */; };
-		E8D7F85B4A9642009C27EDDE /* Gilroy-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 70D5FE1E89064EAB809033EE /* Gilroy-SemiBold.ttf */; };
+		743BD485DF594C83873934B1 /* ArialCEMTBlack.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44D42F15C96444C698911187 /* ArialCEMTBlack.ttf */; };
+		76396E36C1A242FAAB9191B5 /* ARIALNBI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = DF4A680F9B604AE0B56F7963 /* ARIALNBI.TTF */; };
+		7D482D9357324B3083CD7FED /* ARIALBD 1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = F0384F5907944ED2BC762039 /* ARIALBD 1.TTF */; };
+		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		827D3F8FBD208A53C9C0CDC1 /* libPods-BADGEAR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2DAC63FB55F3C76C8E84CFF /* libPods-BADGEAR.a */; };
+		86432D9EE2BF4D11BA94FDC2 /* Gilroy-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D8B72621FCC14A95B74E7D48 /* Gilroy-Heavy.ttf */; };
+		A25957BB844D4304AC837662 /* ARIALLGTITL.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 02B9A5DC071F447A9D8DC0F4 /* ARIALLGTITL.TTF */; };
+		A85128112C0600C1008BCC2E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = A85128102C0600C1008BCC2E /* Fonts */; };
+		A85128132C06017F008BCC2E /* ios in Resources */ = {isa = PBXBuildFile; fileRef = A85128122C06017F008BCC2E /* ios */; };
+		AA321441D7CF46C184AC7540 /* ARIALBD.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 1C01008C1CB049E281E8813D /* ARIALBD.TTF */; };
+		AC69EC7F551B4460A9E0060B /* ArialMdmItl.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D89F6B240D894BBC8F193C11 /* ArialMdmItl.ttf */; };
+		AD3DE2E7109F426D9EF651C8 /* ARIALN.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 7DC1CA4EB58B495EB3CB4174 /* ARIALN.TTF */; };
+		B7CEBBB4BEAE43AD8381BE62 /* ARIALI 1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 68DE524D54FB428D87B261C9 /* ARIALI 1.TTF */; };
 		C277AFB089174AD2A6D356B5 /* ArialCE.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C819A59EA2B45408363BAD8 /* ArialCE.ttf */; };
 		C6379763A9874310AF764627 /* ArialCEBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E0497A65454249CCAA3D911B /* ArialCEBoldItalic.ttf */; };
-		E4C03EFDE3D94ED584A39D9C /* ArialCEItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5BDC4623ED16427380539AD5 /* ArialCEItalic.ttf */; };
-		743BD485DF594C83873934B1 /* ArialCEMTBlack.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44D42F15C96444C698911187 /* ArialCEMTBlack.ttf */; };
-		F48A1EC12E914C7D87B6359D /* ArialMdm.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 86A2B82E843244BCB75215A5 /* ArialMdm.ttf */; };
-		AC69EC7F551B4460A9E0060B /* ArialMdmItl.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D89F6B240D894BBC8F193C11 /* ArialMdmItl.ttf */; };
-		FF95266DC7BB4A5C9C3DB30F /* arialceb.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DBBB88E47F0845EA840C704B /* arialceb.ttf */; };
-		58DC6CEAA31447459C2BE5F5 /* ARIAL.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 53343D7E78E84A1FB8EFA2DF /* ARIAL.TTF */; };
-		7D482D9357324B3083CD7FED /* ARIALBD 1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = F0384F5907944ED2BC762039 /* ARIALBD 1.TTF */; };
-		AA321441D7CF46C184AC7540 /* ARIALBD.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 1C01008C1CB049E281E8813D /* ARIALBD.TTF */; };
-		E032D1EA71F148FE83BF365D /* ARIALBI 1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 96F407CE55F646DE82D300B4 /* ARIALBI 1.TTF */; };
-		43E109ED27CE4265A4896046 /* ARIALBI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 3E3B29D973CB4CB58B73BD70 /* ARIALBI.TTF */; };
-		4CD85B478C8D46CF98EBCC3F /* ARIALBLACKITALIC.TTF in Resources */ = {isa = PBXBuildFile; fileRef = AA23A09263EF49D3A74393E6 /* ARIALBLACKITALIC.TTF */; };
-		B7CEBBB4BEAE43AD8381BE62 /* ARIALI 1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 68DE524D54FB428D87B261C9 /* ARIALI 1.TTF */; };
-		FA9ED04ECE7843098FE8A5AE /* ARIALI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 7D4DC9149A9242D78171A290 /* ARIALI.TTF */; };
+		D984C9560DA7401581BC876D /* Gilroy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8EF55E95413647EDA5D0E383 /* Gilroy-Regular.ttf */; };
 		DD447B3225774D5D9FB0074F /* ARIALLGT.TTF in Resources */ = {isa = PBXBuildFile; fileRef = D4A9E7D67A4245A2B4845547 /* ARIALLGT.TTF */; };
-		A25957BB844D4304AC837662 /* ARIALLGTITL.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 02B9A5DC071F447A9D8DC0F4 /* ARIALLGTITL.TTF */; };
-		AD3DE2E7109F426D9EF651C8 /* ARIALN.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 7DC1CA4EB58B495EB3CB4174 /* ARIALN.TTF */; };
+		E032D1EA71F148FE83BF365D /* ARIALBI 1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 96F407CE55F646DE82D300B4 /* ARIALBI 1.TTF */; };
+		E4C03EFDE3D94ED584A39D9C /* ArialCEItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5BDC4623ED16427380539AD5 /* ArialCEItalic.ttf */; };
+		E8D7F85B4A9642009C27EDDE /* Gilroy-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 70D5FE1E89064EAB809033EE /* Gilroy-SemiBold.ttf */; };
 		F081A60E9A2140A490DCDE23 /* ARIALNB.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 2EDFE739BD9345199217A7B9 /* ARIALNB.TTF */; };
-		76396E36C1A242FAAB9191B5 /* ARIALNBI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = DF4A680F9B604AE0B56F7963 /* ARIALNBI.TTF */; };
-		07A7E7C7BC984754AA9915E7 /* ARIALNI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 07EFDB8C9C9D41C38E8DF3E4 /* ARIALNI.TTF */; };
-		53D3A39435CA49B8B482318E /* ARIBLK.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 0948BC43DC0448A1A28A133F /* ARIBLK.TTF */; };
+		F48A1EC12E914C7D87B6359D /* ArialMdm.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 86A2B82E843244BCB75215A5 /* ArialMdm.ttf */; };
+		FA9ED04ECE7843098FE8A5AE /* ARIALI.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 7D4DC9149A9242D78171A290 /* ARIALI.TTF */; };
+		FF95266DC7BB4A5C9C3DB30F /* arialceb.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DBBB88E47F0845EA840C704B /* arialceb.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,48 +60,50 @@
 		00E356EE1AD99517003FC87E /* BADGEARTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BADGEARTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* BADGEARTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BADGEARTests.m; sourceTree = "<group>"; };
+		02B9A5DC071F447A9D8DC0F4 /* ARIALLGTITL.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALLGTITL.TTF; path = ../src/assets/fonts/Gilroy/ARIALLGTITL.TTF; sourceTree = "<group>"; };
+		07EFDB8C9C9D41C38E8DF3E4 /* ARIALNI.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALNI.TTF; path = ../src/assets/fonts/Gilroy/ARIALNI.TTF; sourceTree = "<group>"; };
+		0948BC43DC0448A1A28A133F /* ARIBLK.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIBLK.TTF; path = ../src/assets/fonts/Gilroy/ARIBLK.TTF; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* BADGEAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BADGEAR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BADGEAR/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = BADGEAR/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BADGEAR/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BADGEAR/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BADGEAR/main.m; sourceTree = "<group>"; };
-		2F4A74E8D44E0862D1717230 /* libPods-BADGEAR.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BADGEAR.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		51E5C934FE4CEBE6A4F2987A /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR-BADGEARTests.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5B7F5541C0A8509B66990CE4 /* Pods-BADGEAR-BADGEARTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR-BADGEARTests.release.xcconfig"; path = "Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests.release.xcconfig"; sourceTree = "<group>"; };
-		5C749061A3FE172C725CD3A6 /* libPods-BADGEAR-BADGEARTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BADGEAR-BADGEARTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C01008C1CB049E281E8813D /* ARIALBD.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALBD.TTF; path = ../src/assets/fonts/Gilroy/ARIALBD.TTF; sourceTree = "<group>"; };
+		2C819A59EA2B45408363BAD8 /* ArialCE.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ArialCE.ttf; path = ../src/assets/fonts/Gilroy/ArialCE.ttf; sourceTree = "<group>"; };
+		2EDFE739BD9345199217A7B9 /* ARIALNB.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALNB.TTF; path = ../src/assets/fonts/Gilroy/ARIALNB.TTF; sourceTree = "<group>"; };
+		355532047AC1DF8CD3D6EDA6 /* libPods-BADGEAR-BADGEARTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BADGEAR-BADGEARTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E3B29D973CB4CB58B73BD70 /* ARIALBI.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALBI.TTF; path = ../src/assets/fonts/Gilroy/ARIALBI.TTF; sourceTree = "<group>"; };
+		44D42F15C96444C698911187 /* ArialCEMTBlack.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ArialCEMTBlack.ttf; path = ../src/assets/fonts/Gilroy/ArialCEMTBlack.ttf; sourceTree = "<group>"; };
+		4B7B6A4F701A463E8FC5F40C /* Gilroy-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Light.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Light.ttf"; sourceTree = "<group>"; };
+		53343D7E78E84A1FB8EFA2DF /* ARIAL.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIAL.TTF; path = ../src/assets/fonts/Gilroy/ARIAL.TTF; sourceTree = "<group>"; };
+		5BDC4623ED16427380539AD5 /* ArialCEItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ArialCEItalic.ttf; path = ../src/assets/fonts/Gilroy/ArialCEItalic.ttf; sourceTree = "<group>"; };
+		622D4A780E2B4892B595471B /* Gilroy-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Bold.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Bold.ttf"; sourceTree = "<group>"; };
+		68DE524D54FB428D87B261C9 /* ARIALI 1.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ARIALI 1.TTF"; path = "../src/assets/fonts/Gilroy/ARIALI 1.TTF"; sourceTree = "<group>"; };
+		70D5FE1E89064EAB809033EE /* Gilroy-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-SemiBold.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-SemiBold.ttf"; sourceTree = "<group>"; };
+		7D4DC9149A9242D78171A290 /* ARIALI.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALI.TTF; path = ../src/assets/fonts/Gilroy/ARIALI.TTF; sourceTree = "<group>"; };
+		7DC1CA4EB58B495EB3CB4174 /* ARIALN.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALN.TTF; path = ../src/assets/fonts/Gilroy/ARIALN.TTF; sourceTree = "<group>"; };
+		81307AFDDA0E0247A0EB0803 /* Pods-BADGEAR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR/Pods-BADGEAR.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BADGEAR/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		86F69402F0A1DBF9B08C810D /* Pods-BADGEAR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR.release.xcconfig"; path = "Target Support Files/Pods-BADGEAR/Pods-BADGEAR.release.xcconfig"; sourceTree = "<group>"; };
-		930399E127120E61FBB00896 /* Pods-BADGEAR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR/Pods-BADGEAR.debug.xcconfig"; sourceTree = "<group>"; };
+		86A2B82E843244BCB75215A5 /* ArialMdm.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ArialMdm.ttf; path = ../src/assets/fonts/Gilroy/ArialMdm.ttf; sourceTree = "<group>"; };
+		8EF55E95413647EDA5D0E383 /* Gilroy-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Regular.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Regular.ttf"; sourceTree = "<group>"; };
+		96F407CE55F646DE82D300B4 /* ARIALBI 1.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ARIALBI 1.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBI 1.TTF"; sourceTree = "<group>"; };
+		A85128102C0600C1008BCC2E /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
+		A85128122C06017F008BCC2E /* ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ios; sourceTree = "<group>"; };
+		AA23A09263EF49D3A74393E6 /* ARIALBLACKITALIC.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALBLACKITALIC.TTF; path = ../src/assets/fonts/Gilroy/ARIALBLACKITALIC.TTF; sourceTree = "<group>"; };
+		AB5C5D5CD19B25B983FB9B0C /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR-BADGEARTests.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests.debug.xcconfig"; sourceTree = "<group>"; };
+		AD6D5C727E0C699CE688DB2C /* Pods-BADGEAR-BADGEARTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR-BADGEARTests.release.xcconfig"; path = "Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests.release.xcconfig"; sourceTree = "<group>"; };
+		BDB02CE7F21C816005E024F2 /* Pods-BADGEAR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR.release.xcconfig"; path = "Target Support Files/Pods-BADGEAR/Pods-BADGEAR.release.xcconfig"; sourceTree = "<group>"; };
+		D2DAC63FB55F3C76C8E84CFF /* libPods-BADGEAR.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BADGEAR.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4A9E7D67A4245A2B4845547 /* ARIALLGT.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALLGT.TTF; path = ../src/assets/fonts/Gilroy/ARIALLGT.TTF; sourceTree = "<group>"; };
+		D89F6B240D894BBC8F193C11 /* ArialMdmItl.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ArialMdmItl.ttf; path = ../src/assets/fonts/Gilroy/ArialMdmItl.ttf; sourceTree = "<group>"; };
+		D8B72621FCC14A95B74E7D48 /* Gilroy-Heavy.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Heavy.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Heavy.ttf"; sourceTree = "<group>"; };
+		DBBB88E47F0845EA840C704B /* arialceb.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = arialceb.ttf; path = ../src/assets/fonts/Gilroy/arialceb.ttf; sourceTree = "<group>"; };
+		DF4A680F9B604AE0B56F7963 /* ARIALNBI.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALNBI.TTF; path = ../src/assets/fonts/Gilroy/ARIALNBI.TTF; sourceTree = "<group>"; };
+		E0497A65454249CCAA3D911B /* ArialCEBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ArialCEBoldItalic.ttf; path = ../src/assets/fonts/Gilroy/ArialCEBoldItalic.ttf; sourceTree = "<group>"; };
+		EB4A00E268FE44DF82479980 /* Gilroy-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Medium.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Medium.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		622D4A780E2B4892B595471B /* Gilroy-Bold.ttf */ = {isa = PBXFileReference; name = "Gilroy-Bold.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D8B72621FCC14A95B74E7D48 /* Gilroy-Heavy.ttf */ = {isa = PBXFileReference; name = "Gilroy-Heavy.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Heavy.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		4B7B6A4F701A463E8FC5F40C /* Gilroy-Light.ttf */ = {isa = PBXFileReference; name = "Gilroy-Light.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		EB4A00E268FE44DF82479980 /* Gilroy-Medium.ttf */ = {isa = PBXFileReference; name = "Gilroy-Medium.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8EF55E95413647EDA5D0E383 /* Gilroy-Regular.ttf */ = {isa = PBXFileReference; name = "Gilroy-Regular.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		70D5FE1E89064EAB809033EE /* Gilroy-SemiBold.ttf */ = {isa = PBXFileReference; name = "Gilroy-SemiBold.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		2C819A59EA2B45408363BAD8 /* ArialCE.ttf */ = {isa = PBXFileReference; name = "ArialCE.ttf"; path = "../src/assets/fonts/Gilroy/ArialCE.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E0497A65454249CCAA3D911B /* ArialCEBoldItalic.ttf */ = {isa = PBXFileReference; name = "ArialCEBoldItalic.ttf"; path = "../src/assets/fonts/Gilroy/ArialCEBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		5BDC4623ED16427380539AD5 /* ArialCEItalic.ttf */ = {isa = PBXFileReference; name = "ArialCEItalic.ttf"; path = "../src/assets/fonts/Gilroy/ArialCEItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		44D42F15C96444C698911187 /* ArialCEMTBlack.ttf */ = {isa = PBXFileReference; name = "ArialCEMTBlack.ttf"; path = "../src/assets/fonts/Gilroy/ArialCEMTBlack.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		86A2B82E843244BCB75215A5 /* ArialMdm.ttf */ = {isa = PBXFileReference; name = "ArialMdm.ttf"; path = "../src/assets/fonts/Gilroy/ArialMdm.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D89F6B240D894BBC8F193C11 /* ArialMdmItl.ttf */ = {isa = PBXFileReference; name = "ArialMdmItl.ttf"; path = "../src/assets/fonts/Gilroy/ArialMdmItl.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		DBBB88E47F0845EA840C704B /* arialceb.ttf */ = {isa = PBXFileReference; name = "arialceb.ttf"; path = "../src/assets/fonts/Gilroy/arialceb.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		53343D7E78E84A1FB8EFA2DF /* ARIAL.TTF */ = {isa = PBXFileReference; name = "ARIAL.TTF"; path = "../src/assets/fonts/Gilroy/ARIAL.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F0384F5907944ED2BC762039 /* ARIALBD 1.TTF */ = {isa = PBXFileReference; name = "ARIALBD 1.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBD 1.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1C01008C1CB049E281E8813D /* ARIALBD.TTF */ = {isa = PBXFileReference; name = "ARIALBD.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBD.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		96F407CE55F646DE82D300B4 /* ARIALBI 1.TTF */ = {isa = PBXFileReference; name = "ARIALBI 1.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBI 1.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		3E3B29D973CB4CB58B73BD70 /* ARIALBI.TTF */ = {isa = PBXFileReference; name = "ARIALBI.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBI.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		AA23A09263EF49D3A74393E6 /* ARIALBLACKITALIC.TTF */ = {isa = PBXFileReference; name = "ARIALBLACKITALIC.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBLACKITALIC.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		68DE524D54FB428D87B261C9 /* ARIALI 1.TTF */ = {isa = PBXFileReference; name = "ARIALI 1.TTF"; path = "../src/assets/fonts/Gilroy/ARIALI 1.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7D4DC9149A9242D78171A290 /* ARIALI.TTF */ = {isa = PBXFileReference; name = "ARIALI.TTF"; path = "../src/assets/fonts/Gilroy/ARIALI.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D4A9E7D67A4245A2B4845547 /* ARIALLGT.TTF */ = {isa = PBXFileReference; name = "ARIALLGT.TTF"; path = "../src/assets/fonts/Gilroy/ARIALLGT.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		02B9A5DC071F447A9D8DC0F4 /* ARIALLGTITL.TTF */ = {isa = PBXFileReference; name = "ARIALLGTITL.TTF"; path = "../src/assets/fonts/Gilroy/ARIALLGTITL.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7DC1CA4EB58B495EB3CB4174 /* ARIALN.TTF */ = {isa = PBXFileReference; name = "ARIALN.TTF"; path = "../src/assets/fonts/Gilroy/ARIALN.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		2EDFE739BD9345199217A7B9 /* ARIALNB.TTF */ = {isa = PBXFileReference; name = "ARIALNB.TTF"; path = "../src/assets/fonts/Gilroy/ARIALNB.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		DF4A680F9B604AE0B56F7963 /* ARIALNBI.TTF */ = {isa = PBXFileReference; name = "ARIALNBI.TTF"; path = "../src/assets/fonts/Gilroy/ARIALNBI.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		07EFDB8C9C9D41C38E8DF3E4 /* ARIALNI.TTF */ = {isa = PBXFileReference; name = "ARIALNI.TTF"; path = "../src/assets/fonts/Gilroy/ARIALNI.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		0948BC43DC0448A1A28A133F /* ARIBLK.TTF */ = {isa = PBXFileReference; name = "ARIBLK.TTF"; path = "../src/assets/fonts/Gilroy/ARIBLK.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F0384F5907944ED2BC762039 /* ARIALBD 1.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ARIALBD 1.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBD 1.TTF"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,7 +111,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05C0571CF2C2BDF31433737E /* libPods-BADGEAR-BADGEARTests.a in Frameworks */,
+				4AE8F5000408A0B3679EA253 /* libPods-BADGEAR-BADGEARTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,7 +119,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DCDAD29C81E85557C49DC51C /* libPods-BADGEAR.a in Frameworks */,
+				827D3F8FBD208A53C9C0CDC1 /* libPods-BADGEAR.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,6 +150,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				A85128122C06017F008BCC2E /* ios */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
@@ -156,57 +161,14 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				2F4A74E8D44E0862D1717230 /* libPods-BADGEAR.a */,
-				5C749061A3FE172C725CD3A6 /* libPods-BADGEAR-BADGEARTests.a */,
+				D2DAC63FB55F3C76C8E84CFF /* libPods-BADGEAR.a */,
+				355532047AC1DF8CD3D6EDA6 /* libPods-BADGEAR-BADGEARTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Libraries;
-			sourceTree = "<group>";
-		};
-		83CBB9F61A601CBA00E9B192 = {
-			isa = PBXGroup;
-			children = (
-				13B07FAE1A68108700A75B9A /* BADGEAR */,
-				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* BADGEARTests */,
-				83CBBA001A601CBA00E9B192 /* Products */,
-				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				BBD78D7AC51CEA395F1C20DB /* Pods */,
-				3C6AB4B1B05C4D19857FB7F7 /* Resources */,
-			);
-			indentWidth = 2;
-			sourceTree = "<group>";
-			tabWidth = 2;
-			usesTabs = 0;
-		};
-		83CBBA001A601CBA00E9B192 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				13B07F961A680F5B00A75B9A /* BADGEAR.app */,
-				00E356EE1AD99517003FC87E /* BADGEARTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				930399E127120E61FBB00896 /* Pods-BADGEAR.debug.xcconfig */,
-				86F69402F0A1DBF9B08C810D /* Pods-BADGEAR.release.xcconfig */,
-				51E5C934FE4CEBE6A4F2987A /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */,
-				5B7F5541C0A8509B66990CE4 /* Pods-BADGEAR-BADGEARTests.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		3C6AB4B1B05C4D19857FB7F7 /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
 				622D4A780E2B4892B595471B /* Gilroy-Bold.ttf */,
 				D8B72621FCC14A95B74E7D48 /* Gilroy-Heavy.ttf */,
@@ -239,7 +201,50 @@
 			);
 			name = Resources;
 			sourceTree = "<group>";
-			path = "";
+		};
+		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		83CBB9F61A601CBA00E9B192 = {
+			isa = PBXGroup;
+			children = (
+				A85128102C0600C1008BCC2E /* Fonts */,
+				13B07FAE1A68108700A75B9A /* BADGEAR */,
+				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				00E356EF1AD99517003FC87E /* BADGEARTests */,
+				83CBBA001A601CBA00E9B192 /* Products */,
+				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				3C6AB4B1B05C4D19857FB7F7 /* Resources */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		83CBBA001A601CBA00E9B192 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13B07F961A680F5B00A75B9A /* BADGEAR.app */,
+				00E356EE1AD99517003FC87E /* BADGEARTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				81307AFDDA0E0247A0EB0803 /* Pods-BADGEAR.debug.xcconfig */,
+				BDB02CE7F21C816005E024F2 /* Pods-BADGEAR.release.xcconfig */,
+				AB5C5D5CD19B25B983FB9B0C /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */,
+				AD6D5C727E0C699CE688DB2C /* Pods-BADGEAR-BADGEARTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -248,12 +253,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "BADGEARTests" */;
 			buildPhases = (
-				5DE2A679BC0C2BC1F52EE489 /* [CP] Check Pods Manifest.lock */,
+				41A2260E242C75564CB51348 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				DA5630D9E691C63006C1197D /* [CP] Embed Pods Frameworks */,
-				DB13796CBD78D6EC5F49A78A /* [CP] Copy Pods Resources */,
+				680C45EB656D6932A86FEC02 /* [CP] Embed Pods Frameworks */,
+				CE3838A7757EDE6A2593BE3A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -269,13 +274,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BADGEAR" */;
 			buildPhases = (
-				5FE992C3CCC48EFE2E9DB5FE /* [CP] Check Pods Manifest.lock */,
+				91C3B4D3BD92CB16672208FB /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				F42A1CE3DE0B3CAC8508CA24 /* [CP] Embed Pods Frameworks */,
-				F5B9E1495CFF9006CA4C360E /* [CP] Copy Pods Resources */,
+				3CF58ECE096D37BF012725E1 /* [CP] Embed Pods Frameworks */,
+				210D1A7C595C550B5637B1B0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -365,6 +370,8 @@
 				76396E36C1A242FAAB9191B5 /* ARIALNBI.TTF in Resources */,
 				07A7E7C7BC984754AA9915E7 /* ARIALNI.TTF in Resources */,
 				53D3A39435CA49B8B482318E /* ARIBLK.TTF in Resources */,
+				A85128132C06017F008BCC2E /* ios in Resources */,
+				A85128112C0600C1008BCC2E /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,7 +394,41 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		5DE2A679BC0C2BC1F52EE489 /* [CP] Check Pods Manifest.lock */ = {
+		210D1A7C595C550B5637B1B0 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3CF58ECE096D37BF012725E1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		41A2260E242C75564CB51348 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -409,7 +450,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5FE992C3CCC48EFE2E9DB5FE /* [CP] Check Pods Manifest.lock */ = {
+		680C45EB656D6932A86FEC02 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		91C3B4D3BD92CB16672208FB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -431,24 +489,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		DA5630D9E691C63006C1197D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DB13796CBD78D6EC5F49A78A /* [CP] Copy Pods Resources */ = {
+		CE3838A7757EDE6A2593BE3A /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -463,40 +504,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F42A1CE3DE0B3CAC8508CA24 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F5B9E1495CFF9006CA4C360E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BADGEAR/Pods-BADGEAR-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -532,7 +539,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 51E5C934FE4CEBE6A4F2987A /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */;
+			baseConfigurationReference = AB5C5D5CD19B25B983FB9B0C /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -561,7 +568,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5B7F5541C0A8509B66990CE4 /* Pods-BADGEAR-BADGEARTests.release.xcconfig */;
+			baseConfigurationReference = AD6D5C727E0C699CE688DB2C /* Pods-BADGEAR-BADGEARTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -587,7 +594,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 930399E127120E61FBB00896 /* Pods-BADGEAR.debug.xcconfig */;
+			baseConfigurationReference = 81307AFDDA0E0247A0EB0803 /* Pods-BADGEAR.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -618,7 +625,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 86F69402F0A1DBF9B08C810D /* Pods-BADGEAR.release.xcconfig */;
+			baseConfigurationReference = BDB02CE7F21C816005E024F2 /* Pods-BADGEAR.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import TitleHeader from '../Components/TitleHeader';
 
 const ForgotPassword = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -23,6 +24,7 @@ const ForgotPassword = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.formContainer}>
+        
         <Text style={styles.title}>Forgot Password?</Text>
         <View style={styles.inputContainer}>
           <View style={styles.passwordContainer}>
@@ -37,17 +39,18 @@ const ForgotPassword = ({navigation}) => {
               {isEmailValid ? (
                 <AntDesign name="checkcircle" size={20} color="#6CC57C" />
               ) : (
-                <MaterialCommunityIcons
-                  name="information"
-                  size={20}
-                  color="red"
-                />
+                null
               )}
             </TouchableOpacity>
           </View>
         </View>
         <TouchableOpacity style={styles.submitButton}>
           <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={{ justifyContent: "center", alignItems: "center" }}>
+          <Text style={styles.signupText}>
+            Already have an account? <Text style={styles.signupLink}>Log In</Text>
+          </Text>
         </TouchableOpacity>
       
       </View>
@@ -108,6 +111,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily:"Gilroy",
   },
-
+  signupText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#000000',
+    marginTop: 20,
+    fontFamily: "Gilroy-SemiBold"
+  },
+  signupLink: {
+    fontWeight: '600',
+    marginTop: 5,
+    textDecorationLine: "underline",
+    color: "#F10C18",
+    fontFamily: "Gilroy-Bold"
+  },
 
 });

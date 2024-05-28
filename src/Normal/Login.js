@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   Text,
@@ -16,92 +16,76 @@ import axios from 'react-native-axios';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isEmailValid, setIsEmailValid] = useState(false);
   const { setUserToken } = useContext(AuthContext);
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-
-  const handleEmailChange = (text) => {
+  const handleEmailChange = text => {
     setEmail(text);
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
     setIsEmailValid(isValidEmail);
   };
 
-  
-
   const handleLogin = async () => {
-    // Validate input fields
     if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
-  
     setLoading(true);
   
-    const data = JSON.stringify({
-      email: email.trim(),
-      password: password.trim(),
-    });
+    const formData = new FormData();
+    formData.append('email', email.trim());
+    formData.append('password', password.trim());
   
     try {
-      // Send the login request to the server
-      const response = await axios.post(
-        'https://sledpullcentral.com/wp-json/login-api/v1/userLogin',
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+      // Send the login request to the server using fetch
+      const response = await fetch('https://bad-gear.com/wp-json/login-api/v1/userLogin', {
+        method: 'POST',
+        body: formData,
+      });
+
+      console.log('Response received:', response);
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      console.log('Login response data:', responseData);
+
+      console.log('Login response data:', responseData);
+      if (responseData.status === "success") {
+        await AsyncStorage.setItem('userData', JSON.stringify(responseData));
   
-      // Log the response from the server
-      console.log('Login response:', response.data);
-  
-      // Check if the response indicates a successful login
-      if (response.data.status !== "error") {
-        // Save the response data to local storage
-        await AsyncStorage.setItem('userData', JSON.stringify(response.data));
-  
-        // Set the user token
-        setUserToken(response.data.token);
+        setUserToken(responseData.token);
+        Alert.alert('Success', responseData.success_message || 'You are successfully logged in!');
       } else {
-        // Handle unsuccessful login
-        Alert.alert('Login Failed', response.data.errormsg || 'Incorrect email or password');
+        Alert.alert('Login Failed', responseData.errormsg || 'Incorrect email or password');
       }
   
-      // Set loading state to false
       setLoading(false);
     } catch (error) {
-      // Set loading state to false
+      console.error('Error:', error);
       setLoading(false);
   
-      // Handle and log errors
-      console.error('Error:', error);
-  
-      // Check if the error response is available
-      if (error.response) {
-        console.error('Server Error Response:', error.response.data);
-        Alert.alert('Error', error.response.data.errormsg || 'An error occurred. Please try again.');
-      } else if (error.request) {
-        console.error('No Server Response:', error.request);
+      if (error.message === 'Network request failed') {
         Alert.alert('Network Error', 'No response from server. Please check your internet connection.');
       } else {
-        console.error('Request Error:', error.message);
-        Alert.alert('Unexpected Error', 'An unexpected error occurred. Please try again later.');
+        Alert.alert('Unexpected Error', error.message || 'An unexpected error occurred. Please try again later.');
       }
     }
   };
   
-
-
+  
+  
   return (
     <SafeAreaView style={styles.container}>
-     <View style={{marginTop:80}}>
+     <View style={{marginTop:80,width:"100%",paddingHorizontal:20,alignSelf:"center",}}>
      <View style={styles.header}>
         <Text style={styles.title}>Log In</Text>
       </View>
@@ -114,6 +98,7 @@ const Login = ({navigation}) => {
             placeholder="Email"
             placeholderTextColor="#23233C"
             color="#23233C"
+            value={email}
           />
           <TouchableOpacity>
           {isEmailValid ? (
@@ -132,6 +117,7 @@ const Login = ({navigation}) => {
             placeholder="Password"
             placeholderTextColor="#23233C"
             color="#23233C"
+            value={password}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Image
@@ -167,7 +153,7 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
+ 
     flex:1,
     backgroundColor:"#FBFCFC"
     

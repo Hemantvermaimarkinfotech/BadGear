@@ -15,6 +15,8 @@ import NewArrival from '../AppStack/NewArrival';
 import ProductDetailsPage from '../AppStack/ProductDetailsPage';
 import WishList from '../AppStack/WishList';
 import colors from "../Utils/Colors"
+import { Platform } from 'react-native'
+import AntDesign from "react-native-vector-icons/Feather"
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -99,21 +101,20 @@ export default AppScreenStack;
 
 const BottomTabNav = ({ navigation }) => (
   <Tab.Navigator
-    initialRouteName="Home"
-    screenOptions={{
-      tabBarActiveTintColor: colors.red,
-      tabBarInactiveTintColor: colors.darkGrey,
-      tabBarStyle: {
-        backgroundColor: 'white', // Set background color here
-        borderWidth: 0,
-        shadowColor: colors.shadowColor, // Add shadow color
-        shadowOpacity: 0.25, // Adjust shadow opacity as needed
-        shadowRadius: 2, // Adjust shadow radius as needed
-        elevation: 5,
-        height:60 ,
-     
-      },
-    }}>
+  initialRouteName="Home"
+  screenOptions={{
+    tabBarActiveTintColor: colors.red,
+    tabBarInactiveTintColor: colors.darkGrey,
+    tabBarStyle: {
+      backgroundColor: 'white', // Set background color here
+      borderWidth: 0,
+      shadowColor: colors.shadowColor, // Add shadow color
+      shadowOpacity: 0.25, // Adjust shadow opacity as needed
+      shadowRadius: 2, // Adjust shadow radius as needed
+      height:"10%" ,
+      ...(Platform.OS === 'android' && { elevation: 1 }), // Apply elevation only on Android
+    },
+  }}>
 
     <Tab.Screen name="Home" component={Home}
 
@@ -147,7 +148,7 @@ const BottomTabNav = ({ navigation }) => (
       options={{
         tabBarIcon: ({focused}) => (
           <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            <Image
+            {/* <Image
               source={require('../assets/search.png')}
               style={{
                 height: 20,
@@ -155,7 +156,8 @@ const BottomTabNav = ({ navigation }) => (
                 resizeMode: 'contain',
                 tintColor: "#000000"
               }}
-            />
+            /> */}
+            <AntDesign name="search" size={22} color={"#000"}/>
             <Text style={{fontSize: 15, fontWeight: 500, marginTop: 5,color:"#000000"}}>Search</Text>
           </View>
         ),
