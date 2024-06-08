@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,56 +7,76 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { getWishList } from '../Components/ApiService';
 
-const CartDATA = [
-  {
-    id: '1',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '2',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '3',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-];
 
-const renderCartItem = ({ item, navigation }) => (
-  <View style={styles.cartItem}>
-    <View style={styles.imageContainer}>
+
+const renderWishList = ({ item ,navigation}) => {
+  return (
+    <View style={styles.cartItem}>
+      <View style={styles.imageContainer}>
       <Image
-        source={item.image}
-        style={styles.image}
-      />
-    </View>
-    <View style={styles.detailsContainer}>
-      <Text style={styles.itemText}>{item.text}</Text>
-      <Text style={styles.itemRate}>{item.rate}</Text>
-      <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-        <Text style={styles.moveToCart}>Move to Cart</Text>
+          source={{ uri: item.image }} // Set the source to item.image
+          style={styles.image}
+        />
+      </View>
+      <View style={styles.detailsContainer}>
+       {item.name ? (
+        <Text style={styles.itemText}>{item?.name}</Text>
+       ):(
+<Text style={styles.itemText}>No name Available</Text>
+       )}
+        {item.price ? (
+          <Text style={styles.itemRate}>$ {item.price}</Text>
+        ) : (
+          <Text style={styles.itemRate}>$ 200</Text>
+        )}
+        <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+          <Text style={styles.moveToCart}>Move to Cart</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity style={styles.removeButton}>
+        <Text style={styles.removeButtonText}>×</Text>
       </TouchableOpacity>
     </View>
-    <TouchableOpacity style={styles.removeButton}>
-      <Text style={styles.removeButtonText}>×</Text>
-    </TouchableOpacity>
-  </View>
-);
+
+    
+
+  );
+};
+
 
 const WishList = () => {
   const navigation = useNavigation();
   const goBack = () => {
     navigation.goBack();
   };
+
+  const [wishlist,setWishList]=useState([])
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  // console.log("wishlist",wishlist)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true); // Set loading state to true
+        // Fetch WishList
+        const WishListResponse = await getWishList();
+        setWishList(WishListResponse);
+        setLoading(false);
+        console.log("WishListResponse",WishListResponse)
+      } catch (error) {
+        console.log('Error fetching data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData(); // Call the combined fetchData function
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -70,14 +90,20 @@ const WishList = () => {
         <Text style={styles.headerText}>WishList</Text>
       </View>
 
-     
 
-      <FlatList
-        numColumns={1}
-        data={CartDATA}
-        renderItem={({ item }) => renderCartItem({ item, navigation })}
-        keyExtractor={item => item.id}
-      />
+      {loading ? (
+  <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+    <ActivityIndicator size={"large"} color={"#F10C18"}/>
+  </View>
+) : (
+  <FlatList
+    numColumns={1}
+    data={wishlist.data}
+    renderItem={({ item }) => renderWishList({ item, navigation })}
+    keyExtractor={item => item.product_id}
+  />
+)}
+
 
     </SafeAreaView>
   );

@@ -92,6 +92,26 @@ export const getBanner = async () => {
   }
 };
 
+export const getWishList = async () => {
+  try {
+    const response = await axios.get(
+      `https://bad-gear.com/wp-json/get-wishlist/v1/getWishlist`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const responseData = response.data; // Extract the data from the response
+    // console.log('WishList data:', responseData); // Log the data to the console
+    return responseData; // Return the data
+  } catch (error) {
+    console.error('Error fetching WishList:', error);
+    throw error;
+  }
+};
+
+
 export const getProductDetails = async (productId) => {
   try {
     const response = await axios.get(
@@ -108,7 +128,7 @@ export const getProductDetails = async (productId) => {
     console.error('Error fetching product details:', error);
     throw error;
   }
-};
+}
 
 
 export const AddCart = async (productId, size, quantity, price) => {
@@ -121,6 +141,31 @@ export const AddCart = async (productId, size, quantity, price) => {
 
     const response = await axios.post(
       'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    console.log("add to cart", response.data);
+    return response.data; // Return the data
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    throw error;
+  }
+};
+
+export const AddWishlist = async (productId, size, quantity, price) => {
+  try {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('size', size);
+    formData.append('quantity', quantity);
+    formData.append('price', price);
+
+    const response = await axios.post(
+      `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
       formData,
       {
         headers: {

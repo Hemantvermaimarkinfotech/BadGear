@@ -8,7 +8,7 @@ import AppScreenStack from './AppScreensStack';
 
 const Routes = () => {
   const { userToken } = useContext(AuthContext);
-
+console.log("userToken",userToken)
     return (
       <NavigationContainer>
         {userToken ? <AppScreenStack/> : <AppNavigator />}

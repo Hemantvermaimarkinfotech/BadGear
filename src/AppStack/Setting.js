@@ -6,13 +6,18 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import {AuthContext} from '../Components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import EvilIcons from "react-native-vector-icons/EvilIcons"
+import AntDesign from "react-native-vector-icons/AntDesign"
 
-const Setting = () => {
+
+const Setting = ({navigation}) => {
   const {userToken, setUserToken} = useContext(AuthContext);
 
   const Logout = () => {
@@ -23,22 +28,141 @@ const Setting = () => {
   return (
     <SafeAreaView style={styles.container}>
       <TitleHeader title={'Setting'} />
-      <View style={{marginHorizontal: 15, marginVertical: 10}}>
-        <TouchableOpacity
-          onPress={() => Logout()}
-          style={{flexDirection: 'row'}}>
-          <AntDesign name="logout" size={24} color={'#000'} />
-          <Text
-            style={{
-              fontSize: 20,
-              color: '#000000',
-              marginLeft: 10,
-              fontFamily:"Gilroy-Medium"
-            }}>
-            Logout
-          </Text>
-        </TouchableOpacity>
+  
+
+     <ScrollView>
+     <View style={styles.accountheader}>
+      <View style={styles.subaccount}>
+      <View>
+        <Image source={require("../assets/user-profile.jpg")} style={{height:70,width:70,borderRadius:35}}/>
       </View>
+      <View style={{marginLeft:20}}>
+        <Text style={{color:"#000000",fontFamily:"Gilroy-Bold",fontSize:20}}>Thomas Djaon</Text>
+        <Text style={{color:"#000000",fontSize:12,fontFamily:"Gilroy-Medium"}}>ID 02317141</Text>
+      </View>
+      </View>
+
+      <TouchableOpacity onPress={()=>navigation.navigate("EditProfile")}>
+      <Feather name="edit-2" size={24} color={"#F10C18"}/>
+      </TouchableOpacity>
+      </View>
+
+      <View style={styles.servicebox}>
+      <TouchableOpacity style={styles.subservicebox} onPress={()=>navigation.navigate("Order")}>
+        <Feather name="package" size={28} color={"#F10C18"}/>
+        <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>Order</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.subservicebox} onPress={()=>navigation.navigate("WishList")}>
+        <Feather name="heart" size={27} color={"#F10C18"}/>
+        <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>WishList</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.subservicebox}>
+        <Feather name="headphones" size={28} color={"#F10C18"} onPress={()=>navigation.navigate("HelpCenter")}/>
+        <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>Help Center</Text>
+      </TouchableOpacity>
+      </View>
+{/* 
+      <View style={[styles.servicebox,{marginTop:10}]}>
+      <TouchableOpacity style={styles.subservicebox} onPress={()=>navigation.navigate("Coupons")}>
+        <Feather name="gift" size={28} color={"#F10C18"}/>
+        <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>Coupons</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.subservicebox}>
+        <Feather name="headphones" size={28} color={"#F10C18"} onPress={()=>navigation.navigate("HelpCenter")}/>
+        <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>Help Center</Text>
+      </TouchableOpacity>
+      </View> */}
+
+      <View style={{height:1,backgroundColor:"#CCC",width:"100%",marginTop:15,opacity:0.6}}/>
+
+      <View style={{marginHorizontal:15,width:"95%",alignSelf:"center",marginTop:15}}>
+      <Text style={{color:"#000000",fontFamily:"Gilroy-Bold",fontSize:20}}>Account Setting</Text>
+
+      <ScrollView>
+      <TouchableOpacity style={styles.row}>
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Feather name="user" size={22} color={"#000000"} />
+     </View>
+
+     <View style={{ justifyContent: "center", marginLeft: 20 }}>
+        <Text style={{ color: "#000000", fontSize: 15 ,fontFamily:"Gilroy",fontWeight:600}}>Edit Profile</Text>
+
+       </View>
+
+</View>
+
+<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+</TouchableOpacity>
+
+<View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC", opacity: 0.6 }} />
+
+<TouchableOpacity style={styles.row}>
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Feather name="map-pin" size={22} color={"#000000"} />
+     </View>
+
+     <View style={{ justifyContent: "center", marginLeft: 20 }}>
+        <Text style={{ color: "#000000", fontSize: 15 ,fontFamily:"Gilroy",fontWeight:600}}>Saved Addresses</Text>
+
+       </View>
+
+</View>
+
+<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+</TouchableOpacity>
+
+<View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC"}} />
+
+
+<TouchableOpacity style={styles.row} onPress={()=>navigation.navigate("Notification")}>
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Feather name="bell" size={22} color={"#000000"} />
+     </View>
+
+     <TouchableOpacity style={{ justifyContent: "center", marginLeft: 20 ,flexDirection:"row",alignItems:"center"}} >
+        <Text style={{ color: "#000000", fontSize: 15 ,fontFamily:"Gilroy",fontWeight:600}}>Notification</Text>
+        <View style={{justifyContent:"center",backgroundColor:"#F10C18",alignItems:"center",marginLeft:10,height:25,width:25,borderRadius:12}}>
+          <Text style={{color:"#FFFFFF",fontFamily:"Gilroy-Medium",fontSize:12}}>5</Text>
+        </View>
+       </TouchableOpacity>
+
+</View>
+
+<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+</TouchableOpacity>
+
+<View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC", opacity: 0.6 }} />
+
+
+<TouchableOpacity style={[styles.row,{}]}   onPress={() => Logout()}>
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <AntDesign name="logout" size={22} color={'#000000'} />
+     </View>
+
+     <View style={{ justifyContent: "center", marginLeft: 20 }}>
+        <Text style={{ color: "#000000", fontSize: 15 ,fontFamily:"Gilroy",fontWeight:600}}>Log Out</Text>
+
+       </View>
+
+</View>
+
+<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+</TouchableOpacity>
+
+<View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC", opacity: 0.6,marginBottom:80 }} />
+
+      </ScrollView>
+
+      </View>
+     
+     </ScrollView>
     </SafeAreaView>
   );
 };
@@ -48,6 +172,41 @@ export default Setting;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:"#FBFCFC"
+    backgroundColor:"#FBFCFC",
+    width:"100%"
   },
+  accountheader:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    alignItems:"center",
+    paddingHorizontal:15,
+    marginTop:15
+  },
+  subaccount:{
+    flexDirection:"row",
+    alignItems:"center",
+  },
+  servicebox:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    paddingHorizontal:15,
+    marginTop:15,
+    width:"100%",
+
+  },
+  subservicebox:{
+    justifyContent:"center",
+    alignItems:"center",
+    height:70,
+    width:"30%",
+    borderColor:"#F10C18",
+    borderWidth:1,
+    borderRadius:8
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    alignItems: "center"
+},
 });

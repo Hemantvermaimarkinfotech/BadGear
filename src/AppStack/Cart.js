@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -7,23 +8,24 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
-  Modal,
-  ActivityIndicator
+  ActivityIndicator,
+ Button
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from "react-native-axios";
 import { SelectCountry } from "react-native-element-dropdown";
+import { Modal } from 'react-native';
 
 const Cart = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [isFocus, setIsFocus] = useState(false);
   const [value, setValue] = useState(null);
   const [country, setCountry] = useState('1');
+  const [selectedCartItem, setSelectedCartItem] = useState(null); // State to hold selected cart item's data
 
   const goBack = () => {
     navigation.goBack();
@@ -34,10 +36,19 @@ const Cart = () => {
     { label: 'M', value: '2' },
     { label: 'L', value: '3' },
     { label: 'XL', value: '4' },
-    { label: 'L', value: '5' },
-    { label: 'L', value: '6' },
-    { label: 'L', value: '7' },
+ 
   ];
+
+  const updateQuantity = (item, quantityChange) => {
+    const updatedCartItems = cartItems.map(cartItem => {
+      if (cartItem.product_id === item.product_id) {
+        const newQuantity = Math.max(1, cartItem.quantity + quantityChange); // Ensure quantity is at least 1
+        return { ...cartItem, quantity: newQuantity };
+      }
+      return cartItem;
+    });
+    setCartItems(updatedCartItems);
+  };
 
   const renderCartItem = ({ item }) => (
     <View>
@@ -49,26 +60,27 @@ const Cart = () => {
               style={styles.image}
             />
           ) : (
-            <Text style={{color:"#000000"}}>No Image Available</Text>
+            <Text style={{ color: "#000000" }}>No Image Available</Text>
           )}
         </View>
         <View style={styles.detailsContainer}>
           <Text style={styles.itemText}>Kenworth Red Skull Hoodie</Text>
-          <Text style={styles.itemRate}>${item.price}</Text>
+          {/* Updated to show dynamic price */}
+          <Text style={styles.itemRate}>${(item.price * item.quantity).toFixed(2)}</Text>
           <View style={styles.qtyContainer}>
             <View style={styles.qtySection}>
-              <TouchableOpacity style={styles.qtybtn} onPress={() => setSelectedQuantity(selectedQuantity - 1)}>
+              <TouchableOpacity style={styles.qtybtn} onPress={() => updateQuantity(item, -1)}>
                 <Text style={styles.btntext}>-</Text>
               </TouchableOpacity>
-              <Text style={styles.quantityText}>{selectedQuantity}</Text>
-              <TouchableOpacity style={styles.qtybtn} onPress={() => setSelectedQuantity(selectedQuantity + 1)}>
+              <Text style={styles.quantityText}>{item.quantity}</Text>
+              <TouchableOpacity style={styles.qtybtn} onPress={() => updateQuantity(item, 1)}>
                 <Text style={styles.btntext}>+</Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.sizeSection]}>
-              <Text style={{fontSize:15,color:"#000000",fontFamily:"Gilroy-SemiBold"}}>Size:</Text>
+              <Text style={{ fontSize: 15, color: "#000000", fontFamily: "Gilroy-SemiBold" }}>Size:</Text>
               <SelectCountry
-                style={styles.dropdown}
+                style={[styles.dropdown,{}]}
                 selectedTextStyle={styles.selectedTextStyle}
                 placeholderStyle={styles.placeholderStyle}
                 imageStyle={styles.imageStyle}
@@ -79,7 +91,7 @@ const Cart = () => {
                 valueField="value"
                 labelField="label"
                 imageField="image"
-                placeholder="Select size"
+                placeholder="size"
                 searchPlaceholder="Search..."
                 onChange={e => {
                   setCountry(e.value);
@@ -89,8 +101,11 @@ const Cart = () => {
             </View>
           </View>
         </View>
-        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(true)}>
-          <Text style={styles.closeButtonText}>×</Text>
+        <TouchableOpacity style={styles.closeButton} onPress={() => {
+          setSelectedCartItem(item); // Store selected item's data in state
+          setModalVisible(true); // Show modal
+        }}>
+          <Text style={styles.closeButtonText}>X</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -108,7 +123,8 @@ const Cart = () => {
       );
       console.log('response cart', response.data.data);
       if (response.data.status === "success") {
-        setCartItems(response.data.data);
+        const itemsWithQuantity = response.data.data.map(item => ({ ...item, quantity: 1 })); // Add quantity field
+        setCartItems(itemsWithQuantity);
       } else {
         console.error('Error: Unexpected response format:', response);
       }
@@ -122,6 +138,10 @@ const Cart = () => {
   useEffect(() => {
     GetCartItems();
   }, []);
+
+  const getTotalAmount = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -142,40 +162,77 @@ const Cart = () => {
       ) : (
         <>
           <View style={styles.totalItemsContainer}>
-            <Text style={styles.totalItemsText}>3 Items Selected</Text>
-            <Text style={styles.totalAmountText}>$89.90</Text>
+            {/* Updated to dynamically show the number of items */}
+            <Text style={styles.totalItemsText}>{cartItems.length} Items Selected</Text>
+            {/* Updated to dynamically show the total amount */}
+            <Text style={styles.totalAmountText}>${getTotalAmount()}</Text>
           </View>
 
-      <View style={{marginBottom:200}}>
-      <FlatList
-            data={cartItems}
-            renderItem={({ item }) => renderCartItem({ item })}
-            keyExtractor={item => item.product_id.toString()}
-            nestedScrollEnabled={true}
-          />
+          <View style={{ marginBottom:200 }}>
+            <FlatList
+              data={cartItems}
+              renderItem={({ item }) => renderCartItem({ item })}
+              keyExtractor={item => item.product_id.toString()}
+              nestedScrollEnabled={true}
+            />
 
-<TouchableOpacity style={styles.placeOrderButton}>
-            <Text style={styles.placeOrderText}>Place Order</Text>
-          </TouchableOpacity>
-      </View>
+            <TouchableOpacity style={styles.placeOrderButton} onPress={()=>navigation.navigate("Checkout")}>
+              <Text style={styles.placeOrderText}>Place Order</Text>
+            </TouchableOpacity>
 
-         
+            
+          </View>
         </>
       )}
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}>
-        {/* Your modal content here */}
-      </Modal>
+<View style={{  justifyContent: 'center', alignItems: 'center', }}>
+  <Modal
+    animationType="slide"
+    transparent={true}
+    visible={modalVisible}
+    onRequestClose={() => {
+      setModalVisible(!modalVisible);
+    }}
+  >
+    <View style={{ flex:1,width: '100%', justifyContent: 'center', alignItems: 'center',}}>
+      <View style={{backgroundColor: '#FFFFFF', width: '100%', position: 'absolute',bottom: 0,height:180,marginHorizontal:15 }}>
+        <View style={{ alignItems: 'center',width:"95%",flexDirection:"row",marginTop:20,alignSelf:"center"}}>
+        <View style={[styles.imageContainer,{height:80,width:80,borderRadius:15}]}>
+        {selectedCartItem?.product_img ? ( // Check if there is a selected item
+                    <Image
+                      source={{ uri: selectedCartItem.product_img }} // Display selected item's image
+                      style={[styles.image, { height: 60, width: 60 }]}
+                    />
+                  ) : (
+                    <Text style={{ color: "#000000",fontSize:12 }}>No Image Available</Text>
+                  )}
+        </View>
+        <View style={{marginLeft:15,width:"60%"}}>
+          <Text style={{color:"#000000",fontSize:18,fontFamily:"Gilroy-Medium"}}>Move from the cart</Text>
+          <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy-Regular"}}>Are you sure you want to move this item from cart?</Text>
+        </View>
+        </View>
+
+        <View style={{height:1,width:"95%",backgroundColor:"#00000010",marginTop:15}}></View>
+        <View style={{marginTop:15,flexDirection:"row",justifyContent:"space-between",width:"95%",alignSelf:"center",paddingHorizontal:50}}>
+        <TouchableOpacity>
+          <Text style={{color:"#F10C18",fontSize:17,fontFamily:"Gilroy-Medium",textDecorationLine:"underline"}}>Remove</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={{color:"#F10C18",fontSize:17,fontFamily:"Gilroy-Medium",textDecorationLine:"underline"}}>Move to Wishlist</Text>
+        </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(!modalVisible)}>
+          <Text style={[styles.closeButtonText,{right:15,}]}>X</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
+</View>
+
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -264,7 +321,7 @@ const styles = StyleSheet.create({
     right: 12,
   },
   closeButtonText: {
-    fontSize: 25,
+    fontSize: 18,
     color: '#707070',
   },
   placeOrderButton: {
@@ -273,7 +330,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F10C18',
-    height: 50,
+    height: 55,
     borderRadius: 8,
     elevation: 1,
     position: "relative",

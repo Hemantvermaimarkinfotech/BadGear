@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import TitleHeader from '../Components/TitleHeader';
 import {getCategory} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
+import he from  "he"
 
 // This is Category data
 const CategoryDATA = [
@@ -55,28 +56,44 @@ const CategoryDATA = [
 ];
 
 //   This is renderCategoryitme
-const rendercategoryItem = ({item, navigation}) => (
-  <TouchableOpacity
-    onPress={() => navigation.navigate('ProductDetails', {ProductId: item})}>
-    <View style={styles.Catitem}>
-      <Image style={styles.Catimage} source={{uri: item.cat_image}} />
-    </View>
-
-    <View style={{justifyContent: 'center', alignItems: 'center'}}>
-      <Text
-        numberOfLines={2}
+const rendercategoryItem = ({ item,navigation }) => {
+  return (
+    <TouchableOpacity style={{ width: "50%", marginTop: 20 }}
+    
+    >
+      <View style={styles.Catitem}>
+      {item.cat_image && item.cat_image.trim() !== '' ? (
+    <Image style={styles.Catimage} source={{uri: item.cat_image}} />
+  ) : (
+    <Image style={styles.Catimage} source={require('../assets/Arrival1.png')} />
+  )}
+      </View>
+      <View
         style={{
-          color: '#000000',
-          fontSize: 14,
-          width: 100,
-          textAlign: 'center',
-          fontWeight: 600,
+          marginTop: 1,
+          justifyContent:"center",
+          alignItems:"center",
+         
         }}>
-        {item?.cat_name}
-      </Text>
-    </View>
-  </TouchableOpacity>
-);
+        <Text
+          numberOfLines={2}
+          style={{
+            color: '#000000',
+            fontSize: 15,
+            width: 120,
+            fontWeight: '600',
+            fontFamily: "Gilroy-SemiBold",
+            lineHeight: 18,
+            textAlign:"center"
+          }}>
+          {item?.cat_name}
+        </Text>
+    
+      </View>
+    
+    </TouchableOpacity>
+  );
+};
 
 const Category = ({navigation}) => {
   const {userToken} = useContext(AuthContext);
@@ -150,17 +167,52 @@ const styles = StyleSheet.create({
   Catitem: {
     margin: 10,
     alignItems: 'center',
-    height: 170,
-    width: 170,
+    height: 190,
     borderRadius: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderColor: '#E5E5E5',
     borderWidth: 1,
     justifyContent: 'center',
   },
   Catimage: {
-    width: 120,
-    height: 140,
-    borderRadius: 50,
+    width: 125,
+    height: 145,
+    resizeMode: "cover"
   },
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const rendercategoryItem = ({item, navigation}) => (
+//   <TouchableOpacity
+//   onPress={() =>
+//     navigation.navigate('ProductDetails', {
+//       productId: item.cat_id,
+//     })}>
+//    <View style={styles.Catitem}>
+//   {item.cat_image && item.cat_image.trim() !== '' ? (
+//     <Image style={styles.Catimage} source={{uri: item.cat_image}} />
+//   ) : (
+//     <Image style={styles.Catimage} source={require('../assets/Arrival1.png')} />
+//   )}
+  
+// </View>

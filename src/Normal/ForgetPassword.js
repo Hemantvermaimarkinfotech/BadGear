@@ -47,10 +47,11 @@ const ForgotPassword = ({navigation}) => {
         <TouchableOpacity style={styles.submitButton}>
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={{ justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity  style={{ justifyContent: "center", alignItems: "center",flexDirection:"row" }}>
           <Text style={styles.signupText}>
-            Already have an account? <Text style={styles.signupLink}>Log In</Text>
-          </Text>
+            Already have an account?   </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}><Text style={styles.signupLink}>Log In</Text></TouchableOpacity>
+        
         </TouchableOpacity>
       
       </View>
@@ -115,12 +116,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: '#000000',
-    marginTop: 20,
-    fontFamily: "Gilroy-SemiBold"
+    marginVertical:20,
+    // fontWeight:"600",
+   
   },
   signupLink: {
     fontWeight: '600',
-    marginTop: 5,
     textDecorationLine: "underline",
     color: "#F10C18",
     fontFamily: "Gilroy-Bold"

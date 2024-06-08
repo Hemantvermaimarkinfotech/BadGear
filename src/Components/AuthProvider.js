@@ -4,6 +4,8 @@ const AuthContext = createContext();
 const AuthProvider = ({children}) => {
   const [userToken, setUserToken] = useState('');
   const [userData, setUserData] = useState(null);
+  const [cartLength, setCartLength] = useState(0);
+
   const getToken = async () => {
     try {
       const value = await AsyncStorage.getItem('userData');
@@ -11,9 +13,11 @@ const AuthProvider = ({children}) => {
         setUserToken(JSON.parse(value));
       }
     } catch (error) {
-      // Error retrieving data
+      // Error retrieving data
     }
   };
+
+
   useEffect(() => {
     getToken();
   }, []);
@@ -25,6 +29,8 @@ const AuthProvider = ({children}) => {
           setUserData,
           userToken,
           setUserToken,
+          cartLength, // Include cart length in the context
+          setCartLength, // Function to update cart length
         }}>
         {children}
       </AuthContext.Provider>

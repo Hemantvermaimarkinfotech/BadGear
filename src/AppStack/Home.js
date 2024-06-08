@@ -7,19 +7,17 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {AuthContext} from '../Components/AuthProvider';
-import SkeletonLoader from '../Components/SkeletonLoader';
 import {getNewArrivals, getCategory, getBanner} from '../Components/ApiService';
 import AntDesign from 'react-native-vector-icons/Feather';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
-import he from 'he'
+import he from 'he';
 
-
-const { width: screenWidth } = Dimensions.get('window');
+const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
 const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
@@ -40,13 +38,15 @@ const Home = ({navigation, item}) => {
   const [categories, setCategories] = useState([]);
   const {userToken} = useContext(AuthContext);
   const [Arrivals, setArrivals] = useState([]);
-  const MIN_CAT_NAME_LENGTH = 2; // Set your desired minimum length
+  const [username, setUsername] = useState('');
+  // const [userDataa, setUserData] = useState(null); // State for userData
+  // console.log("userDataa",userDataa)
 
   const ensureMinLength = (str, minLength) => {
     if (str.length >= minLength) return str;
     return str + ' '.repeat(minLength - str.length);
   };
- 
+
   const BestSellingDATA = [
     {
       id: '1',
@@ -94,33 +94,33 @@ const Home = ({navigation, item}) => {
 
         // Fetch banner
         const bannerResponse = await getBanner(userToken);
-        console.log('bannerResponse', bannerResponse);
+        // console.log('bannerResponse', bannerResponse);
         if (bannerResponse.status === 'success') {
           const {data} = bannerResponse; // Destructuring the data
           setBanner(data);
-          console.log('Banner data set:', data);
+          // console.log('Banner data set:', data);
         } else {
           console.log('Error fetching banner:', bannerResponse);
         }
-    
+
         // Fetch categories
         const categoriesResponse = await getCategory(userToken);
-        console.log('categoriesResponse', categoriesResponse);
+        // console.log('categoriesResponse', categoriesResponse);
         setCategories(categoriesResponse);
-    
+
         // Fetch new arrivals
         const newArrivalsResponse = await getNewArrivals(userToken);
-        console.log('newArrivalsResponse', newArrivalsResponse);
-        
+        // console.log('newArrivalsResponse', newArrivalsResponse);
+
         // Decode HTML entities in arrival data
         const decodedArrivalsResponse = newArrivalsResponse.map(arrival => ({
           ...arrival,
           title: arrival.title ? he.decode(arrival.title) : '', // Add a check for undefined title
           // Add more fields to decode if necessary
         }));
-    
+
         setArrivals(decodedArrivalsResponse);
-    
+
         setLoading(false);
       } catch (error) {
         console.log('Error fetching data:', error);
@@ -141,9 +141,9 @@ const Home = ({navigation, item}) => {
 
     return (
       <TouchableOpacity
-        // onPress={() =>
-        //   navigation.navigate('ProductDetails', {ProductId: item.cat_id})
-        // }
+        onPress={() =>
+          navigation.navigate('ProductDetails', {ProductId: item.cat_id})
+        }
         style={styles.categoryItem}
         key={item.cat_id}>
         <View style={styles.catitem}>
@@ -169,8 +169,10 @@ const Home = ({navigation, item}) => {
               style={{width: 100, marginTop: 5}}
               duration={1000} // Duration of the shimmer animation
             />
+          ) : item?.cat_name.length > 14 ? (
+            item?.cat_name.substring(0, 14) + '...'
           ) : (
-            ensureMinLength(item.cat_name, MIN_CAT_NAME_LENGTH)
+            item?.cat_name
           )}
         </Text>
       </TouchableOpacity>
@@ -178,11 +180,9 @@ const Home = ({navigation, item}) => {
   };
 
   const renderBestSellingItem = ({item, navigation}) => (
-    
-    <View  activeOpacity={0.92} 
-    style={[{ width: imageWidth,marginTop:10}]}>
+    <View activeOpacity={0.92} style={[{width: imageWidth, marginTop: 10}]}>
       <View style={styles.Arrivelitem}>
-      <Image source={item.image}   style={styles.Arrivalimage}/>
+        <Image source={item.image} style={styles.Arrivalimage} />
       </View>
 
       <View
@@ -192,8 +192,7 @@ const Home = ({navigation, item}) => {
           alignItems: 'center',
           paddingHorizontal: 15,
           marginTop: 10,
-          marginLeft:20
-          
+          marginLeft: 20,
         }}>
         <Text
           numberOfLines={2}
@@ -208,7 +207,8 @@ const Home = ({navigation, item}) => {
           key={`${item.id}_text`}>
           {item.text}
         </Text>
-        <TouchableOpacity onPress={()=>navigation.navigate("WishList")}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('WishList')}
           style={{
             height: 30,
             width: 30,
@@ -238,7 +238,6 @@ const Home = ({navigation, item}) => {
           {item.rate}
         </Text>
       </View>
-      
     </View>
   );
 
@@ -279,7 +278,7 @@ const Home = ({navigation, item}) => {
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.banner}>
           {loading ? (
             <ShimmerPlaceholder
@@ -385,15 +384,15 @@ const Home = ({navigation, item}) => {
               }
               renderItem={({item}) => {
                 return (
-                  <TouchableOpacity activeOpacity={0.92}    style={{width:imageWidth}}
+                  <TouchableOpacity
+                    activeOpacity={0.92}
+                    style={{width: imageWidth}}
                     onPress={() =>
                       navigation.navigate('ProductDetails', {
                         productId: item.product_id,
                       })
-                   
-                     
                     }>
-                    <View style={[styles.Arrivelitem,{marginTop:10}]}>
+                    <View style={[styles.Arrivelitem, {marginTop: 10}]}>
                       {loading ? (
                         <ShimmerPlaceholder
                           style={[styles.Arrivalimage, {height: 150}]}
@@ -428,7 +427,7 @@ const Home = ({navigation, item}) => {
                         />
                       ) : (
                         <Text
-                        numberOfLines={2}
+                          numberOfLines={2}
                           style={{
                             color: '#000000',
                             fontSize: 15,
@@ -441,7 +440,8 @@ const Home = ({navigation, item}) => {
                           {he.decode(item.product_name)}
                         </Text>
                       )}
-                      <TouchableOpacity onPress={()=>navigation.navigate('WishList')}
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('WishList')}
                         style={{
                           height: 30,
                           width: 30,
@@ -450,29 +450,44 @@ const Home = ({navigation, item}) => {
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}>
-                        <Image
-                          source={require('../assets/heart.png')}
-                          style={{tintColor: '#000000'}}
-                        />
+                        {loading ? ( // Check if loading
+                          <ShimmerPlaceholder
+                            duration={1000}
+                            style={{width: 30, height: 30, borderRadius: 15}}
+                          />
+                        ) : (
+                          <Image
+                            source={require('../assets/heart.png')}
+                            style={{tintColor: '#000000'}}
+                          />
+                        )}
                       </TouchableOpacity>
                     </View>
-                    <View style={{justifyContent: 'center', marginTop: 10}}>
-                      <Text
-                        style={{
-                          color: '#000000',
-                          fontSize: 17,
-                          fontWeight: '500',
-                          marginLeft: 18,
-                          fontFamily: 'Gilroy-SemiBold',
-                        }}>
-                        {item.price}
-                      </Text>
+                    <View style={{justifyContent: 'center', marginTop: 10,}}>
+                      {loading ? ( // Check if loading
+                        <ShimmerPlaceholder // Render ShimmerPlaceholder when loading
+                          duration={1000}
+                          style={{
+                            width: 60, // Adjust width according to your text size
+                            height: 16, // Adjust height according to your text size
+                            borderRadius: 2,
+                            marginLeft: 18, // Adjust borderRadius as needed
+                          }}
+                        />
+                      ) : (
+                        <Text
+                          style={{
+                            color: '#000000',
+                            fontSize: 17,
+                            fontWeight: '500',
+                            marginLeft: 18,
+                            fontFamily: 'Gilroy-SemiBold',
+                          }}>
+                             {item?.price}
+                        </Text>
+                      )}
                     </View>
                   </TouchableOpacity>
-
-
-
-                
                 );
               }}
               keyExtractor={(item, index) => index.toString()}
@@ -503,7 +518,7 @@ const Home = ({navigation, item}) => {
               </Text>
             </TouchableOpacity> */}
           </View>
-          <View >
+          <View style={{}}>
             <FlatList
               keyExtractor={(item, index) => `${item.id}_${index}`} // Unique key extractor
               showsHorizontalScrollIndicator={false}
@@ -536,7 +551,7 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
     tintColor: '#000',
-    marginHorizontal: 10,
+    marginHorizontal: 20,
     resizeMode: 'contain',
   },
   banner: {
@@ -579,7 +594,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   Arrivelitem: {
-    marginLeft:10,
+    marginLeft: 10,
     alignItems: 'center',
     height: 170,
     borderRadius: 20,
@@ -587,11 +602,12 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     borderWidth: 1,
     justifyContent: 'center',
+    marginRight: 10,
   },
   Arrivalimage: {
     width: 125,
     height: 145,
-    borderRadius: 50,
+    borderRadius: 15,
   },
   gradientContainer: {
     width: '100%',

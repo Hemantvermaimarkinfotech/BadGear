@@ -8,10 +8,11 @@ const dynamicFontSize = screenHeight * 0.029;
 
 const Welcome = ({ navigation }) => {
   const [isPaused, setIsPaused] = useState(false);
+  const [showVideo, setShowVideo] = useState(false); // State variable to manage video visibility
   const videoRef = useRef(null);
 
   const playVideo = () => {
-    setIsPaused(!isPaused); // Toggle between playing and pausing the video
+    setShowVideo(true); // Show the video UI when the user presses the play button
   };
 
   const onEnd = () => {
@@ -30,7 +31,7 @@ const Welcome = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {isPaused ? (
+      {!showVideo ? ( // Render UI without video if showVideo is false
         <ImageBackground source={require('../assets/tracter3x.png')} style={styles.backgroundImage}>
           <View style={styles.overlay}>
             <View style={styles.header}>
@@ -64,12 +65,16 @@ const Welcome = ({ navigation }) => {
             source={require('../assets/BadGear.mp4')}
             ref={videoRef}
             style={styles.fullScreenVideo}
-            resizeMode="cover"
+            resizeMode="stretch"
             paused={isPaused}
             onEnd={onEnd}
             onError={(error) => console.error('Video Error: ', error)} // Add error handling
-            controls={false} // Enables video controls
+            controls={false} // Disables video controls
           />
+          {/* Skip button */}
+          <TouchableOpacity onPress={handleSkip} style={[styles.skipButton,{justifyContent:"center",alignItems:"center"}]}>
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
           {/* End of Video component */}
         </TouchableOpacity>
       )}
@@ -114,6 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative', // Add relative positioning
   },
   playButton: {
     position: 'absolute',
@@ -131,11 +137,20 @@ const styles = StyleSheet.create({
     bottom: 30,
     alignSelf: 'center',
   },
+  skipButton: {
+    position: 'absolute',
+    bottom: screenHeight * 0.03, // Adjust the vertical position according to screen height
+    right: screenWidth / 2.2, // Center horizontally on the screen
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: screenHeight * 0.01, // Adjust padding according to screen height
+    paddingHorizontal: screenWidth * 0.04, // Adjust padding according to screen width
+    borderRadius: screenWidth * 0.03, // Adjust border radius according to screen width
+ 
+  },
   skipText: {
     color: '#fff',
     fontSize: 18,
     textAlign: 'center',
     fontWeight: '700',
-    textDecorationLine: 'underline',
   },
 });

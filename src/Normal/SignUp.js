@@ -34,7 +34,7 @@ const SignUp = ({ navigation }) => {
   const handleSignUp = async () => {
     // Validate input fields
     if (!name.trim() || !email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('ALert', 'Please fill in all fields');
       return;
     }
 
@@ -138,11 +138,15 @@ const SignUp = ({ navigation }) => {
             <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={{ justifyContent: "center", alignItems: "center" }}>
+        <View style={{ justifyContent: "center", alignItems: "center",flexDirection:"row" }}>
           <Text style={styles.signupText}>
-            Already have an account? <Text style={styles.signupLink}>Log In</Text>
-          </Text>
-        </TouchableOpacity>
+            Already have an account?  </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')} >
+            <Text style={styles.signupLink}>Log In</Text>
+            </TouchableOpacity>
+         
+        </View>
+        
       </View>
     </SafeAreaView>
   );
@@ -194,6 +198,7 @@ const styles = StyleSheet.create({
   eyeIcon: {
     height: 24,
     width: 24,
+    tintColor:"#DEDEDE"
   },
   forgotPasswordText: {
     fontSize: 15,
@@ -223,12 +228,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: '#000000',
-    marginTop: 20,
-    fontFamily: "Gilroy-SemiBold"
+    marginVertical:20,
+    // fontWeight:"600",
+    
   },
   signupLink: {
     fontWeight: '600',
-    marginTop: 5,
     textDecorationLine: "underline",
     color: "#F10C18",
     fontFamily: "Gilroy-Bold"

@@ -8,13 +8,21 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Button,
+  Dimensions
 } from 'react-native';
 import CustomDropdownPicker from '../Components/CustomDropDownPicker';
 import TitleHeader from '../Components/TitleHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { AddCart } from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
+import Modal from "react-native-modal"
+
+const {width: screenWidth} = Dimensions.get('window');
+const imageWidth = screenWidth / 2.2;
+const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
+
 
 const RelatedProductDATA = [
   {
@@ -56,58 +64,67 @@ const RelatedProductDATA = [
   // Related Product data
 ];
 
-const renderRelatedProductItem = ({item, navigation}) => (
-  <TouchableOpacity>
-    <View style={styles.RelatedProductitem}>
-      <Image style={styles.RelatedProductimage} source={item.image} />
-    </View>
-    <View
+const renderRelatedProductItem = ({item, navigation,fetchProductDetails}) => (
+  <TouchableOpacity activeOpacity={0.92} style={[{width: imageWidth, marginTop: 10}]} 
+  >
+  <View style={styles.Arrivelitem}>
+    <Image source={{uri:item?.featured_img}} style={styles.Arrivalimage} />
+  </View>
+
+  <View
+    style={{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 15,
+      marginTop: 10,
+      marginLeft: 20,
+    }}>
+    <Text
+      numberOfLines={2}
       style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        color: '#000000',
+        fontSize: 15,
+        width: 100,
+        textAlign: 'center',
+        fontWeight: 600,
+        fontFamily: 'Gilroy-SemiBold',
+      }}
+      key={`${item.id}_text`}>
+      {item?.title}
+    </Text>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('WishList')}
+      style={{
+        height: 30,
+        width: 30,
+        backgroundColor: '#fff',
+        borderRadius: 30,
         alignItems: 'center',
-        paddingHorizontal: 15,
-        marginTop: 1,
-      }}>
-      <Text
-        numberOfLines={2}
-        style={{
-          color: '#000000',
-          fontSize: 15,
-          width: 100,
-          textAlign: 'center',
-          fontWeight: '600',
-          fontFamily:"Gilroy-SemiBold"
-        }}>
-        {item.text}
-      </Text>
-      <View
-        style={{
-          height: 30,
-          width: 30,
-          backgroundColor: '#fff',
-          borderRadius: 30,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Image
-          source={require('../assets/heart.png')}
-          style={{tintColor: '#000000'}}
-        />
-      </View>
-    </View>
-    <View style={{justifyContent: 'center', marginTop: 10}}>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 18,
-          marginLeft: 16,
-          fontFamily:"Gilroy-SemiBold"
-        }}>
-        {item.rate}
-      </Text>
-    </View>
-  </TouchableOpacity>
+        justifyContent: 'center',
+      }}
+      key={`${item.id}_heart`}>
+      <Image
+        source={require('../assets/heart.png')}
+        style={{tintColor: '#000000'}}
+      />
+    </TouchableOpacity>
+  </View>
+
+  <View style={{justifyContent: 'center', marginTop: 10}}>
+    <Text
+      style={{
+        color: '#000000',
+        fontSize: 17,
+        fontWeight: 500,
+        marginLeft: 18,
+        fontFamily: 'Gilroy-SemiBold',
+      }}
+      key={`${item.id}_rate`}>
+      $ {item?.price}
+    </Text>
+  </View>
+</TouchableOpacity>
 );
 
 const ProductDetailsPage = ({route, navigation}) => {
@@ -118,6 +135,11 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken} = useContext(AuthContext);
   const [loading, setLoading] = useState(true); 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  // console.log("relatedProductsrelatedProducts",relatedProducts)
+
 
   console.log('size', selectedSize);
   console.log('quantity', selectedQuantity);
@@ -129,22 +151,38 @@ const ProductDetailsPage = ({route, navigation}) => {
   // Inside your fetchProductDetails function
   const fetchProductDetails = async productId => {
     try {
+      // Fetch main product details
       const response = await fetch(
         `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
       );
+      
       if (!response.ok) {
         throw new Error('Failed to fetch product details');
       }
+      
       const data = await response.json();
-      // console.log('Product Details:', data);
+      console.log('Product Details:', data);
+      
+      // Set main product details
       setProductDetails(data.data[0]);
+      
+      // If related products are included in the main product details, you can extract them directly
+      const relatedProducts = data.data[0].related_products;
+      console.log('Related Products:', relatedProducts)
+      setRelatedProducts(relatedProducts);
+      
     } catch (error) {
       console.error('Error fetching product details:', error);
       setProductDetails(null);
-    }finally {
+    } finally {
       setLoading(false); // Set loading to false after fetching is done
     }
   };
+  
+
+  
+  
+
   useEffect(() => {
     // Fetch product details when the component mounts
     fetchProductDetails(productId);
@@ -160,6 +198,9 @@ const ProductDetailsPage = ({route, navigation}) => {
         productDetails?.price,
       );
       console.log('Product added to cart:', response);
+      setIsAddedToCart(true);
+      setModalVisible(true);
+      // navigation.navigate("Cart")
     } catch (error) {
       console.error('Error adding product to cart:', error);
     }
@@ -171,7 +212,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* This is headerpart */}
-      <TitleHeader title={'ProductDetails'} />
+      <TitleHeader title={productDetails?.product_name} />
       {/* header part end */}
       {loading ? (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -356,7 +397,8 @@ const ProductDetailsPage = ({route, navigation}) => {
             fontSize: 18,
             fontFamily: 'Gilroy-SemiBold',
           }}>
-          Add To Cart
+         {/* {isAddedToCart ? 'View Cart' : 'Add To Cart'} */}
+         Add To Cart
         </Text>
       </TouchableOpacity>
     </TouchableOpacity>
@@ -369,6 +411,7 @@ const ProductDetailsPage = ({route, navigation}) => {
           color: '#000000',
           fontSize: 20,
           fontFamily: 'Gilroy-SemiBold',
+          marginTop:20
         }}>
         Product Description
       </Text>
@@ -409,8 +452,10 @@ const ProductDetailsPage = ({route, navigation}) => {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={RelatedProductDATA}
-          renderItem={renderRelatedProductItem}
+          data={relatedProducts}
+          renderItem={({ item }) =>
+          renderRelatedProductItem({ item, navigation: navigation })
+        }
           keyExtractor={item => item.id}
         />
       </View>
@@ -466,7 +511,8 @@ const ProductDetailsPage = ({route, navigation}) => {
                 alignSelf: 'center',
                 width: '99%',
                 flexDirection: 'row',
-                justifyContent:"space-between"
+                justifyContent:"space-between",
+              
               }}>
               <View
                 style={{
@@ -490,8 +536,8 @@ const ProductDetailsPage = ({route, navigation}) => {
                 />
               </View>
 
-              <View style={{width: 250, height: 50}}>
-                <Text style={{fontSize: 15, fontWeight: 500, marginTop: 5,color:"#000000",fontFamily:"Gilroy-Medium"}}>
+              <View style={{width: 250, height: 30,marginLeft:12}}>
+                <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5,color:"#000000",fontFamily:"Gilroy-Medium"}}>
                   Cozy Comfort and Style Combined!
                 </Text>
                 <View
@@ -528,6 +574,23 @@ const ProductDetailsPage = ({route, navigation}) => {
   </ScrollView>
   )}
     
+
+    {/* Modal for showing item added to cart */}
+    <Modal isVisible={modalVisible}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
+              <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10,width:"80%",alignSelf:"center" }}>
+            
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between',}}>
+                 <TouchableOpacity onPress={() => setModalVisible(false)}>
+                 <Text style={{color:"#000000",fontSize:15,fontWeight:500}}>Item added to cart</Text>
+                 </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                    <Text style={{color:"#F10C18",fontSize:15,fontWeight:500}}>GO TO CART</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
     </SafeAreaView>
   );
 };
@@ -598,12 +661,13 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
     borderRadius: 20,
     borderColor: '#E5E5E5',
     borderWidth: 1,
+   
   },
   RelatedProductlheader: {
     flexDirection: 'row',
@@ -626,7 +690,7 @@ const styles = StyleSheet.create({
   RelatedProductimage: {
     width: 120,
     height: 140,
-    borderRadius: 50,
+    borderRadius: 15,
   },
   Review: {
     height: 350,
@@ -691,4 +755,21 @@ const styles = StyleSheet.create({
   selectedSizetext: {
     color: '#FFFFFF', // Text color for selected size
   },
+  Arrivelitem: {
+    marginLeft: 10,
+    alignItems: 'center',
+    height: 170,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+    borderColor: '#E5E5E5',
+    borderWidth: 1,
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  Arrivalimage: {
+    width: 125,
+    height: 145,
+    borderRadius: 15,
+  },
+  
 });

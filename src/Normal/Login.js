@@ -23,6 +23,7 @@ const Login = ({ navigation }) => {
   const { setUserToken } = useContext(AuthContext);
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const {userToken}=useContext(AuthContext)
 
   const handleEmailChange = text => {
     setEmail(text);
@@ -32,7 +33,7 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Alert', 'Please fill in all fields');
       return;
     }
     setLoading(true);
@@ -63,7 +64,7 @@ const Login = ({ navigation }) => {
         await AsyncStorage.setItem('userData', JSON.stringify(responseData));
   
         setUserToken(responseData.token);
-        Alert.alert('Success', responseData.success_message || 'You are successfully logged in!');
+        
       } else {
         Alert.alert('Login Failed', responseData.errormsg || 'Incorrect email or password');
       }
@@ -81,8 +82,14 @@ const Login = ({ navigation }) => {
     }
   };
   
-  
-  
+  // const handleSkip = () => {
+  //   {userToken ? <AppScreenStack/> : <AppNavigator />}
+  // };
+  // const handleSkip = () => {
+  //   if (!userToken) {
+  //     <AppScreenStack/> // Navigate to the desired screen
+  //   }
+  // };
   return (
     <SafeAreaView style={styles.container}>
      <View style={{marginTop:80,width:"100%",paddingHorizontal:20,alignSelf:"center",}}>
@@ -137,13 +144,18 @@ const Login = ({ navigation }) => {
           <Text style={styles.buttonText}>Log in</Text>
         </TouchableOpacity>
       )}
-      <TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={{justifyContent:"center",alignItems:"center"}}>
-        <Text style={styles.signupText}>
-          Don't have an account? <Text style={styles.signupLink}>Sign up</Text>
-        </Text>
-      </TouchableOpacity>
+   <View  style={{ justifyContent: "center", alignItems: "center" ,flexDirection:"row"}}>
+  <Text style={styles.signupText}>
+    Don't have an account? </Text>
+    <TouchableOpacity onPress={() => navigation.navigate('SignUp')}><Text style={[styles.signupLink,{  fontFamily:"Gilroy-Bold",}]}>Sign up</Text></TouchableOpacity>
+  
+</View>
+
+
      </View>
+      <TouchableOpacity >
       <Text style={styles.skipText}>Skip</Text>
+      </TouchableOpacity>
      
     </SafeAreaView>
   );
@@ -196,6 +208,7 @@ const styles = StyleSheet.create({
   eyeIcon: {
     height: 24,
     width: 24,
+    tintColor:"#DEDEDE"
   },
   forgotPasswordText: {
     fontSize: 16,
@@ -229,9 +242,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: '#000000',
-    marginVertical:30,
+    marginVertical:20,
     // fontWeight:"600",
-    fontFamily:"Gilroy-SemiBold"
+   
 
   },
   inputContainer:{
@@ -241,9 +254,9 @@ const styles = StyleSheet.create({
   },
   signupLink: {
     fontWeight: '600',
-    marginTop:5,
     fontSize:16,
-    fontFamily:"Gilroy-Bold"
+    color:"#000000",
+   
   },
   skipText: {
     textDecorationLine:"underline",
