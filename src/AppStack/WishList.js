@@ -80,32 +80,37 @@ const WishList = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={goBack}>
-          <Image
-            source={require('../assets/next.png')}
-            style={styles.headerIcon}
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>WishList</Text>
+    <View style={styles.header}>
+      <TouchableOpacity onPress={goBack}>
+        <Image
+          source={require('../assets/next.png')}
+          style={styles.headerIcon}
+        />
+      </TouchableOpacity>
+      <Text style={styles.headerText}>WishList</Text>
+    </View>
+  
+    {loading ? (
+      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+        <ActivityIndicator size={"large"} color={"#F10C18"}/>
       </View>
-
-
-      {loading ? (
-  <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-    <ActivityIndicator size={"large"} color={"#F10C18"}/>
-  </View>
-) : (
-  <FlatList
-    numColumns={1}
-    data={wishlist.data}
-    renderItem={({ item }) => renderWishList({ item, navigation })}
-    keyExtractor={item => item.product_id}
-  />
-)}
-
-
-    </SafeAreaView>
+    ) : (
+      wishlist.data && wishlist.data.length > 0 ? (
+        <FlatList
+          numColumns={1}
+          data={wishlist.data}
+          renderItem={({ item }) => renderWishList({ item, navigation })}
+          keyExtractor={item => item.product_id}
+        />
+      ) : (
+        <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+          <Text style={{color:"#000000",fontSize:20,fontFamily:"Gilroy-Medium"}}>No wishlist items available</Text>
+        </View>
+      )
+    )}
+  </SafeAreaView>
+  
+  
   );
 };
 

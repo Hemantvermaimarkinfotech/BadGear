@@ -126,7 +126,7 @@ const Category = ({navigation}) => {
       <ActivityIndicator color="#F10C18" size="large" />
     </View>
   ) : (
-    <View style={{ alignSelf: 'center' }}>
+    <View style={{ alignSelf: 'center' ,marginBottom:100}}>
       <FlatList
         showsVerticalScrollIndicator={false}
         numColumns={2}

@@ -8,10 +8,16 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {AuthContext} from '../Components/AuthProvider';
-import {getNewArrivals, getCategory, getBanner} from '../Components/ApiService';
+import {
+  getNewArrivals,
+  getCategory,
+  getBanner,
+  AddWishlist,
+} from '../Components/ApiService';
 import AntDesign from 'react-native-vector-icons/Feather';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
@@ -39,6 +45,7 @@ const Home = ({navigation, item}) => {
   const {userToken} = useContext(AuthContext);
   const [Arrivals, setArrivals] = useState([]);
   const [username, setUsername] = useState('');
+  const [wishlist, setWishlist] = useState([]); // State for wishlist
   // const [userDataa, setUserData] = useState(null); // State for userData
   // console.log("userDataa",userDataa)
 
@@ -131,6 +138,49 @@ const Home = ({navigation, item}) => {
     fetchData(); // Call the combined fetchData function
   }, [userToken]);
 
+  // const addToWishlist = async productId => {
+  //   console.log("productiddddd",productId)
+  //   try {
+  //     const response = await AddWishlist(productId);
+  //     // Alert.alert('Success', 'Product added to wishlist!');
+  //     setWishlist([...wishlist, productId]); // Update wishlist state
+  //     console.log('addtoWishlist', response);
+  //   } catch (error) {
+  //     console.error('Error adding product to wishlist:', error);
+  //     // Alert.alert('Error', 'Failed to add product to wishlist. Please try again.');
+  //   }
+  // };
+
+  const isItemInWishlist = productId => {
+    return wishlist.includes(productId);
+  };
+
+  const addToWishlist = async productId => {
+    console.log('productId', productId);
+    try {
+      // Call AddWishlist function to add product to wishlist
+      const response = await AddWishlist(productId);
+      // If the request is successful
+      if (response.status === 'success') {
+        console.log('Product added to wishlist:', response.successmsg);
+        setWishlist([...wishlist, productId]);
+        // Return true to indicate success
+        return true;
+      } else {
+        console.error(
+          'Failed to add product to wishlist:',
+          response.error_code,
+        );
+        // Return false to indicate failure
+        return false;
+      }
+    } catch (error) {
+      console.error('Error adding product to wishlist:', error);
+      // Return false to indicate failure
+      return false;
+    }
+  };
+
   const renderCategoryItem = ({item}) => {
     const catDataItem = CatDATA.find(
       dataItem => dataItem.text === item.cat_name,
@@ -208,7 +258,10 @@ const Home = ({navigation, item}) => {
           {item.text}
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('WishList')}
+          onPress={() => {
+            console.log('Item:', item); // Console log the item
+            addToWishlist(item.id);
+          }}
           style={{
             height: 30,
             width: 30,
@@ -261,7 +314,11 @@ const Home = ({navigation, item}) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <TouchableOpacity onPress={() => navigation.navigate('WishList')}>
+          <TouchableOpacity
+            onPress={() => {
+              console.log('Item:', item); // Console log the item
+              addToWishlist(item.id);
+            }}>
             <Image
               source={require('../assets/heart2.png')}
               style={styles.headericon}
@@ -441,7 +498,27 @@ const Home = ({navigation, item}) => {
                         </Text>
                       )}
                       <TouchableOpacity
-                        onPress={() => navigation.navigate('WishList')}
+                        onPress={async () => {
+                          console.log('Item:', item); // Console log the item
+                          const addedToWishlist = await addToWishlist(
+                            item.product_id,
+                          );
+                          if (addedToWishlist) {
+                            // If added to wishlist successfully, show like icon
+                            console.log('Added to wishlist');
+                            // Update the state to reflect the change in the wishlist status
+                            setWishlist([...wishlist, item.product_id]);
+                          } else {
+                            // If failed to add to wishlist or removed from wishlist, show heart icon
+                            console.log('Removed from wishlist');
+                            // Update the state to reflect the change in the wishlist status
+                            setWishlist(
+                              wishlist.filter(
+                                productId => productId !== item.product_id,
+                              ),
+                            );
+                          }
+                        }}
                         style={{
                           height: 30,
                           width: 30,
@@ -449,21 +526,21 @@ const Home = ({navigation, item}) => {
                           borderRadius: 30,
                           alignItems: 'center',
                           justifyContent: 'center',
-                        }}>
-                        {loading ? ( // Check if loading
-                          <ShimmerPlaceholder
-                            duration={1000}
-                            style={{width: 30, height: 30, borderRadius: 15}}
-                          />
-                        ) : (
+                        }}
+                        key={`${item.id}_heart`}>
+                        
+                     
                           <Image
                             source={require('../assets/heart.png')}
-                            style={{tintColor: '#000000'}}
+                            style={{
+                              tintColor: '#000000',
+                              
+                            }}
                           />
-                        )}
+                      
                       </TouchableOpacity>
                     </View>
-                    <View style={{justifyContent: 'center', marginTop: 10,}}>
+                    <View style={{justifyContent: 'center', marginTop: 10}}>
                       {loading ? ( // Check if loading
                         <ShimmerPlaceholder // Render ShimmerPlaceholder when loading
                           duration={1000}
@@ -483,7 +560,7 @@ const Home = ({navigation, item}) => {
                             marginLeft: 18,
                             fontFamily: 'Gilroy-SemiBold',
                           }}>
-                             {item?.price}
+                          {item?.price}
                         </Text>
                       )}
                     </View>

@@ -156,30 +156,53 @@ export const AddCart = async (productId, size, quantity, price) => {
   }
 };
 
-export const AddWishlist = async (productId, size, quantity, price) => {
+export const AddWishlist = async (productId) => {
+  console.log("product_id", productId);
   try {
-    const formData = new FormData();
-    formData.append('product_id', productId);
-    formData.append('size', size);
-    formData.append('quantity', quantity);
-    formData.append('price', price);
-
     const response = await axios.post(
-      `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
-      formData,
+      `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
-      }
+      },
     );
-    console.log("add to cart", response.data);
+    console.log("add to Wishlistttttt", response.data);
     return response.data; // Return the data
   } catch (error) {
-    console.error('Error adding product to cart:', error);
+    console.error('Error adding product to Wishlist:', error);
     throw error;
   }
 };
+
+
+// export const deleteCart = async (itemId) => {
+//   try {
+//     const response = await axios.post(
+//       `https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems/${itemId}`,
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     );
+//     console.log('Item deleted successfully');
+//   } catch (error) {
+//     console.error('Error deleting item from wishlist:', error);
+//     throw error;
+//   }
+// };
+
+// // Example usage of the deleteWishlistItem function
+// (async () => {
+//   try {
+//     const itemIdToDelete = '123'; // Replace '123' with the actual ID of the item to delete
+//     await deleteWishlistItem(itemIdToDelete);
+//   } catch (error) {
+//     // Handle errors
+//     console.error('Error:', error);
+//   }
+// })();
 
 
 

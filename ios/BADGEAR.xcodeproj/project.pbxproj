@@ -25,7 +25,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		86432D9EE2BF4D11BA94FDC2 /* Gilroy-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D8B72621FCC14A95B74E7D48 /* Gilroy-Heavy.ttf */; };
 		A25957BB844D4304AC837662 /* ARIALLGTITL.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 02B9A5DC071F447A9D8DC0F4 /* ARIALLGTITL.TTF */; };
-		A85128112C0600C1008BCC2E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = A85128102C0600C1008BCC2E /* Fonts */; };
+		A892A6492C16BD4B006050F7 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = A892A6482C16BD4A006050F7 /* Fonts */; };
 		AA321441D7CF46C184AC7540 /* ARIALBD.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 1C01008C1CB049E281E8813D /* ARIALBD.TTF */; };
 		AAAD3231ADC691AA81CA2228 /* libPods-BADGEAR-BADGEARTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F14D97BC20423D6F0D726C58 /* libPods-BADGEAR-BADGEARTests.a */; };
 		AC69EC7F551B4460A9E0060B /* ArialMdmItl.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D89F6B240D894BBC8F193C11 /* ArialMdmItl.ttf */; };
@@ -88,7 +88,7 @@
 		8EF55E95413647EDA5D0E383 /* Gilroy-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Regular.ttf"; path = "../src/assets/fonts/Gilroy/Gilroy-Regular.ttf"; sourceTree = "<group>"; };
 		96F407CE55F646DE82D300B4 /* ARIALBI 1.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ARIALBI 1.TTF"; path = "../src/assets/fonts/Gilroy/ARIALBI 1.TTF"; sourceTree = "<group>"; };
 		A78729414217348081A5E591 /* Pods-BADGEAR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR/Pods-BADGEAR.debug.xcconfig"; sourceTree = "<group>"; };
-		A85128102C0600C1008BCC2E /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
+		A892A6482C16BD4A006050F7 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
 		AA23A09263EF49D3A74393E6 /* ARIALBLACKITALIC.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALBLACKITALIC.TTF; path = ../src/assets/fonts/Gilroy/ARIALBLACKITALIC.TTF; sourceTree = "<group>"; };
 		C33FFA7D1C1F73F14266D3FE /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR-BADGEARTests.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D4A9E7D67A4245A2B4845547 /* ARIALLGT.TTF */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ARIALLGT.TTF; path = ../src/assets/fonts/Gilroy/ARIALLGT.TTF; sourceTree = "<group>"; };
@@ -209,7 +209,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				A85128102C0600C1008BCC2E /* Fonts */,
+				A892A6482C16BD4A006050F7 /* Fonts */,
 				13B07FAE1A68108700A75B9A /* BADGEAR */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* BADGEARTests */,
@@ -367,7 +367,7 @@
 				76396E36C1A242FAAB9191B5 /* ARIALNBI.TTF in Resources */,
 				07A7E7C7BC984754AA9915E7 /* ARIALNI.TTF in Resources */,
 				53D3A39435CA49B8B482318E /* ARIBLK.TTF in Resources */,
-				A85128112C0600C1008BCC2E /* Fonts in Resources */,
+				A892A6492C16BD4B006050F7 /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -728,7 +728,10 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -797,7 +800,10 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

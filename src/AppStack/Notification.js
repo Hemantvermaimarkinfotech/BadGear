@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, ScrollView ,FlatList} from 'react-native
 import TitleHeader from '../Components/TitleHeader';
 import discountimage from "../assets/discount.png"
 import AntDesign from "react-native-vector-icons/AntDesign"
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Notification = () => {
   const data = [
@@ -34,7 +35,7 @@ const Notification = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TitleHeader title={"Notification"} />
       <View style={styles.header}>
         <View style={styles.headertext}>
@@ -60,7 +61,7 @@ const Notification = () => {
           keyExtractor={(item, index) => `key-${index}`}
         />
       </View> */}
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 

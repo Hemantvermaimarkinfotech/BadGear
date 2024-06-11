@@ -26,7 +26,7 @@ const Checkout = ({navigation}) => {
 
             <ScrollView style={{ marginHorizontal: 10 }}>
                 <View style={styles.mainView}>
-                    <TouchableOpacity style={styles.row}>
+                    <TouchableOpacity style={styles.row}  onPress={()=>navigation.navigate("DeliveryAddress")}>
 
                         <View style={{ flexDirection: "row", justifyContent: "center" }}>
 
@@ -98,7 +98,7 @@ const Checkout = ({navigation}) => {
             </ScrollView>
             <View style={{ height: 1, width: "100%", marginTop: 10, backgroundColor: "#707070", opacity: 0.3, position: "absolute", bottom: 90 }} />
             <View style={{ height: 80, justifyContent: "center", position: "absolute", bottom: 10, width: "100%" }}>
-                <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("DeliveryAddress")}>
+                <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText}>Submit Order</Text>
                 </TouchableOpacity>
             </View>

@@ -481,16 +481,19 @@ const ProductDetailsPage = ({route, navigation}) => {
           </Text>
         </TouchableOpacity>
       </View>
+
       <Image
         source={require('../assets/Reviewstar.png')}
         style={{marginLeft: 20, marginTop: 10}}
       />
+
       <View
         style={{
           marginTop: 10,
           borderRadius: 10,
           alignSelf: 'center',
           width: '90%',
+          // borderWidth:1
         }}>
         <View
           style={{
@@ -506,18 +509,17 @@ const ProductDetailsPage = ({route, navigation}) => {
             <View
               style={{
                 marginTop: 10,
-                height: 200,
                 borderRadius: 10,
-                alignSelf: 'center',
-                width: '99%',
+                width: '100%',
                 flexDirection: 'row',
                 justifyContent:"space-between",
+             
               
               }}>
               <View
                 style={{
                   height: 28,
-                  width: 60,
+                  width: "20%",
                   backgroundColor: '#FFFFFF',
                   borderRadius: 25,
                   borderColor: '#707070',
@@ -536,7 +538,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                 />
               </View>
 
-              <View style={{width: 250, height: 30,marginLeft:12}}>
+              <View style={{width: "80%",marginLeft:10}}>
                 <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5,color:"#000000",fontFamily:"Gilroy-Medium"}}>
                   Cozy Comfort and Style Combined!
                 </Text>
@@ -545,8 +547,10 @@ const ProductDetailsPage = ({route, navigation}) => {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     marginTop: 10,
-                    width:250,
-                    paddingRight:10
+                    width:"100%",
+                    paddingRight:10,
+                 
+                   
                   }}>
                   <Text
                     style={{
@@ -561,6 +565,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                       color: '#4B4B4B',
                       fontSize: 13,
                       fontWeight: 300,
+                     
                     }}>
                     5 days ago
                   </Text>

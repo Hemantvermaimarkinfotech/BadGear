@@ -84,7 +84,7 @@ const DeliveryAddress = ({ navigation }) => {
       </View>
       
       <View style={styles.bottomButtonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("DeliveryAddress")}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Checkout")}>
           <Text style={styles.buttonText}>Save Address</Text>
         </TouchableOpacity>
       </View>

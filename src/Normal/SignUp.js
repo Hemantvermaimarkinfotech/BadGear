@@ -23,7 +23,8 @@ const SignUp = ({ navigation }) => {
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { setUserToken } = useContext(AuthContext);
+  const { setUserToken ,setUserId} = useContext(AuthContext);
+  console.log("signup_userid",setUserId)
 
   const handleEmailChange = text => {
     setEmail(text);
@@ -68,6 +69,7 @@ const SignUp = ({ navigation }) => {
 
       setLoading(false);
       setUserToken(response.data.token);
+      setUserId(response.data?.user_id)
     } catch (error) {
       setLoading(false);
       console.error('Error:', error);

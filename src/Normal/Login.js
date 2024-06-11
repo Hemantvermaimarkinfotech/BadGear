@@ -17,13 +17,14 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('nitishh123@gmail.com');
+  const [password, setPassword] = useState('1234567');
   const [loading, setLoading] = useState(false);
-  const { setUserToken } = useContext(AuthContext);
+  const { setUserToken ,setUserId} = useContext(AuthContext);
+  console.log("setuserID",setUserId)
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const {userToken}=useContext(AuthContext)
+  
 
   const handleEmailChange = text => {
     setEmail(text);
@@ -64,6 +65,7 @@ const Login = ({ navigation }) => {
         await AsyncStorage.setItem('userData', JSON.stringify(responseData));
   
         setUserToken(responseData.token);
+        setUserId(responseData?.user_data?.data?.ID)
         
       } else {
         Alert.alert('Login Failed', responseData.errormsg || 'Incorrect email or password');

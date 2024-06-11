@@ -144,31 +144,119 @@ const Cart = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={goBack}>
-          <Image
-            source={require('../assets/next.png')}
-            style={styles.headerIcon}
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Cart</Text>
-      </View>
+//     <SafeAreaView style={styles.container}>
+//       <View style={styles.header}>
+//         <TouchableOpacity onPress={goBack}>
+//           <Image
+//             source={require('../assets/next.png')}
+//             style={styles.headerIcon}
+//           />
+//         </TouchableOpacity>
+//         <Text style={styles.headerText}>Cart</Text>
+//       </View>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#F10C18" />
-        </View>
-      ) : (
+//       {loading ? (
+//         <View style={styles.loadingContainer}>
+//           <ActivityIndicator size="large" color="#F10C18" />
+//         </View>
+//       ) : (
+//         <>
+//           <View style={styles.totalItemsContainer}>
+//             {/* Updated to dynamically show the number of items */}
+//             <Text style={styles.totalItemsText}>{cartItems.length} Items Selected</Text>
+//             {/* Updated to dynamically show the total amount */}
+//             <Text style={styles.totalAmountText}>${getTotalAmount()}</Text>
+//           </View>
+
+//           <View style={{ marginBottom:200 }}>
+//             <FlatList
+//               data={cartItems}
+//               renderItem={({ item }) => renderCartItem({ item })}
+//               keyExtractor={item => item.product_id.toString()}
+//               nestedScrollEnabled={true}
+//             />
+
+//             <TouchableOpacity style={styles.placeOrderButton} onPress={()=>navigation.navigate("Checkout")}>
+//               <Text style={styles.placeOrderText}>Place Order</Text>
+//             </TouchableOpacity>
+
+            
+//           </View>
+//         </>
+//       )}
+
+// <View style={{  justifyContent: 'center', alignItems: 'center', }}>
+//   <Modal
+//     animationType="slide"
+//     transparent={true}
+//     visible={modalVisible}
+//     onRequestClose={() => {
+//       setModalVisible(!modalVisible);
+//     }}
+//   >
+//     <View style={{ flex:1,width: '100%', justifyContent: 'center', alignItems: 'center',}}>
+//       <View style={{backgroundColor: '#FFFFFF', width: '100%', position: 'absolute',bottom: 0,height:180,marginHorizontal:15 }}>
+//         <View style={{ alignItems: 'center',width:"95%",flexDirection:"row",marginTop:20,alignSelf:"center"}}>
+//         <View style={[styles.imageContainer,{height:80,width:80,borderRadius:15}]}>
+//         {selectedCartItem?.product_img ? ( // Check if there is a selected item
+//                     <Image
+//                       source={{ uri: selectedCartItem.product_img }} // Display selected item's image
+//                       style={[styles.image, { height: 60, width: 60 }]}
+//                     />
+//                   ) : (
+//                     <Text style={{ color: "#000000",fontSize:12 }}>No Image Available</Text>
+//                   )}
+//         </View>
+//         <View style={{marginLeft:15,width:"60%"}}>
+//           <Text style={{color:"#000000",fontSize:18,fontFamily:"Gilroy-Medium"}}>Move from the cart</Text>
+//           <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy-Regular"}}>Are you sure you want to move this item from cart?</Text>
+//         </View>
+//         </View>
+
+//         <View style={{height:1,width:"95%",backgroundColor:"#00000010",marginTop:15}}></View>
+//         <View style={{marginTop:15,flexDirection:"row",justifyContent:"space-between",width:"95%",alignSelf:"center",paddingHorizontal:50}}>
+//         <TouchableOpacity>
+//           <Text style={{color:"#F10C18",fontSize:17,fontFamily:"Gilroy-Medium",textDecorationLine:"underline"}}>Remove</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity>
+//           <Text style={{color:"#F10C18",fontSize:17,fontFamily:"Gilroy-Medium",textDecorationLine:"underline"}}>Move to Wishlist</Text>
+//         </TouchableOpacity>
+//         </View>
+//         <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(!modalVisible)}>
+//           <Text style={[styles.closeButtonText,{right:15,}]}>X</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   </Modal>
+// </View>
+
+//     </SafeAreaView>
+
+<SafeAreaView style={styles.container}>
+  <View style={styles.header}>
+    <TouchableOpacity onPress={goBack}>
+      <Image
+        source={require('../assets/next.png')}
+        style={styles.headerIcon}
+      />
+    </TouchableOpacity>
+    <Text style={styles.headerText}>Cart</Text>
+  </View>
+
+  {loading ? (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#F10C18" />
+    </View>
+  ) : (
+    <>
+      {cartItems.length > 0 ? (
         <>
           <View style={styles.totalItemsContainer}>
-            {/* Updated to dynamically show the number of items */}
             <Text style={styles.totalItemsText}>{cartItems.length} Items Selected</Text>
-            {/* Updated to dynamically show the total amount */}
             <Text style={styles.totalAmountText}>${getTotalAmount()}</Text>
           </View>
 
-          <View style={{ marginBottom:200 }}>
+          <View style={{ marginBottom: 200 }}>
             <FlatList
               data={cartItems}
               renderItem={({ item }) => renderCartItem({ item })}
@@ -179,58 +267,22 @@ const Cart = () => {
             <TouchableOpacity style={styles.placeOrderButton} onPress={()=>navigation.navigate("Checkout")}>
               <Text style={styles.placeOrderText}>Place Order</Text>
             </TouchableOpacity>
-
-            
           </View>
         </>
+      ) : (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{color:"#000000",fontSize:18,fontFamily:"Gilroy-Medium"}}>No items in the cart</Text>
+        </View>
       )}
+    </>
+  )}
 
-<View style={{  justifyContent: 'center', alignItems: 'center', }}>
-  <Modal
-    animationType="slide"
-    transparent={true}
-    visible={modalVisible}
-    onRequestClose={() => {
-      setModalVisible(!modalVisible);
-    }}
-  >
-    <View style={{ flex:1,width: '100%', justifyContent: 'center', alignItems: 'center',}}>
-      <View style={{backgroundColor: '#FFFFFF', width: '100%', position: 'absolute',bottom: 0,height:180,marginHorizontal:15 }}>
-        <View style={{ alignItems: 'center',width:"95%",flexDirection:"row",marginTop:20,alignSelf:"center"}}>
-        <View style={[styles.imageContainer,{height:80,width:80,borderRadius:15}]}>
-        {selectedCartItem?.product_img ? ( // Check if there is a selected item
-                    <Image
-                      source={{ uri: selectedCartItem.product_img }} // Display selected item's image
-                      style={[styles.image, { height: 60, width: 60 }]}
-                    />
-                  ) : (
-                    <Text style={{ color: "#000000",fontSize:12 }}>No Image Available</Text>
-                  )}
-        </View>
-        <View style={{marginLeft:15,width:"60%"}}>
-          <Text style={{color:"#000000",fontSize:18,fontFamily:"Gilroy-Medium"}}>Move from the cart</Text>
-          <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy-Regular"}}>Are you sure you want to move this item from cart?</Text>
-        </View>
-        </View>
+  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+    {/* Modal Component */}
+    {/* Your Modal Code Here */}
+  </View>
+</SafeAreaView>
 
-        <View style={{height:1,width:"95%",backgroundColor:"#00000010",marginTop:15}}></View>
-        <View style={{marginTop:15,flexDirection:"row",justifyContent:"space-between",width:"95%",alignSelf:"center",paddingHorizontal:50}}>
-        <TouchableOpacity>
-          <Text style={{color:"#F10C18",fontSize:17,fontFamily:"Gilroy-Medium",textDecorationLine:"underline"}}>Remove</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={{color:"#F10C18",fontSize:17,fontFamily:"Gilroy-Medium",textDecorationLine:"underline"}}>Move to Wishlist</Text>
-        </TouchableOpacity>
-        </View>
-        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(!modalVisible)}>
-          <Text style={[styles.closeButtonText,{right:15,}]}>X</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Modal>
-</View>
-
-    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({
