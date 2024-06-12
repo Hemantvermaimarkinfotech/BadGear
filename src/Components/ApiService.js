@@ -1,6 +1,9 @@
 // apiService.js
 
 import axios from "react-native-axios";
+
+const BASE_URL = "https://bad-gear.com/wp-json/";
+
 const CatDATA = [
   {id: '1', text: 'Bad Woman', image: require('../assets/cat1.png')},
   {id: '2', text: 'Hats', image: require('../assets/cat2.png')},
@@ -16,7 +19,7 @@ export const getNewArrivals = async (userToken, page = 1) => {
   const startIndex = (page - 1) * itemsPerPage;
   try {
     const response = await axios.get(
-      'https://bad-gear.com/wp-json/new-arrivals/v1/newarrivals_home',
+      `${BASE_URL}new-arrivals/v1/newarrivals_home`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +44,7 @@ export const getNewArrivals = async (userToken, page = 1) => {
 export const getCategory = async (userToken) => {
   try {
     const response = await axios.get(
-      'https://bad-gear.com/wp-json/all-category/v1/categories',
+      `${BASE_URL}all-category/v1/categories`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +81,7 @@ export const getCategory = async (userToken) => {
 export const getBanner = async () => {
   try {
     const response = await axios.get(
-      `https://bad-gear.com/wp-json/home-banner-api/v1/home_banner`,
+      `${BASE_URL}home-banner-api/v1/home_banner`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +98,7 @@ export const getBanner = async () => {
 export const getWishList = async () => {
   try {
     const response = await axios.get(
-      `https://bad-gear.com/wp-json/get-wishlist/v1/getWishlist`,
+      `${BASE_URL}get-wishlist/v1/getWishlist`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -112,10 +115,11 @@ export const getWishList = async () => {
 };
 
 
+
 export const getProductDetails = async (productId) => {
   try {
     const response = await axios.get(
-      `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
+      `${BASE_URL}product-detail-api/v1/product_detail?product_id=${productId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +144,7 @@ export const AddCart = async (productId, size, quantity, price) => {
     formData.append('price', price);
 
     const response = await axios.post(
-      'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
+      `${BASE_URL}add-to-cart/v1/AddToCart`,
       formData,
       {
         headers: {
@@ -148,19 +152,22 @@ export const AddCart = async (productId, size, quantity, price) => {
         },
       }
     );
-    console.log("add to cart", response.data);
-    return response.data; // Return the data
+    console.log("add to cart", response.data?.successmsg);
+    return response.data?.successmsg; // Return the success message
   } catch (error) {
     console.error('Error adding product to cart:', error);
     throw error;
   }
 };
 
+
+
+
 export const AddWishlist = async (productId) => {
   console.log("product_id", productId);
   try {
     const response = await axios.post(
-      `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
+      `${BASE_URL}add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -174,35 +181,3 @@ export const AddWishlist = async (productId) => {
     throw error;
   }
 };
-
-
-// export const deleteCart = async (itemId) => {
-//   try {
-//     const response = await axios.post(
-//       `https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems/${itemId}`,
-//       {
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       }
-//     );
-//     console.log('Item deleted successfully');
-//   } catch (error) {
-//     console.error('Error deleting item from wishlist:', error);
-//     throw error;
-//   }
-// };
-
-// // Example usage of the deleteWishlistItem function
-// (async () => {
-//   try {
-//     const itemIdToDelete = '123'; // Replace '123' with the actual ID of the item to delete
-//     await deleteWishlistItem(itemIdToDelete);
-//   } catch (error) {
-//     // Handle errors
-//     console.error('Error:', error);
-//   }
-// })();
-
-
-

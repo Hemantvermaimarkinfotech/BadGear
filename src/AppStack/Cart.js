@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "react-native-axios";
 import { SelectCountry } from "react-native-element-dropdown";
 import { Modal } from 'react-native';
+import { AuthContext } from '../Components/AuthProvider';
 
 const Cart = () => {
   const navigation = useNavigation();
@@ -26,6 +27,7 @@ const Cart = () => {
   const [value, setValue] = useState(null);
   const [country, setCountry] = useState('1');
   const [selectedCartItem, setSelectedCartItem] = useState(null); // State to hold selected cart item's data
+  const {userToken}=useContext(AuthContext)
 
   const goBack = () => {
     navigation.goBack();
@@ -111,16 +113,53 @@ const Cart = () => {
     </View>
   );
 
-  const GetCartItems = async () => {
+  // const GetCartItems = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       },
+  //     );
+  //     console.log('response cart', response.data.data);
+  //     if (response.data.status === "success") {
+  //       const itemsWithQuantity = response.data.data.map(item => ({ ...item, quantity: 1 })); // Add quantity field
+  //       setCartItems(itemsWithQuantity);
+  //     } else {
+  //       console.error('Error: Unexpected response format:', response);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching Cart Items:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    GetCartItems();
+  }, []);
+
+
+  const GetCartItems = async (token) => {
+    console.log("token",token)
     try {
+      if (!token) {
+        console.error('User token is not available');
+        return;
+      }
+  
       const response = await axios.get(
         'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
         {
           headers: {
             'Content-Type': 'application/json',
+            Authorization: token,
           },
         },
       );
+  
       console.log('response cart', response.data.data);
       if (response.data.status === "success") {
         const itemsWithQuantity = response.data.data.map(item => ({ ...item, quantity: 1 })); // Add quantity field
@@ -135,9 +174,12 @@ const Cart = () => {
     }
   };
 
+  
   useEffect(() => {
-    GetCartItems();
-  }, []);
+    if (userToken && userToken.token) {
+      GetCartItems(userToken.token); // Pass the token as an argument
+    }
+  }, [userToken]);
 
   const getTotalAmount = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);

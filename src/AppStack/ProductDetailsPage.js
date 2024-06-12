@@ -18,51 +18,14 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { AddCart } from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
 import Modal from "react-native-modal"
+import axios from "react-native-axios"
+import FormData from 'form-data';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
 
 
-const RelatedProductDATA = [
-  {
-    id: '1',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '2',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '3',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '4',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '5',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '6',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  // Related Product data
-];
 
 const renderRelatedProductItem = ({item, navigation,fetchProductDetails}) => (
   <TouchableOpacity activeOpacity={0.92} style={[{width: imageWidth, marginTop: 10}]} 
@@ -133,11 +96,12 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [productDetails, setProductDetails] = useState();
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const {userToken} = useContext(AuthContext);
+  const {userToken,setUserToken} = useContext(AuthContext);
   const [loading, setLoading] = useState(true); 
   const [modalVisible, setModalVisible] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
+
   // console.log("relatedProductsrelatedProducts",relatedProducts)
 
 
@@ -189,23 +153,110 @@ const ProductDetailsPage = ({route, navigation}) => {
     ``;
   }, []);
 
-  const addToCart = async () => {
-    try {
-      const response = await AddCart(
-        productId,
-        selectedSize,
-        selectedQuantity,
-        productDetails?.price,
-      );
-      console.log('Product added to cart:', response);
-      setIsAddedToCart(true);
-      setModalVisible(true);
-      // navigation.navigate("Cart")
-    } catch (error) {
-      console.error('Error adding product to cart:', error);
-    }
-  };
+  const token=userToken.token
 
+
+
+
+  // const addToCart = async () => {
+  //   try {
+    
+  //     // const userToken = 'USER_AUTH_TOKEN';
+  //     const response = await AddCart(
+  //       productId,
+  //       selectedSize,
+  //       selectedQuantity,
+  //       productDetails?.price,
+  //      token
+  //     );
+  //     console.log(JSON.stringify(response.data));; // Log the response to the console
+  //     // setIsAddedToCart(true);
+  //     // setModalVisible(true);
+  //     // navigation.navigate("Cart")
+  //     setCart(response.data.successmsg); 
+  //   } catch (error) {
+  //     console.error('Error adding product to cart:', error);
+  //   }
+  // };
+
+console.log("userToken",userToken)
+
+// const addToCart = (productId) => {
+//   let data = new FormData();
+//   data.append('product_id', productId);
+//   data.append('size', 'M');
+//   data.append('quantity', '3');
+//   data.append('price', '345');
+
+//   let config = {
+//     method: 'post',
+//     maxBodyLength: Infinity,
+//     url: 'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
+//     headers: {
+//       'Authorization': 'ankitarororaa|1719387234|i71w6X009GMNURPWLurCCE3kEYgVA7GiY3Ycbn8fQog|3e453f53c7026ee09c2065a99dc8badd32e775636ede6d38845fb90671644d05',
+//       'Cookie': 'wordpress_logged_in_bfeed78d608bb360f77edd870d3b8578=ankitarororaa%7C1718350434%7CBoz9jiNprSxWJMYEu0DYYYnwdA9Y5ECO1hu5UfcjGg8%7Ce1c755e684f63916a24898aa704cb59000763c46132613ed563efd3f7a415e13',
+//       'Content-Type': 'multipart/form-data', // Set the Content-Type header
+//     },
+//     data: data
+//   };
+
+//   axios.request(config)
+//     .then((response) => {
+//       console.log(JSON.stringify(response.data));
+//       // Handle success response here, maybe update UI or show a success message
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       // Handle error here, maybe show an error message to the user
+//     });
+// };
+
+
+const addToCart = async () => {
+  try {
+    let formData = new FormData();
+    formData.append('product_id', productId); // Replace productId with the actual product id
+    formData.append('size', selectedSize); // Assuming selectedSize is available in your scope
+    formData.append('quantity', selectedQuantity); // Assuming selectedQuantity is available in your scope
+    formData.append('price', productDetails?.price); // Assuming productDetails is available and has a price property
+console.log("formData",formData)
+    const response = await axios.put(
+      'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `ankitarororaa|1719378738|eevGbmwMPsLCvZjlRsxlNf7UVoxjvQDkzNmSGWfJ08U|a313ed6b336a37cff1dc3032aea782107766e12e96f05bfad8366945cff87383`,
+        },
+      },
+    );
+
+    // Assuming setUserToken is a function to update user token and AsyncStorage is available
+    setUserToken(response?.data);
+    await AsyncStorage.setItem('addtocart', JSON.stringify(response?.data));
+    console.log("addtocart", response?.data);
+  } catch (error) {
+    console.log(error);
+    // Handle error here
+  }
+};
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+ 
+  
+  
  
 
 
@@ -381,7 +432,8 @@ const ProductDetailsPage = ({route, navigation}) => {
             paddingHorizontal: 20,
           },
         ]}
-        onPress={addToCart}>
+        onPress={() => addToCart(productId)}
+>
         <Image
           source={require('../assets/Cart.png')}
           style={{

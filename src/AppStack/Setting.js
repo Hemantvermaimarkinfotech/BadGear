@@ -15,10 +15,46 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import EvilIcons from "react-native-vector-icons/EvilIcons"
 import AntDesign from "react-native-vector-icons/AntDesign"
+import axios from "react-native-axios"
 
 
 const Setting = ({navigation}) => {
-  const {userToken, setUserToken} = useContext(AuthContext);
+  const {userToken,setUserToken} = useContext(AuthContext);
+  const [profileData,setProfileData]=useState()
+
+console.log("profileData",profileData)
+  const getProfile = async (token) => {
+    try {
+      if (!token) {
+        console.error('User token is not available');
+        return;
+      }
+  
+      const response = await axios.get(
+        'https://bad-gear.com/wp-json/get-userProfile-api/v1/get_userProfile',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+          },
+        },
+      );
+  
+      const responseData = response.data.data;
+      console.log('Response Data:', responseData);
+      setProfileData(responseData);
+    } catch (error) {
+      console.error('Error fetching Profile:', error);
+      // Handle error appropriately
+    }
+  };
+  
+  useEffect(() => {
+    if (userToken && userToken.token) {
+      getProfile(userToken.token); // Pass the token as an argument
+    }
+  }, [userToken]);
+  
 
   const Logout = () => {
     setUserToken(null);
@@ -37,12 +73,21 @@ const Setting = ({navigation}) => {
         <Image source={require("../assets/user-profile.jpg")} style={{height:70,width:70,borderRadius:35}}/>
       </View>
       <View style={{marginLeft:20}}>
-        <Text style={{color:"#000000",fontFamily:"Gilroy-Bold",fontSize:20}}>Thomas Djaon</Text>
-        <Text style={{color:"#000000",fontSize:12,fontFamily:"Gilroy-Medium"}}>ID 02317141</Text>
+      {profileData ? (
+    <>
+      <Text style={{color:"#000000",fontFamily:"Gilroy-Bold",fontSize:20}}> {profileData[0]?.userName.charAt(0).toUpperCase() + profileData[0]?.userName.slice(1)}</Text>
+      <Text style={{color:"#000000",fontSize:12,fontFamily:"Gilroy-Medium"}}>{profileData[0]?.userEmail}</Text>
+    </>
+  ) : (
+    <>
+      <Text style={{color:"#000000",fontFamily:"Gilroy-Bold",fontSize:20}}>Thomas Djaon</Text>
+      <Text style={{color:"#000000",fontSize:12,fontFamily:"Gilroy-Medium"}}>ID 02317141</Text>
+    </>
+  )}
       </View>
       </View>
 
-      <TouchableOpacity onPress={()=>navigation.navigate("EditProfile")}>
+      <TouchableOpacity onPress={()=>navigation.navigate("EditProfile",{profileData})}>
       <Feather name="edit-2" size={24} color={"#F10C18"}/>
       </TouchableOpacity>
       </View>
@@ -82,7 +127,7 @@ const Setting = ({navigation}) => {
       <Text style={{color:"#000000",fontFamily:"Gilroy-Bold",fontSize:20}}>Account Setting</Text>
 
       <ScrollView>
-      <TouchableOpacity style={styles.row}>
+      <TouchableOpacity style={styles.row} onPress={()=>navigation.navigate("EditProfile",{profileData})}>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         <Feather name="user" size={22} color={"#000000"} />
