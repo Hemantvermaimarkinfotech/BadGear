@@ -1,10 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList,TextInput} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  Alert
+} from 'react-native';
 import MainHeader from '../Components/MainHeader';
-import Entypo from "react-native-vector-icons/Entypo";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
-import { ScrollView } from 'react-native-gesture-handler';
+import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import {ScrollView} from 'react-native-gesture-handler';
+import { AuthContext } from '../Components/AuthProvider';
+import Loader from '../Components/Loader';
+import axios from "react-native-axios"
+
 // Dummy JSON data
 const addressesData = [
   {
@@ -12,120 +25,658 @@ const addressesData = [
     type: 'home',
     name: 'Home Address',
     address: '323 Main Street, Anytown, USA 12345',
-    icon: 'home'
+    icon: 'home',
   },
-
-  
 ];
 
-const AddDeliveryAddress = ({ navigation }) => {
+const isAnyFieldFilled = () => {
+  return !!firstName || !!lastName || !!company || !!country || !!streetaddress || !!city || !!state || !!zipcode || !!phone || !!email;
+}
+
+const AddDeliveryAddress = ({navigation}) => {
   const [addresses, setAddresses] = useState([]);
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
+  const [company, setCompanyy] = useState();
+  const [country, setCountry] = useState();
+  const [streetaddress, setStreetAddress] = useState();
+  const [city, setCity] = useState();
+  const [state, setState] = useState();
+  const [zipcode, setZipCode] = useState();
+  const [phone, setphone] = useState();
+  const [email, setEmail] = useState();
+  const [addressType, setAddressType] = useState(1);
+  const {userToken}=useContext(AuthContext)
+  const [loading,setLoading]=useState(false)
 
   useEffect(() => {
     // Load JSON data
     setAddresses(addressesData);
   }, []);
 
+  const AddBillingAddress = async () => {
+    console.log("userToken.tokennnnnn",userToken.token)
+    setLoading(true);
   
+    try {
+      if (!userToken.token) {
+        console.error('User token is not available');
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append('first_name', firstName);
+      formData.append('last_name', lastName);
+      formData.append('company', company);
+      formData.append('country', country);
+      formData.append('street_address', streetaddress);
+      formData.append('city', city);
+      formData.append('state', state);
+      formData.append('zipcode', zipcode);
+      formData.append('phone', phone);
+      formData.append('email', email);
+  
+      const response = await axios.post(
+        'https://bad-gear.com/wp-json/add-billing-address/v1/BillingAddress',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: userToken.token,
+          },
+        }
+      );
+  
+      const responseData = response.data;
+  
+      if (responseData.successmsg) {
+        Alert.alert('Success', responseData.successmsg);
+        console.log("Sucess",responseData.successmsg)
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', responseData.message);
+        // Handle error appropriately
+      }
+    } catch (error) {
+      console.error('Error updating Delivery Address:', error);
+      Alert.alert('Error', 'Failed to update profile. Please try again.');
+      // Handle error appropriately
+    } finally {
+      setLoading(false);
+    }
+  };
 
- 
+
+
+  const AddShippingAddress = async () => {
+    console.log("userToken.tokennnnnn",userToken.token)
+    setLoading(true);
+  
+    try {
+      if (!userToken.token) {
+        console.error('User token is not available');
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append('first_name', firstName);
+      formData.append('last_name', lastName);
+      formData.append('company', company);
+      formData.append('country', country);
+      formData.append('street_address', streetaddress);
+      formData.append('city', city);
+      formData.append('state', state);
+      formData.append('zipcode', zipcode);
+      formData.append('phone', phone);
+      formData.append('email', email);
+  
+      const response = await axios.post(
+        'https://bad-gear.com/wp-json/add-shipping-address/v1/ShippingAddres',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: userToken.token,
+          },
+        }
+      );
+  
+      const responseData = response.data;
+  
+      if (responseData.successmsg) {
+        Alert.alert('Success', responseData.successmsg);
+        console.log("Sucess",responseData.successmsg)
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', responseData.message);
+        // Handle error appropriately
+      }
+    } catch (error) {
+      console.error('Error updating Shipping address:', error);
+      Alert.alert('Error', 'Failed to add Shipping address Please try again.');
+      // Handle error appropriately
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <SafeAreaView style={styles.container}>
-      <MainHeader title={"Add Delivery Address"} />
-      
-     <ScrollView style={{marginBottom:100}}>
-        <View style={{width:"100%",marginHorizontal:20,marginTop:20}}>
-        <View>
+      <MainHeader title={'Add Delivery Address'} />
 
-        <Text style={{color:"#000000",fontSize:18,fontFamily:"Gilroy-Bold"}}>Contact Details</Text>
-        <Text style={{color:"#000000",fontSize:15,fontFamily:"Gilroy-Medium",marginTop:10}}>Full Name</Text>
-        <View style={styles.inputcontainer}>
-        <TextInput/>
+      <ScrollView style={{marginBottom: 100}}>
+      {/* Delivery address */}
+      {addressType === 1 && (
+      <View style={{width: '100%', marginHorizontal: 20, marginTop: 20}}>
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontFamily: 'Gilroy-Bold',
+              }}>
+              Contact Details
+            </Text>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 10,
+              }}>
+              First Name
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+              onChangeText={(text)=>setFirstName()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Last Name
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput
+              style={styles.textform} 
+                onChangeText={(text)=>setLastName()} />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontFamily: 'Gilroy-Bold',
+                marginTop: 20,
+              }}>
+              Address{' '}
+            </Text>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 10,
+              }}>
+              Company
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setCompanyy()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Country
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setCountry()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Street Address
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setStreetAddress()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              City/District
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setCity()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              State
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              zipcode
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setZipCode()}
+              />
+            </View>
+
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              phone
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setphone()}
+              />
+            </View>
+
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Email
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput
+              style={styles.textform} 
+                onChangeText={(text)=>setEmail()}
+              />
+            </View>
+          </View>
+
+          <View style={{marginBottom:100}}>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontFamily: 'Gilroy-Bold',
+                marginTop: 20,
+              }}>
+              Save Address as Delivery
+            </Text>
+            <View
+              style={{
+                height: 1,
+                width: '100%',
+                backgroundColor: '#CCC',
+                marginTop: 10,
+              }}
+            />
+          
+          </View>
         </View>
+         )}
+        {/* End Delivery Address */}
+
+        {/* shipping Address */}
+        {addressType === 2 && (
+       <View style={{width: '100%', marginHorizontal: 20, marginTop: 20}}>
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontFamily: 'Gilroy-Bold',
+              }}>
+              Contact Details
+            </Text>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 10,
+              }}>
+              First Name
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+              onChangeText={(text)=>setFirstName()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Last Name
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput
+              style={styles.textform} 
+                onChangeText={(text)=>setLastName()} />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontFamily: 'Gilroy-Bold',
+                marginTop: 20,
+              }}>
+              Address{' '}
+            </Text>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 10,
+              }}>
+              Company
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setCompanyy()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Country
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setCountry()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Street Address
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setStreetAddress()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              City/District
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setCity()}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              State
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} />
+            </View>
+          </View>
+
+          <View>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              zipcode
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setZipCode()}
+              />
+            </View>
+
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              phone
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput 
+              style={styles.textform} 
+                onChangeText={(text)=>setphone()}
+              />
+            </View>
+
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                fontFamily: 'Gilroy-Medium',
+                marginTop: 20,
+              }}>
+              Email
+            </Text>
+            <View style={styles.inputcontainer}>
+              <TextInput
+              style={styles.textform} 
+                onChangeText={(text)=>setEmail()}
+              />
+            </View>
+          </View>
+
+          <View style={{marginBottom:100}}>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontFamily: 'Gilroy-Bold',
+                marginTop: 20,
+              }}>
+              Save Address as Delivery
+            </Text>
+            <View
+              style={{
+                height: 1,
+                width: '100%',
+                backgroundColor: '#CCC',
+                marginTop: 10,
+              }}
+            />
+          
+          </View>
         </View>
-
-        <View>
-
-
-<Text style={{color:"#000000",fontSize:15,fontFamily:"Gilroy-Medium",marginTop:20}}>Mobile No</Text>
-<View style={styles.inputcontainer}>
-<TextInput/>
-</View>
-</View>
-
-<View>
-
-<Text style={{color:"#000000",fontSize:18,fontFamily:"Gilroy-Bold",marginTop:20}}>Address </Text>
-<Text style={{color:"#000000",fontSize:15,fontFamily:"Gilroy-Medium",marginTop:10}}>Pin Code</Text>
-<View style={styles.inputcontainer}>
-<TextInput/>
-</View>
-</View>
-
-<View>
-
-
-<Text style={{color:"#000000",fontSize:15,fontFamily:"Gilroy-Medium",marginTop:20}}>Address</Text>
-<View style={styles.inputcontainer}>
-<TextInput/>
-</View>
-</View>
-
-<View>
-
-
-<Text style={{color:"#000000",fontSize:15,fontFamily:"Gilroy-Medium",marginTop:20}}>Loclity Town</Text>
-<View style={styles.inputcontainer}>
-<TextInput/>
-</View>
-</View>
-
-<View>
-
-
-<Text style={{color:"#000000",fontSize:15,fontFamily:"Gilroy-Medium",marginTop:20}}>City/District</Text>
-<View style={styles.inputcontainer}>
-<TextInput/>
-</View>
-</View>
-
-<View>
-
-
-<Text style={{color:"#000000",fontSize:15,fontFamily:"Gilroy-Medium",marginTop:20}}>State</Text>
-<View style={styles.inputcontainer}>
-<TextInput/>
-</View>
-</View>
-
-
-<View>
-
-<Text style={{color:"#000000",fontSize:18,fontFamily:"Gilroy-Bold",marginTop:20}}>Save Address as </Text>
-<View style={{height:1,width:"100%",backgroundColor:"#CCC",marginTop:10}}/>
-<View style={{flexDirection:"row",marginTop:20,marginBottom:70}}>
-<TouchableOpacity style={{justifyContent:"center",alignItems:"center",height:40,width:80,borderWidth:1,borderColor:"#CCC",borderRadius:8}}>
-  <Text style={{color:"#000000",fontSize:15}}>Home</Text>
-</TouchableOpacity>
-
-<TouchableOpacity style={{justifyContent:"center",alignItems:"center",height:40,width:80,borderWidth:1,borderColor:"#CCC",borderRadius:8,marginLeft:10}}>
-  <Text style={{color:"#000000",fontSize:15}}>Office</Text>
-</TouchableOpacity>
-</View>
-</View>
-
+         )}
+        {/* End Shipping Address */}
 
         
-        </View>
+      </ScrollView>
 
-        
-     </ScrollView>
-      
+     
+   
+
       <View style={styles.bottomButtonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("DeliveryAddress")}>
-          <Text style={styles.buttonText}>Save Address</Text>
+
+      <View
+              style={{flexDirection:"row",paddingLeft:20,bottom:20}}>
+              <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 40,
+            width: 150,
+            borderWidth: 1,
+            borderColor: addressType === 1 ? 'transparent' : '#CCC',
+            borderRadius: 8,
+            backgroundColor: addressType === 1 ? '#F10C18' : '#FFF',
+          }}
+          onPress={() => {
+            setAddressType(1);
+             // Call AddBillingAddress function
+          }}
+        >
+          <Text style={{ color: addressType === 1 ? '#FFF' : '#000', fontSize: 15 }}>Delivery Address</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 40,
+            width: 150,
+            borderWidth: 1,
+            borderColor: addressType === 2 ? 'transparent' : '#CCC',
+            borderRadius: 8,
+            marginLeft: 10,
+            backgroundColor: addressType === 2 ? '#F10C18' : '#FFF',
+          }}
+          onPress={() => {
+            setAddressType(2);
+            // Call AddShippingAddress function
+          }}
+        >
+          <Text style={{ color: addressType === 2 ? '#FFF' : '#000', fontSize: 15 }}>Shipping Address</Text>
+        </TouchableOpacity>
+            </View>
+            {addressType === 1 && (
+  <>
+    {loading ? (
+      <Loader />
+    ) : (
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => AddBillingAddress()}>
+        <Text style={styles.buttonText}>Save Delivery Address</Text>
+      </TouchableOpacity>
+    )}
+  </>
+)}
+
+{addressType === 2 && (
+  <>
+    {loading ? (
+      <Loader />
+    ) : (
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => AddShippingAddress()}>
+        <Text style={styles.buttonText}>Save Shipping Address</Text>
+      </TouchableOpacity>
+    )}
+  </>
+)}
+
       </View>
     </SafeAreaView>
   );
@@ -136,18 +687,18 @@ export default AddDeliveryAddress;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FBFCFC",
+    backgroundColor: '#FBFCFC',
   },
   listContainer: {
     marginHorizontal: 10,
   },
-  
+
   bottomButtonContainer: {
     height: 80,
-    justifyContent: "center",
-    position: "absolute",
+    justifyContent: 'center',
+    position: 'absolute',
     bottom: 10,
-    width: "100%",
+    width: '100%',
   },
   button: {
     height: 55,
@@ -157,21 +708,33 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: "#F10C18",
+    backgroundColor: '#F10C18',
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontFamily: 'Gilroy-Medium',
   },
-  inputcontainer:{
-    height:50,
-    borderColor:"#CCC",
-    borderWidth:1,
-    marginTop:10,
-    borderRadius:8,
-  width:"90%"
+  inputcontainer: {
+    height: 50,
+    borderColor: '#CCC',
+    borderWidth: 1,
+    marginTop: 10,
+    borderRadius: 8,
+    width: '90%',
+  },
+  bottomSelectButton:{
+    height: 100,
+    position: 'absolute',
+    bottom: 80,
+    width: '100%',
+    flexDirection:"row",
+    width:"100%",
+    paddingLeft:20,
+    alignItems:"center"
     
+  },
+  textform:{
+    color: '#000000',fontSize:15 
   }
-  
 });

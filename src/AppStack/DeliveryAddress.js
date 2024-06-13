@@ -1,90 +1,334 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator
+} from 'react-native';
 import MainHeader from '../Components/MainHeader';
-import Entypo from "react-native-vector-icons/Entypo";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
+import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import {AuthContext} from '../Components/AuthProvider';
+import axios from 'react-native-axios';
 // Dummy JSON data
 const addressesData = [
   {
     id: '1',
     type: 'home',
-    name: 'Home Address',
+    name: 'Billing Address',
     address: '323 Main Street, Anytown, USA 12345',
-    icon: 'home'
+    icon: 'home',
   },
   {
     id: '2',
     type: 'office',
-    name: 'Office Address',
+    name: 'Shipping Address',
     address: '3436 Example St, Anytown, USA 12345',
-    icon: 'location-pin'
+    icon: 'location-pin',
   },
-  
 ];
 
-const DeliveryAddress = ({ navigation }) => {
+const DeliveryAddress = ({navigation}) => {
   const [selectedId, setSelectedId] = useState(null);
   const [addresses, setAddresses] = useState([]);
+  const {userToken, setUserToken} = useContext(AuthContext);
+  const [billling, setBilling] = useState([]);
+  const [shipping,setShipping]=useState([])
+  const [selectedBilling, setSelectedBilling] = useState(false);
+  const [selectedShipping, setSelectedShipping] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const handleBillingPress = () => {
+    setSelectedBilling(true);
+    setSelectedShipping(false);
+  };
+
+  const handleShippingPress = () => {
+    setSelectedBilling(false);
+    setSelectedShipping(true);
+  };
+
+
+  const billingaddress = `${billling?.billing_address},${billling?.billing_city},${billling?.billing_address},${billling?.billing_company},${billling?.billing_last_name},${billling?.billing_first_name}, 
+  ${billling?.billing_phone}`;
+  const shippingaddress = `${shipping?.shipping_address},${shipping?.shipping_city},${shipping?.shipping_address},${shipping?.shipping_company},${shipping?.shipping_last_name},${shipping?.shipping_first_name}, 
+  ${shipping?.shipping_phone}`;
+
+  const getAddressData = async (token, addressType) => {
+    try {
+      if (!token) {
+        console.error('User token is not available');
+        return;
+      }
+  
+      let url;
+      if (addressType === 'billing') {
+        url = 'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress';
+      } else if (addressType === 'shipping') {
+        url = 'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress';
+      }
+  
+      const response = await axios.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token,
+        },
+      });
+  
+      const responseData = response.data.data;
+      console.log(`${addressType} Response Data:`, responseData);
+      if (addressType === 'billing') {
+        setBilling(responseData);
+      } else if (addressType === 'shipping') {
+        setShipping(responseData); // Assuming you have a state variable for shipping address
+      }
+    } catch (error) {
+      console.error(`Error fetching ${addressType} Profile:`, error);
+      // Handle error appropriately
+    }finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (userToken && userToken.token) {
+      getAddressData(userToken.token, 'billing');
+      getAddressData(userToken.token, 'shipping');
+    }
+  }, [userToken]);
+  
 
   useEffect(() => {
     // Load JSON data
     setAddresses(addressesData);
   }, []);
 
-  const handleRadioPress = (id) => {
+  const handleRadioPress = id => {
     setSelectedId(id);
   };
 
-  const renderItem = ({ item }) => (
-    <View key={item.id}>
-      <TouchableOpacity style={styles.row} onPress={() => handleRadioPress(item.id)}>
-        <View style={{ flexDirection: "row", justifyContent: "center" }}>
-          <View style={[styles.iconContainer, selectedId === item.id ]}>
-            <Entypo name={item.icon} size={22} color={"#fff"} />
+  // const renderItem = ({ item }) => (
+  //   <View key={item.id}>
+  //     <TouchableOpacity style={styles.row} onPress={() => handleRadioPress(item.id)}>
+  //       <View style={{ flexDirection: "row", justifyContent: "center" }}>
+  //         <View style={[styles.iconContainer, selectedId === item.id ]}>
+  //           <Entypo name={item.icon} size={22} color={"#fff"} />
+  //         </View>
+  //         <View style={{ justifyContent: "center", marginLeft: 10 }}>
+  //           <Text style={{ color: "#000000", fontSize: 15 }}>{item.name}</Text>
+  //           {/* <Text style={{ color: "#000000", fontSize: 12, fontFamily: "Gilroy-Regular", marginVertical: 5 }}>{profileData?.data}</Text> */}
+  //         </View>
+  //       </View>
+  //       <View style={{ marginLeft: 10 }}>
+  //         {selectedId === item.id ? (
+  //           <MaterialIcons name="radio-button-checked" size={24} color={"red"} />
+  //         ) : (
+  //           <MaterialIcons name="radio-button-unchecked" size={24} color={"red"} />
+  //         )}
+  //       </View>
+  //     </TouchableOpacity>
+  //     <View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#707070", opacity: 0.3 }} />
+  //   </View>
+  // );
+
+  const renderItem = ({item}) => {
+  
+
+    return (
+      <View key={item.id}>
+        <TouchableOpacity
+          style={styles.row}
+          onPress={() => handleRadioPress(item.id)}>
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <View style={[styles.iconContainer, selectedId === item.id]}>
+              <Entypo name={item.icon} size={22} color={'#fff'} />
+            </View>
+            <View style={{justifyContent: 'center', marginLeft: 10}}>
+              <Text style={{color: '#000000', fontSize: 15}}>
+                Biilling Address
+              </Text>
+              <Text
+                style={{
+                  color: '#000000',
+                  fontSize: 12,
+                  fontFamily: 'Gilroy-Regular',
+                  marginVertical: 5,
+                }}>
+                {item?.address}
+              </Text>
+            </View>
           </View>
-          <View style={{ justifyContent: "center", marginLeft: 10 }}>
-            <Text style={{ color: "#000000", fontSize: 15 }}>{item.name}</Text>
-            <Text style={{ color: "#000000", fontSize: 12, fontFamily: "Gilroy-Regular", marginVertical: 5 }}>{item.address}</Text>
+          <View style={{marginLeft: 10}}>
+            {selectedId === item.id ? (
+              <MaterialIcons
+                name="radio-button-checked"
+                size={24}
+                color={'red'}
+              />
+            ) : (
+              <MaterialIcons
+                name="radio-button-unchecked"
+                size={24}
+                color={'red'}
+              />
+            )}
           </View>
-        </View>
-        <View style={{ marginLeft: 10 }}>
-          {selectedId === item.id ? (
-            <MaterialIcons name="radio-button-checked" size={24} color={"red"} />
-          ) : (
-            <MaterialIcons name="radio-button-unchecked" size={24} color={"red"} />
-          )}
-        </View>
-      </TouchableOpacity>
-      <View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#707070", opacity: 0.3 }} />
-    </View>
-  );
+        </TouchableOpacity>
+        <View
+          style={{
+            height: 1,
+            width: '100%',
+            marginTop: 15,
+            backgroundColor: '#707070',
+            opacity: 0.3,
+          }}
+        />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <MainHeader title={"Delivery Address"} />
-      
-      <View>
-      <FlatList
-        data={addresses}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
-      />
-      
-      {/* Add Address Button */}
-      <TouchableOpacity style={styles.addAddressButton} onPress={()=>navigation.navigate("AddDeliveryAddress")} >
-     <View style={{flexDirection:"row",alignItems:"center"}}>
-     <EvilIcons name="plus" size={24} color={"#000000"} />
-        <Text style={styles.addAddressButtonText}>Add Address</Text>
-     </View>
+      <MainHeader title={'Delivery Address'} />
 
-     <MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+      <View>
+        {/* <FlatList
+          data={addressesData}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.listContainer}
+        /> */}
+
+{loading ? (
+  <View style={{justifyContent:"center",alignItems:"center",flex}}>
+    <ActivityIndicator size={"large"} color={"red"} />
+  </View>
+) : (
+  <View>
+    <View style={{ width: "95%", alignSelf: "center" }}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={handleBillingPress}
+      >
+        <View style={{ flexDirection: 'row', width: "90%" }}>
+          <View style={[styles.iconContainer]}>
+            <Entypo name="home" size={30} color={'#fff'} />
+          </View>
+          <View style={{ justifyContent: 'center', marginLeft: 10 }}>
+            <Text style={{ color: '#000000', fontSize: 15 }}>
+              Billing Address
+            </Text>
+            <View style={{ width: "100%" }}>
+              <Text
+                style={{
+                  color: '#000000',
+                  fontSize: 12,
+                  fontFamily: 'Gilroy-Regular',
+                  marginVertical: 5,
+                  lineHeight: 15
+                }}>
+                {billingaddress}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={{ marginLeft: 10, width: "10%" }}>
+          {selectedBilling && (
+            <MaterialIcons
+              name="radio-button-checked"
+              size={24}
+              color={'red'}
+            />
+          )}
+        </View>
       </TouchableOpacity>
-      </View>
+      <View
+        style={{
+          height: 1,
+          width: '100%',
+          marginTop: 15,
+          backgroundColor: '#707070',
+          opacity: 0.3,
+        }}
+      />
+    </View>
+
+    <View style={{ width: "95%", alignSelf: "center" }}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={handleShippingPress}
+      >
+        <View style={{ flexDirection: 'row', width: "90%" }}>
+          <View style={[styles.iconContainer]}>
+            <Entypo name="location-pin" size={30} color={'#fff'} />
+          </View>
+          <View style={{ justifyContent: 'center', marginLeft: 10 }}>
+            <Text style={{ color: '#000000', fontSize: 15 }}>
+              Shipping Address
+            </Text>
+            <View style={{ width: "100%" }}>
+              <Text
+                style={{
+                  color: '#000000',
+                  fontSize: 12,
+                  fontFamily: 'Gilroy-Regular',
+                  marginVertical: 5,
+                  lineHeight: 15
+                }}>
+                {shippingaddress}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={{ marginLeft: 10, width: "10%" }}>
+          {selectedShipping && (
+            <MaterialIcons
+              name="radio-button-checked"
+              size={24}
+              color={'red'}
+            />
+          )}
+        </View>
+      </TouchableOpacity>
+      <View
+        style={{
+          height: 1,
+          width: '100%',
+          marginTop: 15,
+          backgroundColor: '#707070',
+          opacity: 0.3,
+        }}
+      />
+    </View>
+  </View>
+)}
+
+
       
+        {/* Add Address Button */}
+        <TouchableOpacity
+          style={styles.addAddressButton}
+          onPress={() => navigation.navigate('AddDeliveryAddress')}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <EvilIcons name="plus" size={24} color={'#000000'} />
+            <Text style={styles.addAddressButtonText}>Add Address</Text>
+          </View>
+
+          <MaterialIcons
+            name="keyboard-arrow-right"
+            size={30}
+            color={'#000000'}
+          />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.bottomButtonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Checkout")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Checkout')}>
           <Text style={styles.buttonText}>Save Address</Text>
         </TouchableOpacity>
       </View>
@@ -97,31 +341,33 @@ export default DeliveryAddress;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FBFCFC",
+    backgroundColor: '#FBFCFC',
   },
   listContainer: {
     marginHorizontal: 10,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 20,
-    alignItems: "center",
+    alignItems: 'center',
+   
+    width:"100%"
   },
   iconContainer: {
-    backgroundColor: "#F10C18",
-    height: 55,
+    backgroundColor: '#F10C18',
+    height: 70,
     borderRadius: 8,
-    width: 55,
-    justifyContent: "center",
-    alignItems: "center",
+    width: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   bottomButtonContainer: {
     height: 80,
-    justifyContent: "center",
-    position: "absolute",
+    justifyContent: 'center',
+    position: 'absolute',
     bottom: 10,
-    width: "100%",
+    width: '100%',
   },
   button: {
     height: 55,
@@ -131,7 +377,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: "#F10C18",
+    backgroundColor: '#F10C18',
   },
   buttonText: {
     color: 'white',
@@ -145,19 +391,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-    borderColor:"#707070",
-    borderWidth:1,
-    marginTop:20,
-    flexDirection:"row",
-    justifyContent:"space-between",
-    paddingHorizontal:20,
-
-   
+    borderColor: '#707070',
+    borderWidth: 1,
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   addAddressButtonText: {
     color: '#000000',
     fontSize: 16,
     fontFamily: 'Gilroy-Medium',
-    marginLeft:10
+    marginLeft: 10,
   },
 });

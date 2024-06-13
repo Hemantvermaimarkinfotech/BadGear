@@ -35,7 +35,7 @@ const Checkout = ({navigation}) => {
                             </View>
 
                             <View style={{ justifyContent: "center", marginLeft: 10 }}>
-                                <Text style={{ color: "#000000", fontSize: 15 }}>Delivery Address</Text>
+                                <Text style={{ color: "#000000", fontSize: 15 }}>Delivery/Shipping Address</Text>
                                 <Text style={{ color: "#000000", fontSize: 12, fontFamily: "Gilroy-Regular", marginVertical: 5 }}>323 Main Street, Anytown, USA 12345</Text>
                             </View>
 

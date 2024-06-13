@@ -38,7 +38,7 @@ const Routes = () => {
   // Extracting userID from userData
 
 
-  console.log("userTokennnnnnnnnnnnnnnnnnnnnn:", userToken);
+  console.log("userTokeRoutes:", userToken);
   console.log("userId:", userID);
 
 

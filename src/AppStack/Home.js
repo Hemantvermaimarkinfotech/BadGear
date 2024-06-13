@@ -22,6 +22,7 @@ import AntDesign from 'react-native-vector-icons/Feather';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
 import he from 'he';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
@@ -43,6 +44,11 @@ const Home = ({navigation, item}) => {
   const [banner, setBanner] = useState(null);
   const [categories, setCategories] = useState([]);
   const {userToken} = useContext(AuthContext);
+  const [userData, setUserData] = useState(null); // State for userData
+console.log("userTokenHomePAge",userToken)
+
+
+
   const [Arrivals, setArrivals] = useState([]);
   const [username, setUsername] = useState('');
   const [wishlist, setWishlist] = useState([]); // State for wishlist
@@ -54,6 +60,9 @@ const Home = ({navigation, item}) => {
     return str + ' '.repeat(minLength - str.length);
   };
 
+  const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
   const BestSellingDATA = [
     {
       id: '1',
@@ -94,10 +103,13 @@ const Home = ({navigation, item}) => {
     // Best Selling data
   ];
 
-  useEffect(() => {
+  useEffect( () => {
     const fetchData = async () => {
       try {
         setLoading(true); // Set loading state to true
+        const userData = await AsyncStorage.getItem('userData');
+        setUserData(userData); // Set userData to state
+  
 
         // Fetch banner
         const bannerResponse = await getBanner(userToken);
@@ -162,7 +174,7 @@ const Home = ({navigation, item}) => {
       const response = await AddWishlist(productId);
       // If the request is successful
       if (response.status === 'success') {
-        console.log('Product added to wishlist:', response.successmsg);
+        // console.log('Product added to wishlist:', response.successmsg);
         setWishlist([...wishlist, productId]);
         // Return true to indicate success
         return true;
@@ -304,7 +316,7 @@ const Home = ({navigation, item}) => {
               fontSize: 22,
               fontFamily: 'Gilroy-SemiBold',
             }}>
-            Welcome Jack
+            Welcome {userData && capitalizeFirstLetter(JSON.parse(userData).user_data.data.user_login)}
           </Text>
         </View>
         <View
@@ -499,18 +511,18 @@ const Home = ({navigation, item}) => {
                       )}
                       <TouchableOpacity
                         onPress={async () => {
-                          console.log('Item:', item); // Console log the item
+                          // console.log('Item:', item); 
                           const addedToWishlist = await addToWishlist(
                             item.product_id,
                           );
                           if (addedToWishlist) {
                             // If added to wishlist successfully, show like icon
-                            console.log('Added to wishlist');
+                            // console.log('Added to wishlist');
                             // Update the state to reflect the change in the wishlist status
                             setWishlist([...wishlist, item.product_id]);
                           } else {
                             // If failed to add to wishlist or removed from wishlist, show heart icon
-                            console.log('Removed from wishlist');
+                            // console.log('Removed from wishlist');
                             // Update the state to reflect the change in the wishlist status
                             setWishlist(
                               wishlist.filter(
