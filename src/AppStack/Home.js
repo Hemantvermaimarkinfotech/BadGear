@@ -459,6 +459,10 @@ console.log("userTokenHomePAge",userToken)
                     onPress={() =>
                       navigation.navigate('ProductDetails', {
                         productId: item.product_id,
+                        productName: item.product_name,
+                        productDescription: item.description,
+                        productImg: item.product_img,
+                        productPrice: item.price,
                       })
                     }>
                     <View style={[styles.Arrivelitem, {marginTop: 10}]}>

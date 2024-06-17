@@ -14,6 +14,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {AuthContext} from '../Components/AuthProvider';
 import axios from 'react-native-axios';
+import { useIsFocused } from '@react-navigation/native'; // Import useIsFocused hook
 // Dummy JSON data
 const addressesData = [
   {
@@ -41,6 +42,9 @@ const DeliveryAddress = ({navigation}) => {
   const [selectedBilling, setSelectedBilling] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState(false);
   const [loading, setLoading] = useState(true);
+  const isFocused = useIsFocused(); // useIsFocused hook to track screen focus
+
+
   const handleBillingPress = () => {
     setSelectedBilling(true);
     setSelectedShipping(false);
@@ -99,6 +103,14 @@ const DeliveryAddress = ({navigation}) => {
       getAddressData(userToken.token, 'shipping');
     }
   }, [userToken]);
+
+  useEffect(() => {
+    console.log("hello")
+    if (isFocused && userToken && userToken.token) {
+      getAddressData(userToken.token, 'billing');
+          getAddressData(userToken.token, 'shipping');;
+    }
+  }, [isFocused,userToken]); // useEffect depends on isFocused
   
 
   useEffect(() => {
@@ -110,29 +122,7 @@ const DeliveryAddress = ({navigation}) => {
     setSelectedId(id);
   };
 
-  // const renderItem = ({ item }) => (
-  //   <View key={item.id}>
-  //     <TouchableOpacity style={styles.row} onPress={() => handleRadioPress(item.id)}>
-  //       <View style={{ flexDirection: "row", justifyContent: "center" }}>
-  //         <View style={[styles.iconContainer, selectedId === item.id ]}>
-  //           <Entypo name={item.icon} size={22} color={"#fff"} />
-  //         </View>
-  //         <View style={{ justifyContent: "center", marginLeft: 10 }}>
-  //           <Text style={{ color: "#000000", fontSize: 15 }}>{item.name}</Text>
-  //           {/* <Text style={{ color: "#000000", fontSize: 12, fontFamily: "Gilroy-Regular", marginVertical: 5 }}>{profileData?.data}</Text> */}
-  //         </View>
-  //       </View>
-  //       <View style={{ marginLeft: 10 }}>
-  //         {selectedId === item.id ? (
-  //           <MaterialIcons name="radio-button-checked" size={24} color={"red"} />
-  //         ) : (
-  //           <MaterialIcons name="radio-button-unchecked" size={24} color={"red"} />
-  //         )}
-  //       </View>
-  //     </TouchableOpacity>
-  //     <View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#707070", opacity: 0.3 }} />
-  //   </View>
-  // );
+ 
 
   const renderItem = ({item}) => {
   
@@ -195,114 +185,134 @@ const DeliveryAddress = ({navigation}) => {
       <MainHeader title={'Delivery Address'} />
 
       <View>
-        {/* <FlatList
-          data={addressesData}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.listContainer}
-        /> */}
+      
 
 {loading ? (
-  <View style={{justifyContent:"center",alignItems:"center",flex}}>
+  <View style={{justifyContent:"center",alignItems:"center"}}>
     <ActivityIndicator size={"large"} color={"red"} />
   </View>
 ) : (
   <View>
-    <View style={{ width: "95%", alignSelf: "center" }}>
-      <TouchableOpacity
-        style={styles.row}
-        onPress={handleBillingPress}
-      >
-        <View style={{ flexDirection: 'row', width: "90%" }}>
-          <View style={[styles.iconContainer]}>
-            <Entypo name="home" size={30} color={'#fff'} />
-          </View>
-          <View style={{ justifyContent: 'center', marginLeft: 10 }}>
-            <Text style={{ color: '#000000', fontSize: 15 }}>
-              Billing Address
-            </Text>
-            <View style={{ width: "100%" }}>
-              <Text
-                style={{
-                  color: '#000000',
-                  fontSize: 12,
-                  fontFamily: 'Gilroy-Regular',
-                  marginVertical: 5,
-                  lineHeight: 15
-                }}>
-                {billingaddress}
-              </Text>
-            </View>
-          </View>
+   <View style={{ width: "95%", alignSelf: "center" }}>
+  {billingaddress ? (
+    <TouchableOpacity
+      style={styles.row}
+      onPress={handleBillingPress}
+    >
+      <View style={{ flexDirection: 'row', width: "90%" }}>
+        <View style={[styles.iconContainer]}>
+          <Entypo name="home" size={30} color={'#fff'} />
         </View>
-        <View style={{ marginLeft: 10, width: "10%" }}>
-          {selectedBilling && (
-            <MaterialIcons
-              name="radio-button-checked"
-              size={24}
-              color={'red'}
-            />
-          )}
+        <View style={{ justifyContent: 'center', marginLeft: 10 }}>
+          <Text style={{ color: '#000000', fontSize: 15 }}>
+            Billing Address
+          </Text>
+          <Text
+            style={{
+              color: '#000000',
+              fontSize: 12,
+              fontFamily: 'Gilroy-Regular',
+              marginVertical: 5,
+              lineHeight: 15
+            }}>
+            {billingaddress}
+          </Text>
         </View>
-      </TouchableOpacity>
-      <View
-        style={{
-          height: 1,
-          width: '100%',
-          marginTop: 15,
-          backgroundColor: '#707070',
-          opacity: 0.3,
-        }}
-      />
-    </View>
+      </View>
+      <View style={{ marginLeft: 10, width: "10%" }}>
+        {selectedBilling && (
+          <MaterialIcons
+            name="radio-button-checked"
+            size={24}
+            color={'red'}
+          />
+        )}
+      </View>
+    </TouchableOpacity>
+  ) : (
+    <Text
+      style={{
+        color: '#808080',
+        fontSize: 12,
+        fontFamily: 'Gilroy-Regular',
+        marginVertical: 5,
+        lineHeight: 15,
+        textAlign: 'center'
+      }}>
+      No billing address found
+    </Text>
+  )}
+  <View
+    style={{
+      height: 1,
+      width: '100%',
+      marginTop: 15,
+      backgroundColor: '#707070',
+      opacity: 0.3,
+    }}
+  />
+</View>
+
 
     <View style={{ width: "95%", alignSelf: "center" }}>
-      <TouchableOpacity
-        style={styles.row}
-        onPress={handleShippingPress}
-      >
-        <View style={{ flexDirection: 'row', width: "90%" }}>
-          <View style={[styles.iconContainer]}>
-            <Entypo name="location-pin" size={30} color={'#fff'} />
-          </View>
-          <View style={{ justifyContent: 'center', marginLeft: 10 }}>
-            <Text style={{ color: '#000000', fontSize: 15 }}>
-              Shipping Address
-            </Text>
-            <View style={{ width: "100%" }}>
-              <Text
-                style={{
-                  color: '#000000',
-                  fontSize: 12,
-                  fontFamily: 'Gilroy-Regular',
-                  marginVertical: 5,
-                  lineHeight: 15
-                }}>
-                {shippingaddress}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={{ marginLeft: 10, width: "10%" }}>
-          {selectedShipping && (
-            <MaterialIcons
-              name="radio-button-checked"
-              size={24}
-              color={'red'}
-            />
-          )}
-        </View>
-      </TouchableOpacity>
-      <View
-        style={{
-          height: 1,
-          width: '100%',
-          marginTop: 15,
-          backgroundColor: '#707070',
-          opacity: 0.3,
-        }}
-      />
+  <TouchableOpacity
+    style={styles.row}
+    onPress={handleShippingPress}
+  >
+    <View style={{ flexDirection: 'row', width: "90%" }}>
+      <View style={[styles.iconContainer]}>
+        <Entypo name="location-pin" size={30} color={'#fff'} />
+      </View>
+      <View style={{ justifyContent: 'center', marginLeft: 10 }}>
+        <Text style={{ color: '#000000', fontSize: 15 }}>
+          Shipping Address
+        </Text>
+        {shippingaddress ? (
+          <Text
+            style={{
+              color: '#000000',
+              fontSize: 12,
+              fontFamily: 'Gilroy-Regular',
+              marginVertical: 5,
+              lineHeight: 15
+            }}>
+            {shippingaddress}
+          </Text>
+        ) : (
+          <Text
+            style={{
+              color: '#808080',
+              fontSize: 12,
+              fontFamily: 'Gilroy-Regular',
+              marginVertical: 5,
+              lineHeight: 15
+            }}>
+            No shipping address found
+          </Text>
+        )}
+      </View>
     </View>
+    <View style={{ marginLeft: 10, width: "10%" }}>
+      {selectedShipping && (
+        <MaterialIcons
+          name="radio-button-checked"
+          size={24}
+          color={'red'}
+        />
+      )}
+    </View>
+  </TouchableOpacity>
+  <View
+    style={{
+      height: 1,
+      width: '100%',
+      marginTop: 15,
+      backgroundColor: '#707070',
+      opacity: 0.3,
+    }}
+  />
+</View>
+
   </View>
 )}
 

@@ -10,100 +10,99 @@ import {
   FlatList,
   ActivityIndicator,
   Button,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import CustomDropdownPicker from '../Components/CustomDropDownPicker';
 import TitleHeader from '../Components/TitleHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { AddCart } from '../Components/ApiService';
+import {AddCart} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
-import Modal from "react-native-modal"
-import axios from "react-native-axios"
+import Modal from 'react-native-modal';
+import axios from 'react-native-axios';
 import FormData from 'form-data';
+import Loader from '../Components/Loader';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
 
+const renderRelatedProductItem = ({item, navigation, fetchProductDetails}) => (
+  <TouchableOpacity
+    activeOpacity={0.92}
+    style={[{width: imageWidth, marginTop: 10}]}>
+    <View style={styles.Arrivelitem}>
+      <Image source={{uri: item?.featured_img}} style={styles.Arrivalimage} />
+    </View>
 
-
-const renderRelatedProductItem = ({item, navigation,fetchProductDetails}) => (
-  <TouchableOpacity activeOpacity={0.92} style={[{width: imageWidth, marginTop: 10}]} 
-  >
-  <View style={styles.Arrivelitem}>
-    <Image source={{uri:item?.featured_img}} style={styles.Arrivalimage} />
-  </View>
-
-  <View
-    style={{
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 15,
-      marginTop: 10,
-      marginLeft: 20,
-    }}>
-    <Text
-      numberOfLines={2}
+    <View
       style={{
-        color: '#000000',
-        fontSize: 15,
-        width: 100,
-        textAlign: 'center',
-        fontWeight: 600,
-        fontFamily: 'Gilroy-SemiBold',
-      }}
-      key={`${item.id}_text`}>
-      {item?.title}
-    </Text>
-    <TouchableOpacity
-      onPress={() => navigation.navigate('WishList')}
-      style={{
-        height: 30,
-        width: 30,
-        backgroundColor: '#fff',
-        borderRadius: 30,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      key={`${item.id}_heart`}>
-      <Image
-        source={require('../assets/heart.png')}
-        style={{tintColor: '#000000'}}
-      />
-    </TouchableOpacity>
-  </View>
+        paddingHorizontal: 15,
+        marginTop: 10,
+        marginLeft: 20,
+      }}>
+      <Text
+        numberOfLines={2}
+        style={{
+          color: '#000000',
+          fontSize: 15,
+          width: 100,
+          textAlign: 'center',
+          fontWeight: 600,
+          fontFamily: 'Gilroy-SemiBold',
+        }}
+        key={`${item.id}_text`}>
+        {item?.title}
+      </Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('WishList')}
+        style={{
+          height: 30,
+          width: 30,
+          backgroundColor: '#fff',
+          borderRadius: 30,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        key={`${item.id}_heart`}>
+        <Image
+          source={require('../assets/heart.png')}
+          style={{tintColor: '#000000'}}
+        />
+      </TouchableOpacity>
+    </View>
 
-  <View style={{justifyContent: 'center', marginTop: 10}}>
-    <Text
-      style={{
-        color: '#000000',
-        fontSize: 17,
-        fontWeight: 500,
-        marginLeft: 18,
-        fontFamily: 'Gilroy-SemiBold',
-      }}
-      key={`${item.id}_rate`}>
-      $ {item?.price}
-    </Text>
-  </View>
-</TouchableOpacity>
+    <View style={{justifyContent: 'center', marginTop: 10}}>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 17,
+          fontWeight: 500,
+          marginLeft: 18,
+          fontFamily: 'Gilroy-SemiBold',
+        }}
+        key={`${item.id}_rate`}>
+        $ {item?.price}
+      </Text>
+    </View>
+  </TouchableOpacity>
 );
 
 const ProductDetailsPage = ({route, navigation}) => {
-  const {productId} = route.params;
-  console.log('productId', productId);
+  const {productId, productName, productDescription, productImg, productPrice} = route.params;
+  console.log('productIdparmasdata', productId,productName, productDescription, productImg, productPrice); 
   const [productDetails, setProductDetails] = useState();
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const {userToken,setUserToken} = useContext(AuthContext);
-  const [loading, setLoading] = useState(true); 
+  const {userToken, setUserToken} = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
 
   // console.log("relatedProductsrelatedProducts",relatedProducts)
-
 
   console.log('size', selectedSize);
   console.log('quantity', selectedQuantity);
@@ -119,22 +118,21 @@ const ProductDetailsPage = ({route, navigation}) => {
       const response = await fetch(
         `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
       );
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch product details');
       }
-      
+
       const data = await response.json();
       console.log('Product Details:', data);
-      
+
       // Set main product details
       setProductDetails(data.data[0]);
-      
+
       // If related products are included in the main product details, you can extract them directly
       const relatedProducts = data.data[0].related_products;
-      console.log('Related Products:', relatedProducts)
+      console.log('Related Products:', relatedProducts);
       setRelatedProducts(relatedProducts);
-      
     } catch (error) {
       console.error('Error fetching product details:', error);
       setProductDetails(null);
@@ -142,10 +140,6 @@ const ProductDetailsPage = ({route, navigation}) => {
       setLoading(false); // Set loading to false after fetching is done
     }
   };
-  
-
-  
-  
 
   useEffect(() => {
     // Fetch product details when the component mounts
@@ -153,112 +147,67 @@ const ProductDetailsPage = ({route, navigation}) => {
     ``;
   }, []);
 
-  const token=userToken.token
 
 
-
-
-  // const addToCart = async () => {
-  //   try {
+  const addToCart = async (productId) => {
+    console.log("userToken:", userToken?.token);
+    console.log("productId:", productId);
+    console.log(productId,size,quantity,price,'hbhbhybhbhybhy')
     
-  //     // const userToken = 'USER_AUTH_TOKEN';
-  //     const response = await AddCart(
-  //       productId,
-  //       selectedSize,
-  //       selectedQuantity,
-  //       productDetails?.price,
-  //      token
-  //     );
-  //     console.log(JSON.stringify(response.data));; // Log the response to the console
-  //     // setIsAddedToCart(true);
-  //     // setModalVisible(true);
-  //     // navigation.navigate("Cart")
-  //     setCart(response.data.successmsg); 
-  //   } catch (error) {
-  //     console.error('Error adding product to cart:', error);
-  //   }
-  // };
-
-console.log("userToken",userToken)
-
-// const addToCart = (productId) => {
-//   let data = new FormData();
-//   data.append('product_id', productId);
-//   data.append('size', 'M');
-//   data.append('quantity', '3');
-//   data.append('price', '345');
-
-//   let config = {
-//     method: 'post',
-//     maxBodyLength: Infinity,
-//     url: 'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
-//     headers: {
-//       'Authorization': 'ankitarororaa|1719387234|i71w6X009GMNURPWLurCCE3kEYgVA7GiY3Ycbn8fQog|3e453f53c7026ee09c2065a99dc8badd32e775636ede6d38845fb90671644d05',
-//       'Cookie': 'wordpress_logged_in_bfeed78d608bb360f77edd870d3b8578=ankitarororaa%7C1718350434%7CBoz9jiNprSxWJMYEu0DYYYnwdA9Y5ECO1hu5UfcjGg8%7Ce1c755e684f63916a24898aa704cb59000763c46132613ed563efd3f7a415e13',
-//       'Content-Type': 'multipart/form-data', // Set the Content-Type header
-//     },
-//     data: data
-//   };
-
-//   axios.request(config)
-//     .then((response) => {
-//       console.log(JSON.stringify(response.data));
-//       // Handle success response here, maybe update UI or show a success message
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//       // Handle error here, maybe show an error message to the user
-//     });
-// };
-
-
-const addToCart = async () => {
-  try {
+    // Create a FormData object to send as the request body
     let formData = new FormData();
-    formData.append('product_id', productId); // Replace productId with the actual product id
-    formData.append('size', selectedSize); // Assuming selectedSize is available in your scope
-    formData.append('quantity', selectedQuantity); // Assuming selectedQuantity is available in your scope
-    formData.append('price', productDetails?.price); // Assuming productDetails is available and has a price property
-console.log("formData",formData)
-    const response = await axios.put(
-      'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `ankitarororaa|1719378738|eevGbmwMPsLCvZjlRsxlNf7UVoxjvQDkzNmSGWfJ08U|a313ed6b336a37cff1dc3032aea782107766e12e96f05bfad8366945cff87383`,
-        },
-      },
-    );
-
-    // Assuming setUserToken is a function to update user token and AsyncStorage is available
-    setUserToken(response?.data);
-    await AsyncStorage.setItem('addtocart', JSON.stringify(response?.data));
-    console.log("addtocart", response?.data);
-  } catch (error) {
-    console.log(error);
-    // Handle error here
-  }
-};
-
-
-
+    formData.append('product_id', productId); 
+    formData.append('size', "M"); 
+    formData.append('quantity', "5");
+    formData.append('price', "235"); 
+  
+    console.log("FormData:", formData); // Log FormData object
+    
+    try {
+      // Make POST request to the API endpoint
+      const response = await axios.post(
+        'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data', // Set the Content-Type header for FormData
+            'Authorization': userToken?.token // Set Authorization header using userToken.token
+          },
+        }
+      );
+  
+      console.log('Response data:', response.data); // Log response data
+  
+    } catch (error) {
+      if (error.response) {
+        console.error('Error adding to cart:', error.response.status);
+        if (error.response.status === 403) {
+          console.error('Authorization error:', error.response.data);
+          alert('Authorization error: Please check your credentials.');
+        } else {
+          console.error('Server Error:', error.response.data);
+          alert('Failed to add item to cart. Please try again later.');
+        }
+      } else if (error.request) {
+        console.error('Request made but no response received:', error.request);
+        alert('No response from server. Please check your network connection.');
+      } else {
+        console.error('Error setting up the request:', error.message);
+        alert('An unexpected error occurred. Please try again later.');
+      }
+    }
+  };
+  
+  
 
 
   
 
-
-
-
-
-
-
-
- 
   
   
- 
+  
 
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -266,388 +215,431 @@ console.log("formData",formData)
       <TitleHeader title={productDetails?.product_name} />
       {/* header part end */}
       {loading ? (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator color="#F10C18" size="large" />
-    </View>
-  ) : (
-    <ScrollView>
-    {/* Upper image */}
-    <View style={styles.productbox}>
-    {productDetails?.product_img ? (
-          <Image
-            source={{ uri: productDetails?.product_img }}
-            style={styles.productimage}
-          />
-        ) : (
-          <Text style={{color:"#000000"}}>No Image Available</Text>
-        )}
-    </View>
-  
-    {/* Upper image end */}
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator color="#F10C18" size="large" />
+        </View>
+      ) : (
+        <ScrollView>
+          {/* Upper image */}
+          <View style={styles.productbox}>
+            {productDetails?.product_img ? (
+              <Image
+                source={{uri: productDetails?.product_img}}
+                style={styles.productimage}
+              />
+            ) : (
+              <Text style={{color: '#000000'}}>No Image Available</Text>
+            )}
+          </View>
 
-    <View style={{marginTop: 10, width: '95%'}}>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 20,
-          fontWeight: 700,
-          marginTop: 10,
-          marginLeft: 20,
-          fontFamily: 'Gilroy-SemiBold',
-        }}>
-        {productDetails?.product_name}
-      </Text>
-      <Text
-        style={{
-          fontSize: 22,
-          fontWeight: 700,
-          color: '#000000',
-          marginTop: 5,
-          marginLeft: 20,
-          fontFamily: 'Gilroy-SemiBold',
-        }}>
-        ${productDetails?.price}
-      </Text>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 16,
-          marginTop: 5,
-          marginLeft: 20,
-          fontFamily: 'Gilroy-Regular',
-        }}>
-        SKU: AGDH
-      </Text>
-    </View>
+          {/* Upper image end */}
 
-    {/* Product Size */}
-    <View style={{marginTop: 20}}>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 18,
-          fontWeight: 700,
-          marginLeft: 20,
-          fontFamily: 'Gilroy-SemiBold',
-        }}>
-        Size:
-      </Text>
-      <ScrollView
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        style={styles.productSize}>
-        {productDetails?.attributes.split(' | ').map((size, index) => (
-        <TouchableOpacity
-        style={[
-          styles.sizebox,
-          selectedSize === size && styles.selectedSizebox // Apply selected style if size is selected
-        ]}
-        key={index}
-        onPress={() => setSelectedSize(selectedSize === size ? null : size)} // Toggle selection
-      >
-        <Text
-          style={[
-            styles.sizetext,
-            selectedSize === size && styles.selectedSizetext // Apply selected text style if size is selected
-          ]}
-        >
-          {size}
-        </Text>
-      </TouchableOpacity>
-      
-        
-        ))}
-      </ScrollView>
-    </View>
+          <View style={{marginTop: 10, width: '95%'}}>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 20,
+                fontWeight: 700,
+                marginTop: 10,
+                marginLeft: 20,
+                fontFamily: 'Gilroy-SemiBold',
+              }}>
+              {productDetails?.product_name}
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: '#000000',
+                marginTop: 5,
+                marginLeft: 20,
+                fontFamily: 'Gilroy-SemiBold',
+              }}>
+              ${productDetails?.price}
+            </Text>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 16,
+                marginTop: 5,
+                marginLeft: 20,
+                fontFamily: 'Gilroy-Regular',
+              }}>
+              SKU: AGDH
+            </Text>
+          </View>
 
-    {/* Product Size end */}
+          {/* Product Size */}
+          <View style={{marginTop: 20}}>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontWeight: 700,
+                marginLeft: 20,
+                fontFamily: 'Gilroy-SemiBold',
+              }}>
+              Size:
+            </Text>
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={styles.productSize}>
+              {productDetails?.attributes.split(' | ').map((size, index) => (
+                <TouchableOpacity
+                  style={[
+                    styles.sizebox,
+                    selectedSize === size && styles.selectedSizebox, // Apply selected style if size is selected
+                  ]}
+                  key={index}
+                  onPress={() =>
+                  
+                    setSelectedSize(selectedSize === size ? null : size)
+                  } // Toggle selection
+                >
+                  <Text
+                    style={[
+                      styles.sizetext,
+                      selectedSize === size && styles.selectedSizetext, // Apply selected text style if size is selected
+                    ]}>
+                    {size}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
 
-    {/* Product Qty */}
-    <View style={{marginTop: 20}}>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 18,
-          marginLeft: 20,
-          fontFamily: 'Gilroy-SemiBold',
-        }}>
-        QTY:
-      </Text>
-      <View style={styles.qty}>
-        <TouchableOpacity
-          style={styles.quantityButton}
-          onPress={() => setSelectedQuantity(selectedQuantity - 1)}>
-          <Text style={styles.quantityButtonText}>-</Text>
-        </TouchableOpacity>
-        <Text style={styles.quantityText}>{selectedQuantity}</Text>
-        <TouchableOpacity
-          style={styles.quantityButton}
-          onPress={() => setSelectedQuantity(selectedQuantity + 1)}>
-          <Text style={styles.quantityButtonText}>+</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-    {/* Product Qty end/}
+          {/* Product Size end */}
+
+          {/* Product Qty */}
+          <View style={{marginTop: 20}}>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                marginLeft: 20,
+                fontFamily: 'Gilroy-SemiBold',
+              }}>
+              QTY:
+            </Text>
+            <View style={styles.qty}>
+              <TouchableOpacity
+                style={styles.quantityButton}
+                onPress={() => setSelectedQuantity(selectedQuantity - 1)}>
+                <Text style={styles.quantityButtonText}>-</Text>
+              </TouchableOpacity>
+              <Text style={styles.quantityText}>{selectedQuantity}</Text>
+              <TouchableOpacity
+                style={styles.quantityButton}
+                onPress={() => setSelectedQuantity(selectedQuantity + 1)}>
+                <Text style={styles.quantityButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          {/* Product Qty end/}
 
     {/* Wishlist & AddCart Button */}
-    <TouchableOpacity
-      style={{
-        flexDirection: 'row',
-        height: 70,
-        width: '95%',
-        alignSelf: 'center',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-        marginTop: 20,
-      }}>
-      <TouchableOpacity
-        style={[styles.button, {justifyContent: 'space-evenly'}]}
-        onPress={() => navigation.navigate('WishList')}>
-        <Image
-          source={require('../assets/heart2.png')}
-          style={{
-            height: 20,
-            width: 20,
-            tintColor: '#000000',
-            resizeMode: 'contain',
-          }}
-        />
-        <Text
-          style={{
-            color: '#000000',
-            fontSize: 20,
-            fontWeight: 600,
-            fontFamily: 'Gilroy-SemiBold',
-          }}>
-          Wishlist
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[
-          styles.button,
-          {
-            backgroundColor: '#F10C18',
-            borderColor: '#F10C18',
-            paddingHorizontal: 20,
-          },
-        ]}
-        onPress={() => addToCart(productId)}
->
-        <Image
-          source={require('../assets/Cart.png')}
-          style={{
-            height: 20,
-            width: 20,
-            tintColor: '#FFFFFF',
-            resizeMode: 'contain',
-          }}
-        />
-        <Text
-          style={{
-            color: '#FFFFFF',
-            fontSize: 18,
-            fontFamily: 'Gilroy-SemiBold',
-          }}>
-         {/* {isAddedToCart ? 'View Cart' : 'Add To Cart'} */}
-         Add To Cart
-        </Text>
-      </TouchableOpacity>
-    </TouchableOpacity>
-    {/* Wishlist $ AddCart Button End */}
-
-    {/* Product Description */}
-    <View style={styles.productDescription}>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 20,
-          fontFamily: 'Gilroy-SemiBold',
-          marginTop:20
-        }}>
-        Product Description
-      </Text>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 15,
-          marginTop: 10,
-          marginLeft: 20,
-          lineHeight: 25,
-          fontFamily: 'Gilroy-Regular',
-          paddingHorizontal: 5,
-        }}>
-        {productDetails?.description}
-      </Text>
-    </View>
-    {/* Product Description End */}
-
-    {/* Related Product */}
-    <View>
-      <View style={styles.RelatedProductlheader}>
-        <Text style={{color: '#000000', fontSize: 20,fontFamily:"Gilroy-SemiBold"}}>
-          Related Product
-        </Text>
-        <TouchableOpacity>
-          <Text
+          <TouchableOpacity
             style={{
-              color: '#000000',
-              fontSize: 15,
-              textDecorationLine: 'underline',
-              fontFamily:"Gilroy-SemiBold"
+              flexDirection: 'row',
+              height: 70,
+              width: '95%',
+              alignSelf: 'center',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingHorizontal: 10,
+              marginTop: 20,
             }}>
-            View All
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={relatedProducts}
-          renderItem={({ item }) =>
-          renderRelatedProductItem({ item, navigation: navigation })
-        }
-          keyExtractor={item => item.id}
-        />
-      </View>
-    </View>
-    {/* Related Product End */}
+            <TouchableOpacity
+              style={[styles.button, {justifyContent: 'space-evenly'}]}
+              onPress={() => navigation.navigate('WishList')}>
+              <Image
+                source={require('../assets/heart2.png')}
+                style={{
+                  height: 20,
+                  width: 20,
+                  tintColor: '#000000',
+                  resizeMode: 'contain',
+                }}
+              />
+              <Text
+                style={{
+                  color: '#000000',
+                  fontSize: 20,
+                  fontWeight: 600,
+                  fontFamily: 'Gilroy-SemiBold',
+                }}>
+                Wishlist
+              </Text>
+            </TouchableOpacity>
+            
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: '#F10C18',
+                    borderColor: '#F10C18',
+                    paddingHorizontal: 20,
+                  },
+                ]}
+                onPress={() => {
+                  console.log('Prouduct Idd:', productId); 
+                  // Log productId to console
+                  addToCart(productId); // Call addToCart function with productId
+                }}>
+                <Image
+                  source={require('../assets/Cart.png')}
+                  style={{
+                    height: 20,
+                    width: 20,
+                    tintColor: '#FFFFFF',
+                    resizeMode: 'contain',
+                  }}
+                />
+                <Text
+                  style={{
+                    color: '#FFFFFF',
+                    fontSize: 18,
+                    fontFamily: 'Gilroy-SemiBold',
+                  }}>
+                 AddToCart
+                </Text>
+              </TouchableOpacity>
+        
 
-    {/* Review Section */}
 
-    <View style={styles.Review}>
-      <View style={styles.RelatedProductlheader}>
-        <Text style={{color: '#000000', fontSize: 20, fontFamily:"Gilroy-Medium"}}>
-          Ratings & Reviews
-        </Text>
-        <TouchableOpacity>
-          <Text
-            style={{
-              color: '#F10C18',
-              fontSize: 15,
-              textDecorationLine: 'underline',
-              fontFamily:"Gilroy-Medium"
-            }}>
-            Write review
-          </Text>
-        </TouchableOpacity>
-      </View>
 
-      <Image
-        source={require('../assets/Reviewstar.png')}
-        style={{marginLeft: 20, marginTop: 10}}
-      />
 
-      <View
-        style={{
-          marginTop: 10,
-          borderRadius: 10,
-          alignSelf: 'center',
-          width: '90%',
-          // borderWidth:1
-        }}>
-        <View
-          style={{
-            height: 100,
-            borderBottomColor: '#D6D6D6',
-            borderBottomWidth: 0.4,
-            width: '100%',
-          }}>
-          <View>
-            <Text style={{color: '#000000', fontSize: 14, fontWeight: 500,fontFamily:"Gilroy-Medium"}}>
-              26 ratings and 24 reviews
+
+
+
+          </TouchableOpacity>
+          {/* Wishlist $ AddCart Button End */}
+
+          {/* Product Description */}
+          <View style={styles.productDescription}>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 20,
+                fontFamily: 'Gilroy-SemiBold',
+                marginTop: 20,
+              }}>
+              Product Description
             </Text>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 15,
+                marginTop: 10,
+                marginLeft: 20,
+                lineHeight: 25,
+                fontFamily: 'Gilroy-Regular',
+                paddingHorizontal: 5,
+              }}>
+              {productDetails?.description}
+            </Text>
+          </View>
+          {/* Product Description End */}
+
+          {/* Related Product */}
+          <View>
+            <View style={styles.RelatedProductlheader}>
+              <Text
+                style={{
+                  color: '#000000',
+                  fontSize: 20,
+                  fontFamily: 'Gilroy-SemiBold',
+                }}>
+                Related Product
+              </Text>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: '#000000',
+                    fontSize: 15,
+                    textDecorationLine: 'underline',
+                    fontFamily: 'Gilroy-SemiBold',
+                  }}>
+                  View All
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={relatedProducts}
+                renderItem={({item}) =>
+                  renderRelatedProductItem({item, navigation: navigation})
+                }
+                keyExtractor={item => item.id}
+              />
+            </View>
+          </View>
+          {/* Related Product End */}
+
+          {/* Review Section */}
+
+          <View style={styles.Review}>
+            <View style={styles.RelatedProductlheader}>
+              <Text
+                style={{
+                  color: '#000000',
+                  fontSize: 20,
+                  fontFamily: 'Gilroy-Medium',
+                }}>
+                Ratings & Reviews
+              </Text>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: '#F10C18',
+                    fontSize: 15,
+                    textDecorationLine: 'underline',
+                    fontFamily: 'Gilroy-Medium',
+                  }}>
+                  Write review
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Image
+              source={require('../assets/Reviewstar.png')}
+              style={{marginLeft: 20, marginTop: 10}}
+            />
+
             <View
               style={{
                 marginTop: 10,
                 borderRadius: 10,
-                width: '100%',
-                flexDirection: 'row',
-                justifyContent:"space-between",
-             
-              
+                alignSelf: 'center',
+                width: '90%',
+                // borderWidth:1
               }}>
               <View
                 style={{
-                  height: 28,
-                  width: "20%",
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 25,
-                  borderColor: '#707070',
-                  borderWidth: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-around',
-                  alignItems: 'center',
+                  height: 100,
+                  borderBottomColor: '#D6D6D6',
+                  borderBottomWidth: 0.4,
+                  width: '100%',
                 }}>
-                <Text
-                  style={{color: '#000000', fontSize: 13, fontWeight: 600}}>
-                  5
-                </Text>
-                <Image
-                  source={require('../assets/star.png')}
-                  style={{height: 15, width: 15, resizeMode: 'contain'}}
-                />
-              </View>
-
-              <View style={{width: "80%",marginLeft:10}}>
-                <Text style={{fontSize: 14, fontWeight: 500, marginTop: 5,color:"#000000",fontFamily:"Gilroy-Medium"}}>
-                  Cozy Comfort and Style Combined!
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 10,
-                    width:"100%",
-                    paddingRight:10,
-                 
-                   
-                  }}>
+                <View>
                   <Text
                     style={{
                       color: '#000000',
                       fontSize: 14,
-                      fontWeight: 700,
+                      fontWeight: 500,
+                      fontFamily: 'Gilroy-Medium',
                     }}>
-                    David
+                    26 ratings and 24 reviews
                   </Text>
-                  <Text
+                  <View
                     style={{
-                      color: '#4B4B4B',
-                      fontSize: 13,
-                      fontWeight: 300,
-                     
+                      marginTop: 10,
+                      borderRadius: 10,
+                      width: '100%',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
                     }}>
-                    5 days ago
-                  </Text>
+                    <View
+                      style={{
+                        height: 28,
+                        width: '20%',
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: 25,
+                        borderColor: '#707070',
+                        borderWidth: 1,
+                        flexDirection: 'row',
+                        justifyContent: 'space-around',
+                        alignItems: 'center',
+                      }}>
+                      <Text
+                        style={{
+                          color: '#000000',
+                          fontSize: 13,
+                          fontWeight: 600,
+                        }}>
+                        5
+                      </Text>
+                      <Image
+                        source={require('../assets/star.png')}
+                        style={{height: 15, width: 15, resizeMode: 'contain'}}
+                      />
+                    </View>
+
+                    <View style={{width: '80%', marginLeft: 10}}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 500,
+                          marginTop: 5,
+                          color: '#000000',
+                          fontFamily: 'Gilroy-Medium',
+                        }}>
+                        Cozy Comfort and Style Combined!
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginTop: 10,
+                          width: '100%',
+                          paddingRight: 10,
+                        }}>
+                        <Text
+                          style={{
+                            color: '#000000',
+                            fontSize: 14,
+                            fontWeight: 700,
+                          }}>
+                          David
+                        </Text>
+                        <Text
+                          style={{
+                            color: '#4B4B4B',
+                            fontSize: 13,
+                            fontWeight: 300,
+                          }}>
+                          5 days ago
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
                 </View>
               </View>
             </View>
           </View>
-        </View>
-      </View>
-    </View>
-  </ScrollView>
-  )}
-    
+        </ScrollView>
+      )}
 
-    {/* Modal for showing item added to cart */}
-    <Modal isVisible={modalVisible}>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',}}>
-              <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10,width:"80%",alignSelf:"center" }}>
-            
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between',}}>
-                 <TouchableOpacity onPress={() => setModalVisible(false)}>
-                 <Text style={{color:"#000000",fontSize:15,fontWeight:500}}>Item added to cart</Text>
-                 </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-                    <Text style={{color:"#F10C18",fontSize:15,fontWeight:500}}>GO TO CART</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+      {/* Modal for showing item added to cart */}
+      <Modal isVisible={modalVisible}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              padding: 20,
+              borderRadius: 10,
+              width: '80%',
+              alignSelf: 'center',
+            }}>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Text style={{color: '#000000', fontSize: 15, fontWeight: 500}}>
+                  Item added to cart
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                <Text style={{color: '#F10C18', fontSize: 15, fontWeight: 500}}>
+                  GO TO CART
+                </Text>
+              </TouchableOpacity>
             </View>
-          </Modal>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -724,7 +716,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: '#E5E5E5',
     borderWidth: 1,
-   
   },
   RelatedProductlheader: {
     flexDirection: 'row',
@@ -772,25 +763,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     backgroundColor: '#fff',
   },
-  qty:{
-    justifyContent:"space-evenly",
-    flexDirection:"row",
-    borderWidth:1,
-    width:"20%",
-    height:37,
-    marginHorizontal:20,
-    marginTop:15,
-    borderColor:"#B2B2B2",
-    borderRadius:8,
-    alignItems:"center"
+  qty: {
+    justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    borderWidth: 1,
+    width: '20%',
+    height: 37,
+    marginHorizontal: 20,
+    marginTop: 15,
+    borderColor: '#B2B2B2',
+    borderRadius: 8,
+    alignItems: 'center',
   },
-  quantityControl: {
-    
-  },
+  quantityControl: {},
   quantityButton: {
     height: 40,
-    width:40,
-    borderRadius:8,
+    width: 40,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -828,5 +817,4 @@ const styles = StyleSheet.create({
     height: 145,
     borderRadius: 15,
   },
-  
 });
