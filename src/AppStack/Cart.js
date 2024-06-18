@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
- Button
+  Button
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from "react-native-axios";
@@ -27,7 +27,9 @@ const Cart = () => {
   const [value, setValue] = useState(null);
   const [country, setCountry] = useState('1');
   const [selectedCartItem, setSelectedCartItem] = useState(null); // State to hold selected cart item's data
-  const {userToken}=useContext(AuthContext)
+  const { userToken } = useContext(AuthContext)
+
+  console.log("userTokenCart",userToken)
 
   const goBack = () => {
     navigation.goBack();
@@ -38,7 +40,7 @@ const Cart = () => {
     { label: 'M', value: '2' },
     { label: 'L', value: '3' },
     { label: 'XL', value: '4' },
- 
+
   ];
 
   const updateQuantity = (item, quantityChange) => {
@@ -82,7 +84,7 @@ const Cart = () => {
             <View style={[styles.sizeSection]}>
               <Text style={{ fontSize: 15, color: "#000000", fontFamily: "Gilroy-SemiBold" }}>Size:</Text>
               <SelectCountry
-                style={[styles.dropdown,{}]}
+                style={[styles.dropdown, {}]}
                 selectedTextStyle={styles.selectedTextStyle}
                 placeholderStyle={styles.placeholderStyle}
                 imageStyle={styles.imageStyle}
@@ -115,34 +117,24 @@ const Cart = () => {
 
 
 
-  useEffect(() => {
-    setLoading(true); // Set loading state to true before fetching data
-    if (userToken && userToken.token) {
-      GetCartItems(userToken.token); // Pass the token as an argument
-    }
-  }, [userToken]);
-
-
-  const GetCartItems = async (token) => {
-    console.log("tokennnnnnnnnn",token)
+  const GetCartItems = async () => {
+    console.log("Token:", userToken);
     
-    try {
-      if (!token) {
-        console.error('User token is not available');
-        return;
+    // Start loading
+    setLoading(true);
+
+    let config = {
+      method: 'get',
+      url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
+      headers: {
+        Authorization: `${userToken}`,
       }
-  
-      const response = await axios.get(
-        'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-          },
-        },
-      );
-  
-      console.log('response cart', response.data.data);
+    };
+
+    try {
+      const response = await axios.request(config);
+      console.log(JSON.stringify(response.data));
+
       if (response.data.status === "success") {
         const itemsWithQuantity = response.data.data.map(item => ({ ...item, quantity: 1 })); // Add quantity field
         setCartItems(itemsWithQuantity);
@@ -152,16 +144,14 @@ const Cart = () => {
     } catch (error) {
       console.error('Error fetching Cart Items:', error);
     } finally {
-      setLoading(false);
+      setLoading(false); // End loading
     }
   };
 
-  
+
   useEffect(() => {
-    if (userToken && userToken.token) {
-      GetCartItems(userToken.token); // Pass the token as an argument
-    }
-  }, [userToken]);
+    GetCartItems()
+  }, []);
 
   const getTotalAmount = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
@@ -170,50 +160,50 @@ const Cart = () => {
   return (
 
 
-<SafeAreaView style={styles.container}>
-  <View style={styles.header}>
-    <TouchableOpacity onPress={goBack}>
-      <Image
-        source={require('../assets/next.png')}
-        style={styles.headerIcon}
-      />
-    </TouchableOpacity>
-    <Text style={styles.headerText}>Cart</Text>
-  </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={goBack}>
+          <Image
+            source={require('../assets/next.png')}
+            style={styles.headerIcon}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Cart</Text>
+      </View>
 
-  {loading ? (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#F10C18" />
-    </View>
-  ) : (
-    <>
-      {cartItems.length > 0 ? (
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#F10C18" />
+        </View>
+      ) : (
         <>
-          <View style={styles.totalItemsContainer}>
-            <Text style={styles.totalItemsText}>{cartItems.length} Items Selected</Text>
-            <Text style={styles.totalAmountText}>${getTotalAmount()}</Text>
-          </View>
+          {cartItems.length > 0 ? (
+            <>
+              <View style={styles.totalItemsContainer}>
+                <Text style={styles.totalItemsText}>{cartItems.length} Items Selected</Text>
+                <Text style={styles.totalAmountText}>${getTotalAmount()}</Text>
+              </View>
 
-          <View style={{ marginBottom: 200 }}>
-            <FlatList
-              data={cartItems}
-              renderItem={({ item }) => renderCartItem({ item })}
-              keyExtractor={item => item.product_id.toString()}
-              nestedScrollEnabled={true}
-            />
+              <View style={{ marginBottom: 200 }}>
+                <FlatList
+                  data={cartItems}
+                  renderItem={({ item }) => renderCartItem({ item })}
+                  keyExtractor={item => item.product_id.toString()}
+                  nestedScrollEnabled={true}
+                />
 
-            <TouchableOpacity style={styles.placeOrderButton} onPress={()=>navigation.navigate("Checkout")}>
-              <Text style={styles.placeOrderText}>Place Order</Text>
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity style={styles.placeOrderButton} onPress={() => navigation.navigate("Checkout")}>
+                  <Text style={styles.placeOrderText}>Place Order</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : null // Render nothing if cartItems.length is 0
+          }
         </>
-      ) : null // Render nothing if cartItems.length is 0
-      }
-    </>
-  )}
+      )}
 
- 
-</SafeAreaView>
+
+    </SafeAreaView>
 
 
   );
@@ -221,7 +211,7 @@ const Cart = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:"#FBFCFC",
+    backgroundColor: "#FBFCFC",
   },
   header: {
     flexDirection: 'row',
@@ -252,12 +242,12 @@ const styles = StyleSheet.create({
   },
   totalItemsText: {
     fontSize: 20,
-   fontFamily:"Gilroy-SemiBold",
+    fontFamily: "Gilroy-SemiBold",
     color: '#000000',
   },
   totalAmountText: {
     fontSize: 20,
-    fontFamily:"Gilroy-SemiBold",
+    fontFamily: "Gilroy-SemiBold",
     color: '#F10C18',
   },
   cartItem: {
@@ -290,15 +280,15 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 18,
     color: '#000000',
-    fontFamily:"Gilroy-Medium",
-    width:150
+    fontFamily: "Gilroy-Medium",
+    width: 150
 
   },
   itemRate: {
     fontSize: 20,
     color: '#000000',
-    fontFamily:"Gilroy-Medium",
-    marginTop:10
+    fontFamily: "Gilroy-Medium",
+    marginTop: 10
   },
   closeButton: {
     position: 'absolute',
@@ -320,7 +310,7 @@ const styles = StyleSheet.create({
     elevation: 1,
     position: "relative",
     bottom: 20,
-    top:20
+    top: 20
   },
   placeOrderText: {
     color: '#fff',
@@ -370,7 +360,7 @@ const styles = StyleSheet.create({
   btntext: {
     fontSize: 20,
     color: "#000000",
-    fontFamily:"Gilroy-SemiBold"
+    fontFamily: "Gilroy-SemiBold"
   },
   dropdown: {
     height: 30,
@@ -394,10 +384,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  quantityText:{
-    color:"#000000",
-    fontSize:15,
-    fontFamily:'Gilroy-SemiBold'
+  quantityText: {
+    color: "#000000",
+    fontSize: 15,
+    fontFamily: 'Gilroy-SemiBold'
   }
 });
 

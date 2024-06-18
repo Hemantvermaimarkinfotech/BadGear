@@ -97,10 +97,12 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken, setUserToken} = useContext(AuthContext);
-  const [loading, setLoading] = useState(true);
+  console.log("authuserToken",userToken)
+  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loadingCart,setLoadingCart]=useState(false)
 
   // console.log("relatedProductsrelatedProducts",relatedProducts)
 
@@ -150,19 +152,20 @@ const ProductDetailsPage = ({route, navigation}) => {
 
 
   const addToCart = async (productId) => {
-    console.log("userToken:", userToken?.token);
+    console.log("userToken:", userToken);
     console.log("productId:", productId);
-    console.log(productId,size,quantity,price,'hbhbhybhbhybhy')
+   
     
     // Create a FormData object to send as the request body
     let formData = new FormData();
     formData.append('product_id', productId); 
-    formData.append('size', "M"); 
-    formData.append('quantity', "5");
-    formData.append('price', "235"); 
+    formData.append('size', selectedSize); 
+    formData.append('quantity', selectedQuantity);
+    formData.append('price',productDetails?.price); 
   
     console.log("FormData:", formData); // Log FormData object
-    
+    const token=userToken
+    setLoadingCart(true)
     try {
       // Make POST request to the API endpoint
       const response = await axios.post(
@@ -171,7 +174,7 @@ const ProductDetailsPage = ({route, navigation}) => {
         {
           headers: {
             'Content-Type': 'multipart/form-data', // Set the Content-Type header for FormData
-            'Authorization': userToken?.token // Set Authorization header using userToken.token
+            Authorization: `${token}`,// Set Authorization header using userToken.token
           },
         }
       );
@@ -195,6 +198,8 @@ const ProductDetailsPage = ({route, navigation}) => {
         console.error('Error setting up the request:', error.message);
         alert('An unexpected error occurred. Please try again later.');
       }
+    }finally{
+      setLoadingCart(false)
     }
   };
   
@@ -373,38 +378,63 @@ const ProductDetailsPage = ({route, navigation}) => {
               </Text>
             </TouchableOpacity>
             
+             {loadingCart ? (
               <TouchableOpacity
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor: '#F10C18',
-                    borderColor: '#F10C18',
-                    paddingHorizontal: 20,
-                  },
-                ]}
-                onPress={() => {
-                  console.log('Prouduct Idd:', productId); 
-                  // Log productId to console
-                  addToCart(productId); // Call addToCart function with productId
+              style={[
+                
+                {
+                  backgroundColor: '#F10C18',
+                  borderColor: '#F10C18',
+                  height: 50,
+                  width: '47%',
+                  alignSelf: 'center',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  borderColor: '#707070',
+                  borderWidth: 1,
+                 justifyContent:"center"
+                  
+                },
+              ]}
+             >
+            
+            <ActivityIndicator size={"large"} color={"#fff"}/>
+            </TouchableOpacity>
+             ):(
+              <TouchableOpacity
+              style={[
+                styles.button,
+                {
+                  backgroundColor: '#F10C18',
+                  borderColor: '#F10C18',
+                  paddingHorizontal: 20,
+                },
+              ]}
+              onPress={() => {
+                console.log('Prouduct Idd:', productId); 
+                // Log productId to console
+                addToCart(productId); // Call addToCart function with productId
+              }}>
+              <Image
+                source={require('../assets/Cart.png')}
+                style={{
+                  height: 20,
+                  width: 20,
+                  tintColor: '#FFFFFF',
+                  resizeMode: 'contain',
+                }}
+              />
+              <Text
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 18,
+                  fontFamily: 'Gilroy-SemiBold',
                 }}>
-                <Image
-                  source={require('../assets/Cart.png')}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    tintColor: '#FFFFFF',
-                    resizeMode: 'contain',
-                  }}
-                />
-                <Text
-                  style={{
-                    color: '#FFFFFF',
-                    fontSize: 18,
-                    fontFamily: 'Gilroy-SemiBold',
-                  }}>
-                 AddToCart
-                </Text>
-              </TouchableOpacity>
+               AddToCart
+              </Text>
+            </TouchableOpacity>
+             )}
         
 
 
