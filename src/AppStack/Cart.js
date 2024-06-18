@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Button
+  Button,
+  Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from "react-native-axios";
@@ -105,20 +106,65 @@ const Cart = () => {
             </View>
           </View>
         </View>
-        <TouchableOpacity style={styles.closeButton} onPress={() => {
-          setSelectedCartItem(item); // Store selected item's data in state
-          setModalVisible(true); // Show modal
-        }}>
+        <TouchableOpacity style={styles.closeButton}  onPress={() => {
+   
+    Alert.alert(
+      'Delete Item',
+      'Are you sure you want to delete this item?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'OK', onPress: () => {
+            console.log(item.product_id); // Optionally, log item.id again here
+            DeleteCart(item.product_id);
+          } 
+        },
+      ],
+      { cancelable: true }
+    );
+  }}>
           <Text style={styles.closeButtonText}>X</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
+  
+  const DeleteCart = async (productId) => {
+    let data = new FormData();
+    data.append('product_id', productId);
 
+    // Log FormData content
+    // data.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
+
+console.log("dataaa",data)
+    let config = {
+      method: 'post',
+      url: 'https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems',
+      headers: { 
+        Authorization: `${userToken?.token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data
+    };
+
+    try {
+      const response = await axios.request(config);
+      console.log(JSON.stringify(response.data));
+
+      if (response.data.status === "success") {
+        setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId));
+      } else {
+        console.error('Error: Unexpected response format:', response);
+      }
+    } catch (error) {
+      console.error('Error deleting Cart Item:', error);
+    }
+  };
 
   const GetCartItems = async () => {
-    console.log("Token:", userToken);
+    console.log("Token:", userToken?.token);
     
     // Start loading
     setLoading(true);
@@ -127,7 +173,7 @@ const Cart = () => {
       method: 'get',
       url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
       headers: {
-        Authorization: `${userToken}`,
+        Authorization: `${userToken?.token}`,
       }
     };
 

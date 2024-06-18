@@ -48,7 +48,6 @@ const Home = ({navigation, item}) => {
 console.log("userTokenHomePAge",userToken)
 
 
-
   const [Arrivals, setArrivals] = useState([]);
   const [username, setUsername] = useState('');
   const [wishlist, setWishlist] = useState([]); // State for wishlist
@@ -176,6 +175,7 @@ console.log("userTokenHomePAge",userToken)
       if (response.status === 'success') {
         // console.log('Product added to wishlist:', response.successmsg);
         setWishlist([...wishlist, productId]);
+       
         // Return true to indicate success
         return true;
       } else {
@@ -284,9 +284,9 @@ console.log("userTokenHomePAge",userToken)
           }}
           key={`${item.id}_heart`}>
           <Image
-            source={require('../assets/heart.png')}
-            style={{tintColor: '#000000'}}
-          />
+        source={ require('../assets/heart.png')}
+        style={{ tintColor: '#000000' }}
+      />
         </TouchableOpacity>
       </View>
 
@@ -515,19 +515,12 @@ console.log("userTokenHomePAge",userToken)
                       )}
                       <TouchableOpacity
                         onPress={async () => {
-                          // console.log('Item:', item); 
                           const addedToWishlist = await addToWishlist(
                             item.product_id,
                           );
                           if (addedToWishlist) {
-                            // If added to wishlist successfully, show like icon
-                            // console.log('Added to wishlist');
-                            // Update the state to reflect the change in the wishlist status
                             setWishlist([...wishlist, item.product_id]);
                           } else {
-                            // If failed to add to wishlist or removed from wishlist, show heart icon
-                            // console.log('Removed from wishlist');
-                            // Update the state to reflect the change in the wishlist status
                             setWishlist(
                               wishlist.filter(
                                 productId => productId !== item.product_id,
@@ -546,13 +539,10 @@ console.log("userTokenHomePAge",userToken)
                         key={`${item.id}_heart`}>
                         
                      
-                          <Image
-                            source={require('../assets/heart.png')}
-                            style={{
-                              tintColor: '#000000',
-                              
-                            }}
-                          />
+                        <Image
+        source={ require('../assets/heart.png')}
+        style={{ tintColor: '#000000'}}
+      />
                       
                       </TouchableOpacity>
                     </View>

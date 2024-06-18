@@ -11,16 +11,18 @@ import {
   ActivityIndicator,
   Button,
   Dimensions,
+  Alert,
 } from 'react-native';
 import CustomDropdownPicker from '../Components/CustomDropDownPicker';
 import TitleHeader from '../Components/TitleHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {AddCart} from '../Components/ApiService';
+import {AddCart, AddWishlist} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
 import Modal from 'react-native-modal';
 import axios from 'react-native-axios';
 import FormData from 'form-data';
 import Loader from '../Components/Loader';
+
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
@@ -103,6 +105,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingCart,setLoadingCart]=useState(false)
+  const [loadingWishlist,setLoadingWishlist]=useState(false)
 
   // console.log("relatedProductsrelatedProducts",relatedProducts)
 
@@ -202,6 +205,30 @@ const ProductDetailsPage = ({route, navigation}) => {
       setLoadingCart(false)
     }
   };
+
+
+  const AddWishlist = async (productId) => {
+    console.log("productiddd", productId);
+    setLoadingWishlist(true);
+    let config = {
+      method: 'post',
+      url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
+      headers: { }
+    };
+    
+    axios.request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        Alert.alert(JSON.stringify(response.data))
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setLoadingWishlist(false);
+      });
+  };
+  
   
   
 
@@ -355,9 +382,30 @@ const ProductDetailsPage = ({route, navigation}) => {
               paddingHorizontal: 10,
               marginTop: 20,
             }}>
-            <TouchableOpacity
+           {loadingWishlist ?
+            ( <TouchableOpacity
+              style={{backgroundColor: '#fff',
+                borderColor: '#F10C18',
+                height: 50,
+                width: '47%',
+                alignSelf: 'center',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderRadius: 10,
+                borderColor: '#707070',
+                borderWidth: 1,
+               justifyContent:"center"}}
+            >
+            
+             <ActivityIndicator size={"large"} color={"000"}/>
+            </TouchableOpacity>):(
+               <TouchableOpacity
               style={[styles.button, {justifyContent: 'space-evenly'}]}
-              onPress={() => navigation.navigate('WishList')}>
+              onPress={() => {
+                console.log('Prouduct Idd:', productId); 
+                // Log productId to console
+                AddWishlist(productId); // Call addToCart function with productId
+              }}>
               <Image
                 source={require('../assets/heart2.png')}
                 style={{
@@ -366,6 +414,8 @@ const ProductDetailsPage = ({route, navigation}) => {
                   tintColor: '#000000',
                   resizeMode: 'contain',
                 }}
+
+               
               />
               <Text
                 style={{
@@ -377,6 +427,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                 Wishlist
               </Text>
             </TouchableOpacity>
+            )}
             
              {loadingCart ? (
               <TouchableOpacity
