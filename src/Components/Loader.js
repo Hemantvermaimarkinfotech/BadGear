@@ -42,7 +42,7 @@ import {
   
   const styles = StyleSheet.create({
     primaryBtn: {
-      display: 'flex',
+      // display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       width: '45%',

@@ -8,18 +8,79 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import TitleHeader from '../Components/TitleHeader';
+import Loader from '../Components/Loader';
+import axios from "react-native-axios"
 
 const ForgotPassword = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [data,setdata]=useState()
+
 
   const handleEmailChange = (text) => {
     setEmail(text);
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
     setIsEmailValid(isValidEmail);
   };
+
+
+
+
+
+  const handleForgotPassword = async () => {
+    let valid = true;
+
+    if (!email.trim()) {
+      setEmailError('Please enter your email.');
+      valid = false;
+    } else if (!isEmailValid) {
+      setEmailError('Please enter a valid email.');
+      valid = false;
+    }
+
+    if (!valid) {
+      return;
+    }
+
+    setLoading(true);
+
+    const Data = JSON.stringify({
+      email: email,
+    });
+
+
+
+    try {
+      const response = await axios.post(
+        'https://bad-gear.com/wp-json/forgot-password-api/v1/forgot_password_api',
+        Data,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      console.log('Forgot response:', response.data);
+
+      if (response.data ) {
+        setdata(response.data);
+        setLoading(false);
+        navigation.navigate("Login")
+      } else {
+        setLoading(false);
+
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error?.response);
+      
+
+    }
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,9 +105,16 @@ const ForgotPassword = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity style={styles.submitButton}>
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
+    
+    {loading ?
+    (<View style={{marginTop:20}}>
+    <Loader/>
+    </View>):(
+      <TouchableOpacity style={styles.submitButton} onPress={()=>handleForgotPassword()}>
+      <Text style={styles.buttonText}>Submit</Text>
+    </TouchableOpacity>
+    )}
+    
         <TouchableOpacity  style={{ justifyContent: "center", alignItems: "center",flexDirection:"row" }}>
           <Text style={styles.signupText}>
             Already have an account?   </Text>

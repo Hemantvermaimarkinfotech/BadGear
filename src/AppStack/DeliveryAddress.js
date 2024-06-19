@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import MainHeader from '../Components/MainHeader';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -14,52 +14,39 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {AuthContext} from '../Components/AuthProvider';
 import axios from 'react-native-axios';
-import { useIsFocused } from '@react-navigation/native'; // Import useIsFocused hook
+import {useIsFocused} from '@react-navigation/native'; // Import useIsFocused hook
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Dummy JSON data
-const addressesData = [
-  {
-    id: '1',
-    type: 'home',
-    name: 'Billing Address',
-    address: '323 Main Street, Anytown, USA 12345',
-    icon: 'home',
-  },
-  {
-    id: '2',
-    type: 'office',
-    name: 'Shipping Address',
-    address: '3436 Example St, Anytown, USA 12345',
-    icon: 'location-pin',
-  },
-];
 
 const DeliveryAddress = ({navigation}) => {
   const [selectedId, setSelectedId] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const {userToken, setUserToken} = useContext(AuthContext);
   const [billling, setBilling] = useState([]);
-  const [shipping,setShipping]=useState([])
+  const [shipping, setShipping] = useState([]);
   const [selectedBilling, setSelectedBilling] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused(); // useIsFocused hook to track screen focus
+  const [selectedAddress, setselectedAddress] = useState('billingaddress');
 
-
-  const handleBillingPress = () => {
-    setSelectedBilling(true);
-    setSelectedShipping(false);
+  const handleBillingPress = (addressId) => {
+   setSelectedBilling(!selectedBilling)
   };
-
+  
   const handleShippingPress = () => {
-    setSelectedBilling(false);
-    setSelectedShipping(true);
+    setSelectedShipping(!selectedShipping); // Toggle selectedShipping state
   };
+  
+  
 
+  const billingaddress = `${billling?.billing_address},${billling?.billing_city},${billling?.billing_company},${billling?.billing_country},${billling?.billing_last_name},${billling?.billing_first_name}, 
+  ${billling?.billing_phone},${billling?.billing_email},${billling?.billing_postcode},${billling?.billing_state}`;
 
-  const billingaddress = `${billling?.billing_address},${billling?.billing_city},${billling?.billing_address},${billling?.billing_company},${billling?.billing_last_name},${billling?.billing_first_name}, 
-  ${billling?.billing_phone}`;
-  const shippingaddress = `${shipping?.shipping_address},${shipping?.shipping_city},${shipping?.shipping_address},${shipping?.shipping_company},${shipping?.shipping_last_name},${shipping?.shipping_first_name}, 
-  ${shipping?.shipping_phone}`;
+  console.log('billignaddress', billingaddress);
+  const shippingaddress = `${shipping?.shipping_address},${shipping?.shipping_city},${shipping?.shipping_company},${shipping?.shipping_country},${shipping?.shipping_company},${shipping?.shipping_last_name},${shipping?.shipping_first_name}, 
+  ${shipping?.shipping_phone},${shipping?.shipping_email},${shipping?.shipping_postcode},${shipping?.shipping_state}`;
 
   const getAddressData = async (token, addressType) => {
     try {
@@ -84,19 +71,23 @@ const DeliveryAddress = ({navigation}) => {
   
       const responseData = response.data.data;
       console.log(`${addressType} Response Data:`, responseData);
+  
       if (addressType === 'billing') {
         setBilling(responseData);
+        await AsyncStorage.setItem('billingAddress', JSON.stringify(responseData));
       } else if (addressType === 'shipping') {
-        setShipping(responseData); // Assuming you have a state variable for shipping address
+        setShipping(responseData);
+        await AsyncStorage.setItem('shippingAddress', JSON.stringify(responseData));
       }
     } catch (error) {
       console.error(`Error fetching ${addressType} Profile:`, error);
       // Handle error appropriately
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
   
+
   useEffect(() => {
     if (userToken && userToken.token) {
       getAddressData(userToken.token, 'billing');
@@ -105,28 +96,18 @@ const DeliveryAddress = ({navigation}) => {
   }, [userToken]);
 
   useEffect(() => {
-    console.log("hello")
+    console.log('hello');
     if (isFocused && userToken && userToken.token) {
       getAddressData(userToken.token, 'billing');
-          getAddressData(userToken.token, 'shipping');;
+      getAddressData(userToken.token, 'shipping');
     }
-  }, [isFocused,userToken]); // useEffect depends on isFocused
-  
-
-  useEffect(() => {
-    // Load JSON data
-    setAddresses(addressesData);
-  }, []);
+  }, [isFocused, userToken]); // useEffect depends on isFocused
 
   const handleRadioPress = id => {
     setSelectedId(id);
   };
 
- 
-
   const renderItem = ({item}) => {
-  
-
     return (
       <View key={item.id}>
         <TouchableOpacity
@@ -157,6 +138,7 @@ const DeliveryAddress = ({navigation}) => {
                 name="radio-button-checked"
                 size={24}
                 color={'red'}
+                onPress={() => setselectedAddress('billingaddress')}
               />
             ) : (
               <MaterialIcons
@@ -185,139 +167,139 @@ const DeliveryAddress = ({navigation}) => {
       <MainHeader title={'Delivery Address'} />
 
       <View>
-      
-
-{loading ? (
-  <View style={{justifyContent:"center",alignItems:"center"}}>
-    <ActivityIndicator size={"large"} color={"red"} />
-  </View>
-) : (
-  <View>
-   <View style={{ width: "95%", alignSelf: "center" }}>
-  {billingaddress ? (
-    <TouchableOpacity
-      style={styles.row}
-      onPress={handleBillingPress}
-    >
-      <View style={{ flexDirection: 'row', width: "90%" }}>
-        <View style={[styles.iconContainer]}>
-          <Entypo name="home" size={30} color={'#fff'} />
-        </View>
-        <View style={{ justifyContent: 'center', marginLeft: 10 }}>
-          <Text style={{ color: '#000000', fontSize: 15 }}>
-            Billing Address
-          </Text>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 12,
-              fontFamily: 'Gilroy-Regular',
-              marginVertical: 5,
-              lineHeight: 15
-            }}>
-            {billingaddress}
-          </Text>
-        </View>
-      </View>
-      <View style={{ marginLeft: 10, width: "10%" }}>
-        {selectedBilling && (
-          <MaterialIcons
-            name="radio-button-checked"
-            size={24}
-            color={'red'}
-          />
-        )}
-      </View>
-    </TouchableOpacity>
-  ) : (
-    <Text
-      style={{
-        color: '#808080',
-        fontSize: 12,
-        fontFamily: 'Gilroy-Regular',
-        marginVertical: 5,
-        lineHeight: 15,
-        textAlign: 'center'
-      }}>
-      No billing address found
-    </Text>
-  )}
-  <View
-    style={{
-      height: 1,
-      width: '100%',
-      marginTop: 15,
-      backgroundColor: '#707070',
-      opacity: 0.3,
-    }}
-  />
-</View>
-
-
-    <View style={{ width: "95%", alignSelf: "center" }}>
-  <TouchableOpacity
-    style={styles.row}
-    onPress={handleShippingPress}
-  >
-    <View style={{ flexDirection: 'row', width: "90%" }}>
-      <View style={[styles.iconContainer]}>
-        <Entypo name="location-pin" size={30} color={'#fff'} />
-      </View>
-      <View style={{ justifyContent: 'center', marginLeft: 10 }}>
-        <Text style={{ color: '#000000', fontSize: 15 }}>
-          Shipping Address
-        </Text>
-        {shippingaddress ? (
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 12,
-              fontFamily: 'Gilroy-Regular',
-              marginVertical: 5,
-              lineHeight: 15
-            }}>
-            {shippingaddress}
-          </Text>
+        {loading ? (
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <ActivityIndicator size={'large'} color={'red'} />
+          </View>
         ) : (
-          <Text
-            style={{
-              color: '#808080',
-              fontSize: 12,
-              fontFamily: 'Gilroy-Regular',
-              marginVertical: 5,
-              lineHeight: 15
-            }}>
-            No shipping address found
-          </Text>
-        )}
-      </View>
+          <View>
+            <View style={{width: '95%', alignSelf: 'center'}}>
+              {billingaddress ? (
+             <TouchableOpacity
+             style={styles.row}
+             onPress={handleBillingPress}
+           >
+             <View style={{ flexDirection: 'row', width: '90%' }}>
+               <View style={[styles.iconContainer]}>
+                 <Entypo name="home" size={30} color={'#fff'} />
+               </View>
+               <View style={{ justifyContent: 'center', marginLeft: 10 }}>
+                 <Text style={{ color: '#000000', fontSize: 15 }}>
+                   Billing Address
+                 </Text>
+                 <Text
+                   style={{
+                     color: '#000000',
+                     fontSize: 12,
+                     fontFamily: 'Gilroy-Regular',
+                     marginVertical: 5,
+                     lineHeight: 15,
+                   }}
+                 >
+                   {billingaddress}
+                 </Text>
+               </View>
+             </View>
+             <View style={{ marginLeft: 10, width: '10%' }}>
+               {selectedBilling && (
+                 <MaterialIcons
+                   name="radio-button-checked"
+                   size={24}
+                   color={'red'}
+                   onPress={() => setselectedAddress('selectedBilling')}
+                 />
+               )}
+             </View>
+           </TouchableOpacity>
+           
+              ) : (
+                <Text
+                  style={{
+                    color: '#808080',
+                    fontSize: 12,
+                    fontFamily: 'Gilroy-Regular',
+                    marginVertical: 5,
+                    lineHeight: 15,
+                    textAlign: 'center',
+                  }}>
+                  No billing address found
+                </Text>
+              )}
+              <View
+                style={{
+                  height: 1,
+                  width: '100%',
+                  marginTop: 15,
+                  backgroundColor: '#707070',
+                  opacity: 0.3,
+                }}
+              />
+            </View>
+
+            <View style={{width: '95%', alignSelf: 'center'}}>
+            <TouchableOpacity
+  style={styles.row}
+  onPress={handleShippingPress}
+>
+  <View style={{ flexDirection: 'row', width: '90%' }}>
+    <View style={[styles.iconContainer]}>
+      <Entypo name="location-pin" size={30} color={'#fff'} />
     </View>
-    <View style={{ marginLeft: 10, width: "10%" }}>
-      {selectedShipping && (
-        <MaterialIcons
-          name="radio-button-checked"
-          size={24}
-          color={'red'}
-        />
+    <View style={{ justifyContent: 'center', marginLeft: 10 }}>
+      <Text style={{ color: '#000000', fontSize: 15 }}>
+        Shipping Address
+      </Text>
+      {shippingaddress ? (
+        <Text
+          style={{
+            color: '#000000',
+            fontSize: 12,
+            fontFamily: 'Gilroy-Regular',
+            marginVertical: 5,
+            lineHeight: 15,
+          }}
+        >
+          {shippingaddress}
+        </Text>
+      ) : (
+        <Text
+          style={{
+            color: '#808080',
+            fontSize: 12,
+            fontFamily: 'Gilroy-Regular',
+            marginVertical: 5,
+            lineHeight: 15,
+          }}
+        >
+          No shipping address found
+        </Text>
       )}
     </View>
-  </TouchableOpacity>
-  <View
-    style={{
-      height: 1,
-      width: '100%',
-      marginTop: 15,
-      backgroundColor: '#707070',
-      opacity: 0.3,
-    }}
-  />
-</View>
-
   </View>
-)}
+  <View style={{ marginLeft: 10, width: '10%' }}>
+    {selectedShipping && (
+      <MaterialIcons
+        name="radio-button-checked"
+        size={24}
+        color={'red'}
+      />
+    )}
+  </View>
+</TouchableOpacity>
 
+              <View
+                style={{
+                  height: 1,
+                  width: '100%',
+                  marginTop: 15,
+                  backgroundColor: '#707070',
+                  opacity: 0.3,
+                }}
+              />
+            </View>
+          </View>
+        )}
 
-      
         {/* Add Address Button */}
         <TouchableOpacity
           style={styles.addAddressButton}
@@ -336,11 +318,22 @@ const DeliveryAddress = ({navigation}) => {
       </View>
 
       <View style={styles.bottomButtonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Checkout')}>
-          <Text style={styles.buttonText}>Save Address</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+  style={styles.button}
+  onPress={() => {
+    const selectedBillingAddress = selectedBilling ? billingaddress : null;
+    const selectedShippingAddress = selectedShipping ? shippingaddress : null;
+
+    navigation.navigate('Checkout', { 
+      selectedBillingAddress,
+      selectedShippingAddress
+    });
+  }}
+>
+  <Text style={styles.buttonText}>Save Address</Text>
+</TouchableOpacity>
+
+
       </View>
     </SafeAreaView>
   );
@@ -361,8 +354,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
     alignItems: 'center',
-   
-    width:"100%"
+
+    width: '100%',
   },
   iconContainer: {
     backgroundColor: '#F10C18',

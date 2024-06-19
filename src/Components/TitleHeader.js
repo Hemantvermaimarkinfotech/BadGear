@@ -63,7 +63,7 @@ const TitleHeader = ({title}) => {
             source={require('../assets/search.png')}
             style={[styles.headericon,{tintColor:"#000000"}]}
           /> */}
-            <AntDesign name="search" size={22} color={'#000'} />
+             <Image source={require("../assets/search.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
             <Image

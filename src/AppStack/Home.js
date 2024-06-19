@@ -149,18 +149,7 @@ console.log("userTokenHomePAge",userToken)
     fetchData(); // Call the combined fetchData function
   }, [userToken]);
 
-  // const addToWishlist = async productId => {
-  //   console.log("productiddddd",productId)
-  //   try {
-  //     const response = await AddWishlist(productId);
-  //     // Alert.alert('Success', 'Product added to wishlist!');
-  //     setWishlist([...wishlist, productId]); // Update wishlist state
-  //     console.log('addtoWishlist', response);
-  //   } catch (error) {
-  //     console.error('Error adding product to wishlist:', error);
-  //     // Alert.alert('Error', 'Failed to add product to wishlist. Please try again.');
-  //   }
-  // };
+
 
   const isItemInWishlist = productId => {
     return wishlist.includes(productId);
@@ -326,18 +315,16 @@ console.log("userTokenHomePAge",userToken)
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <TouchableOpacity
-            onPress={() => {
-              console.log('Item:', item); // Console log the item
-              addToWishlist(item.id);
-            }}>
+          <TouchableOpacity onPress={()=>navigation.navigate("WishList")}
+           >
             <Image
               source={require('../assets/heart2.png')}
               style={styles.headericon}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('search')}>
-            <AntDesign name="search" size={22} color={'#000'} />
+            {/* <AntDesign name="search" size={22} color={'#000'} /> */}
+            <Image source={require("../assets/search.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
             <Image

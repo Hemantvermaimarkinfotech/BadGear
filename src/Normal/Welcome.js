@@ -72,7 +72,7 @@ const Welcome = ({ navigation }) => {
             controls={false} // Disables video controls
           />
           {/* Skip button */}
-          <TouchableOpacity onPress={handleSkip} style={[styles.skipButton,{justifyContent:"center",alignItems:"center"}]}>
+          <TouchableOpacity onPress={handleSkip} style={[styles.skipButton,{justifyContent:"center",alignItems:"center",alignSelf:"center"}]}>
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
           {/* End of Video component */}
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
   skipButton: {
     position: 'absolute',
     bottom: screenHeight * 0.03, // Adjust the vertical position according to screen height
-    right: screenWidth / 2.2, // Center horizontally on the screen
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     paddingVertical: screenHeight * 0.01, // Adjust padding according to screen height
     paddingHorizontal: screenWidth * 0.04, // Adjust padding according to screen width
@@ -148,9 +147,8 @@ const styles = StyleSheet.create({
  
   },
   skipText: {
-    color: '#fff',
-    fontSize: 18,
-    textAlign: 'center',
-    fontWeight: '700',
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily:"Gilroy-Bold"
   },
 });

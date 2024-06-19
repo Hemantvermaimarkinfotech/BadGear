@@ -155,10 +155,9 @@ const ProductDetailsPage = ({route, navigation}) => {
 
 
   const addToCart = async (productId) => {
-    console.log("userToken:", userToken);
+    console.log("userTokennnnnnnnnnnnnnnnnnnnn:", userToken);
     console.log("productId:", productId);
    
-    
     // Create a FormData object to send as the request body
     let formData = new FormData();
     formData.append('product_id', productId); 
@@ -167,7 +166,7 @@ const ProductDetailsPage = ({route, navigation}) => {
     formData.append('price',productDetails?.price); 
   
     console.log("FormData:", formData); // Log FormData object
-    const token=userToken
+    const token=userToken?.token
     setLoadingCart(true)
     try {
       // Make POST request to the API endpoint

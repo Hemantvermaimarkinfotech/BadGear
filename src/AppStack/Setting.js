@@ -59,6 +59,11 @@ console.log("profileData",profileData)
   const Logout = () => {
     setUserToken(null);
     AsyncStorage.removeItem('userData');
+    AsyncStorage.removeItem('billingAddress');
+    AsyncStorage.removeItem('shippingAddress');
+    AsyncStorage.removeItem('cartItems');
+    AsyncStorage.removeItem('totalAmount');
+
   };
   const [isEnabled, setIsEnabled] = useState(false);
   return (
@@ -140,7 +145,7 @@ console.log("profileData",profileData)
 
 </View>
 
-<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+<Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
 </TouchableOpacity>
 
 <View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC", opacity: 0.6 }} />
@@ -158,7 +163,7 @@ console.log("profileData",profileData)
 
 </View>
 
-<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+<Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
 </TouchableOpacity>
 
 <View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC"}} />
@@ -179,7 +184,7 @@ console.log("profileData",profileData)
 
 </View>
 
-<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+<Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
 </TouchableOpacity>
 
 <View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC", opacity: 0.6 }} />
@@ -198,7 +203,7 @@ console.log("profileData",profileData)
 
 </View>
 
-<MaterialIcons name="keyboard-arrow-right" size={30} color={"#000000"} />
+<Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
 </TouchableOpacity>
 
 <View style={{ height: 1, width: "100%", marginTop: 15, backgroundColor: "#CCC", opacity: 0.6,marginBottom:80 }} />

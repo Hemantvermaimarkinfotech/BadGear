@@ -38,13 +38,12 @@ const Login = ({ navigation }) => {
       return;
     }
     setLoading(true);
-  
     const formData = new FormData();
     formData.append('email', email.trim());
     formData.append('password', password.trim());
   console.log("formData",formData)
     try {
-      // Send the login request to the server using fetch
+  
       const response = await fetch('https://bad-gear.com/wp-json/login-api/v1/userLogin', {
         method: 'POST',
         body: formData,
@@ -60,7 +59,6 @@ const Login = ({ navigation }) => {
 
       console.log('Login response data:', responseData);
 
-      console.log('Login response data:', responseData);
       if (responseData.status === "success") {
         await AsyncStorage.setItem('userData', JSON.stringify(responseData));
   
@@ -84,14 +82,6 @@ const Login = ({ navigation }) => {
     }
   };
   
-  // const handleSkip = () => {
-  //   {userToken ? <AppScreenStack/> : <AppNavigator />}
-  // };
-  // const handleSkip = () => {
-  //   if (!userToken) {
-  //     <AppScreenStack/> // Navigate to the desired screen
-  //   }
-  // };
   return (
     <SafeAreaView style={styles.container}>
      <View style={{marginTop:80,width:"100%",paddingHorizontal:20,alignSelf:"center",}}>
@@ -111,7 +101,8 @@ const Login = ({ navigation }) => {
           />
           <TouchableOpacity>
           {isEmailValid ? (
-            <AntDesign name="checkcircle" size={20} color="#6CC57C" />
+            // <AntDesign name="checkcircle" size={20} color="#6CC57C" />
+            <Image source={require("../assets/accept.png")} style={{height:20,width:20}}/>
           ) : (
             null
           )}
@@ -130,7 +121,7 @@ const Login = ({ navigation }) => {
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Image
-               source={showPassword ? require('../assets/eye.png') : require('../assets/view.png')}
+               source={showPassword ? require('../assets/view.png') : require('../assets/eye.png')}
               style={styles.eyeIcon}
             />
           </TouchableOpacity>
@@ -155,9 +146,9 @@ const Login = ({ navigation }) => {
 
 
      </View>
-      <TouchableOpacity >
+      {/* <TouchableOpacity >
       <Text style={styles.skipText}>Skip</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
      
     </SafeAreaView>
   );
