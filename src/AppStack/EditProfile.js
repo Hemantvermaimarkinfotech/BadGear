@@ -110,7 +110,9 @@ const updateProfile = async () => {
      <View style={{ height: 1, width: "100%", marginTop: 10, backgroundColor: "#707070", opacity: 0.3, position: "absolute", bottom: 90 }} />
             <View style={{ height: 80, justifyContent: "center", position: "absolute", bottom: 10, width: "100%" }}>
              {loading ? 
-             (<Loader/>):(
+             (   <TouchableOpacity style={styles.button}>
+             <Loader/>
+         </TouchableOpacity>):(
               <TouchableOpacity style={styles.button} onPress={()=>updateProfile()}>
               <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>

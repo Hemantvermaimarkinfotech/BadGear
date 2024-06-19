@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import MainHeader from '../Components/MainHeader';
-import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'react-native-axios';
 import {AuthContext} from '../Components/AuthProvider';
@@ -43,15 +42,19 @@ const Checkout = ({navigation, route}) => {
   const {userToken} = useContext(AuthContext);
   const calculateTotal = () => {
     let total = 0;
-    cartItems.forEach(item => {
-      if (item.price === 'undefined') {
-        0.0;
-      } else {
-        total += item.price * item.quantity;
-      }
-    });
+  
+    if (Array.isArray(cartItems)) {
+      cartItems.forEach(item => {
+        const price = parseFloat(item.price);
+        if (!isNaN(price)) {
+          total += price * item.quantity;
+        }
+      });
+    }
+  
     return total.toFixed(2); // Format total amount to two decimal places
   };
+  
 
   const continueShopping = () => {
     // Close the modal and navigate to home screen
@@ -188,7 +191,7 @@ const Checkout = ({navigation, route}) => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <Entypo name="location-pin" size={22} color={'#fff'} />
+                <Image source={require("../assets/location.png")} style={{height:22,width:22,tintColor:"#FFFFFF"}}/>
               </View>
 
               <View style={{justifyContent: 'center', marginLeft: 10}}>
@@ -232,11 +235,7 @@ const Checkout = ({navigation, route}) => {
               </View>
             </View>
 
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={30}
-              color={'#000000'}
-            />
+          <Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
           </TouchableOpacity>
 
           <View
@@ -259,15 +258,17 @@ const Checkout = ({navigation, route}) => {
                   width: 55,
                   justifyContent: 'center',
                   alignItems: 'center',
+                  marginLeft:10
                 }}>
-                <MaterialIcons name="payment" size={22} color={'#fff'} />
+                 <Image source={require("../assets/credit-card.png")} style={{height:22,width:22,tintColor:"#FFFFFF"}}/>
               </View>
 
               <TouchableOpacity
                 style={{justifyContent: 'center', marginLeft: 10}}
                 onPress={() => navigation.navigate('Payment')}>
                 <Text style={{color: '#000000', fontSize: 15}}>Payment</Text>
-                <Text
+              <View>
+              <Text
                   style={{
                     color: '#000000',
                     fontSize: 12,
@@ -276,14 +277,11 @@ const Checkout = ({navigation, route}) => {
                   }}>
                   <Text> X X X X X X X X X X X X 3436</Text>
                 </Text>
+              </View>
               </TouchableOpacity>
             </View>
 
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={30}
-              color={'#000000'}
-            />
+            <Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
           </TouchableOpacity>
 
           <View
@@ -310,31 +308,35 @@ const Checkout = ({navigation, route}) => {
               </View>
             ))} */}
 
-            {cartItems.map((item, index) => {
-              const undefindedrates = item.price;
-              return (
-                <View
-                  key={index}
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 10,
-                  }}>
-                  <View style={{width: '70%'}}>
-                    <Text style={styles.orderText}>
-                      {he.decode(item?.product_name)}
-                    </Text>
-                  </View>
-                  {/* <Text style={styles.orderText}>$ {item.price}</Text> */}
-                  <Text>
-                    $
-                    {item && undefindedrates !== 'undefined'
-                      ? item.price
-                      : '0.00'}
-                  </Text>
-                </View>
-              );
-            })}
+{cartItems && cartItems.length > 0 ? (
+  cartItems.map((item, index) => {
+    const undefinedRates = item.price;
+    return (
+      <View
+        key={index}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: 10,
+        }}>
+        <View style={{width: '70%'}}>
+          <Text style={styles.orderText}>
+            {he.decode(item?.product_name)}
+          </Text>
+        </View>
+        <Text style={styles.orderText}>
+          $
+          {item && undefinedRates !== undefined
+            ? item.price
+            : '0.00'}
+        </Text>
+      </View>
+    );
+  })
+) : (
+  <Text>No items in the cart</Text>
+)}
+
           </View>
 
           <View

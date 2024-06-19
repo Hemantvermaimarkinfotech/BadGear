@@ -746,7 +746,11 @@ const AddDeliveryAddress = ({navigation}) => {
             {addressType === 1 && (
   <>
     {loading ? (
-      <Loader />
+      <TouchableOpacity
+      style={styles.button}
+      >
+      <Loader/>
+    </TouchableOpacity>
     ) : (
       <TouchableOpacity
         style={styles.button}
@@ -760,7 +764,11 @@ const AddDeliveryAddress = ({navigation}) => {
 {addressType === 2 && (
   <>
     {loading ? (
-      <Loader />
+       <TouchableOpacity
+       style={styles.button}
+       >
+       <Loader/>
+     </TouchableOpacity>
     ) : (
       <TouchableOpacity
         style={styles.button}

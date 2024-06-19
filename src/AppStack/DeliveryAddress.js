@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Image
 } from 'react-native';
 import MainHeader from '../Components/MainHeader';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -107,60 +108,7 @@ const DeliveryAddress = ({navigation}) => {
     setSelectedId(id);
   };
 
-  const renderItem = ({item}) => {
-    return (
-      <View key={item.id}>
-        <TouchableOpacity
-          style={styles.row}
-          onPress={() => handleRadioPress(item.id)}>
-          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <View style={[styles.iconContainer, selectedId === item.id]}>
-              <Entypo name={item.icon} size={22} color={'#fff'} />
-            </View>
-            <View style={{justifyContent: 'center', marginLeft: 10}}>
-              <Text style={{color: '#000000', fontSize: 15}}>
-                Biilling Address
-              </Text>
-              <Text
-                style={{
-                  color: '#000000',
-                  fontSize: 12,
-                  fontFamily: 'Gilroy-Regular',
-                  marginVertical: 5,
-                }}>
-                {item?.address}
-              </Text>
-            </View>
-          </View>
-          <View style={{marginLeft: 10}}>
-            {selectedId === item.id ? (
-              <MaterialIcons
-                name="radio-button-checked"
-                size={24}
-                color={'red'}
-                onPress={() => setselectedAddress('billingaddress')}
-              />
-            ) : (
-              <MaterialIcons
-                name="radio-button-unchecked"
-                size={24}
-                color={'red'}
-              />
-            )}
-          </View>
-        </TouchableOpacity>
-        <View
-          style={{
-            height: 1,
-            width: '100%',
-            marginTop: 15,
-            backgroundColor: '#707070',
-            opacity: 0.3,
-          }}
-        />
-      </View>
-    );
-  };
+ 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -181,7 +129,7 @@ const DeliveryAddress = ({navigation}) => {
            >
              <View style={{ flexDirection: 'row', width: '90%' }}>
                <View style={[styles.iconContainer]}>
-                 <Entypo name="home" size={30} color={'#fff'} />
+                 <Image source={require("../assets/home.png")} style={{height:30,width:30,tintColor:"#ffffff"}}/>
                </View>
                <View style={{ justifyContent: 'center', marginLeft: 10 }}>
                  <Text style={{ color: '#000000', fontSize: 15 }}>
@@ -202,12 +150,15 @@ const DeliveryAddress = ({navigation}) => {
              </View>
              <View style={{ marginLeft: 10, width: '10%' }}>
                {selectedBilling && (
-                 <MaterialIcons
-                   name="radio-button-checked"
-                   size={24}
-                   color={'red'}
-                   onPress={() => setselectedAddress('selectedBilling')}
-                 />
+                //  <MaterialIcons
+                //    name="radio-button-checked"
+                //    size={24}
+                //    color={'red'}
+                //    onPress={() => setselectedAddress('selectedBilling')}
+                //  />
+                <TouchableOpacity  onPress={() => setselectedAddress('selectedBilling')}>
+                  <Image source={require("../assets/round.png")} style={{height:20,width:20,tintColor:"#F10C18"}}/>
+                </TouchableOpacity>
                )}
              </View>
            </TouchableOpacity>
@@ -243,7 +194,7 @@ const DeliveryAddress = ({navigation}) => {
 >
   <View style={{ flexDirection: 'row', width: '90%' }}>
     <View style={[styles.iconContainer]}>
-      <Entypo name="location-pin" size={30} color={'#fff'} />
+    <Image source={require("../assets/location.png")} style={{height:30,width:30,tintColor:"#ffffff"}}/>
     </View>
     <View style={{ justifyContent: 'center', marginLeft: 10 }}>
       <Text style={{ color: '#000000', fontSize: 15 }}>
@@ -278,11 +229,15 @@ const DeliveryAddress = ({navigation}) => {
   </View>
   <View style={{ marginLeft: 10, width: '10%' }}>
     {selectedShipping && (
-      <MaterialIcons
-        name="radio-button-checked"
-        size={24}
-        color={'red'}
-      />
+      // <MaterialIcons
+      //   name="radio-button-checked"
+      //   size={24}
+      //   color={'red'}
+      // />
+
+      <TouchableOpacity  onPress={() => setselectedAddress('selectedBilling')}>
+      <Image source={require("../assets/round.png")} style={{height:20,width:20,tintColor:"#F10C18"}}/>
+    </TouchableOpacity>
     )}
   </View>
 </TouchableOpacity>
@@ -305,15 +260,11 @@ const DeliveryAddress = ({navigation}) => {
           style={styles.addAddressButton}
           onPress={() => navigation.navigate('AddDeliveryAddress')}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <EvilIcons name="plus" size={24} color={'#000000'} />
+            <Image source={require("../assets/plus.png")} style={{height:20,width:20,tintColor:"#000000"}}/>
             <Text style={styles.addAddressButtonText}>Add Address</Text>
           </View>
 
-          <MaterialIcons
-            name="keyboard-arrow-right"
-            size={30}
-            color={'#000000'}
-          />
+          <Image source={require("../assets/arrow-right.png")} style={{height:20,width:20,tintColor:"#000000"}}/>
         </TouchableOpacity>
       </View>
 

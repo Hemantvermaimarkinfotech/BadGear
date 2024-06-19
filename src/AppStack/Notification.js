@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView ,FlatList} from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import discountimage from "../assets/discount.png"
-import AntDesign from "react-native-vector-icons/AntDesign"
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Notification = () => {
@@ -28,7 +27,7 @@ const Notification = () => {
 
       </View>
       <View style={{ flexDirection: "row", height: 20, alignItems: "center" ,position:"absolute",right:10,top:15}}>
-          <AntDesign name="clockcircleo" size={14} color={"#000000"} />
+         <Image source={require("../assets/time.png")} style={{height:14,width:14,tintColor:"#000000"}}/>
           <Text style={{ marginLeft: 5, color: "#000000", fontSize: 14 }}>{item?.time}</Text>
         </View>
     </View>

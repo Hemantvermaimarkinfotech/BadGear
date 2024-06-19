@@ -11,10 +11,6 @@ import {
 import TitleHeader from '../Components/TitleHeader';
 import {AuthContext} from '../Components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Feather from 'react-native-vector-icons/Feather';
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"
-import EvilIcons from "react-native-vector-icons/EvilIcons"
-import AntDesign from "react-native-vector-icons/AntDesign"
 import axios from "react-native-axios"
 
 
@@ -35,7 +31,7 @@ console.log("profileData",profileData)
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: token,
+            Authorization: `${userToken?.token}`,
           },
         },
       );
@@ -93,23 +89,23 @@ console.log("profileData",profileData)
       </View>
 
       <TouchableOpacity onPress={()=>navigation.navigate("EditProfile",{profileData})}>
-      <Feather name="edit-2" size={24} color={"#F10C18"}/>
+      <Image source={require("../assets/edit.png")} style={{height:28,width:25,tintColor:"#F10C18"}}/>
       </TouchableOpacity>
       </View>
 
       <View style={styles.servicebox}>
       <TouchableOpacity style={styles.subservicebox} onPress={()=>navigation.navigate("Order")}>
-        <Feather name="package" size={28} color={"#F10C18"}/>
+      <Image source={require("../assets/package.png")} style={{height:25,width:25,tintColor:"#F10C18"}}/>
         <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>Order</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.subservicebox} onPress={()=>navigation.navigate("WishList")}>
-        <Feather name="heart" size={27} color={"#F10C18"}/>
+      <Image source={require("../assets/heart2.png")} style={{height:20,width:25,tintColor:"#F10C18"}}/>
         <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>WishList</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.subservicebox}>
-        <Feather name="headphones" size={28} color={"#F10C18"} onPress={()=>navigation.navigate("HelpCenter")}/>
+      <Image source={require("../assets/headset.png")} style={{height:25,width:25,tintColor:"#F10C18"}}/>
         <Text style={{color:"#000000",fontSize:16,fontFamily:"Gilroy",fontWeight:600}}>Help Center</Text>
       </TouchableOpacity>
       </View>
@@ -135,7 +131,7 @@ console.log("profileData",profileData)
       <TouchableOpacity style={styles.row} onPress={()=>navigation.navigate("EditProfile",{profileData})}>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <Feather name="user" size={22} color={"#000000"} />
+      <Image source={require("../assets/people.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
      </View>
 
      <View style={{ justifyContent: "center", marginLeft: 20 }}>
@@ -153,7 +149,7 @@ console.log("profileData",profileData)
 <TouchableOpacity style={styles.row}>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <Feather name="map-pin" size={22} color={"#000000"} />
+      <Image source={require("../assets/location.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
      </View>
 
      <View style={{ justifyContent: "center", marginLeft: 20 }}>
@@ -172,7 +168,7 @@ console.log("profileData",profileData)
 <TouchableOpacity style={styles.row} onPress={()=>navigation.navigate("Notification")}>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <Feather name="bell" size={22} color={"#000000"} />
+      <Image source={require("../assets/bell.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
      </View>
 
      <TouchableOpacity style={{ justifyContent: "center", marginLeft: 20 ,flexDirection:"row",alignItems:"center"}} >
@@ -193,7 +189,7 @@ console.log("profileData",profileData)
 <TouchableOpacity style={[styles.row,{}]}   onPress={() => Logout()}>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-      <AntDesign name="logout" size={22} color={'#000000'} />
+      <Image source={require("../assets/logout.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
      </View>
 
      <View style={{ justifyContent: "center", marginLeft: 20 }}>

@@ -133,7 +133,7 @@ const Search = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
-        <Feather name="search" size={22} color="#F10C18" />
+        <Image source={require("../assets/search.png")} style={{height:24,width:24,tintColor:"#F10C18"}}/>
         <TextInput
           placeholder="Search here..."
           placeholderTextColor="rgba(30, 30, 50, 0.6)"

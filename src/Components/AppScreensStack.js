@@ -221,20 +221,13 @@ const BottomTabNav = ({ navigation }) => (
       options={{
         tabBarIcon: ({focused}) => (
           <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            {/* <Image
-              source={require('../assets/search.png')}
-              style={{
-                height: 20,
-                width: 20,
-                tintColor: focused ? "#F10C18" : "#000000",
-              }}
-            /> */}
-           <AntDesign
-  name="search"
-  size={22}
-  color={focused ? "#F10C18" : "#000000"} // Use object syntax to conditionally set the color
-/>
+          
 
+<Image source={require("../assets/search.png")} style={{   height: 27,
+                width: 27,
+                resizeMode: 'contain',
+                tintColor: focused ? "#F10C18" : "#000000",
+              }}/>
             <Text style={{fontSize: 15, fontWeight: 500, marginTop: 5,color:"#000000"}}>Search</Text>
           </View>
         ),

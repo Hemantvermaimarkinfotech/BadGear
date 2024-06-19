@@ -100,7 +100,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken, setUserToken} = useContext(AuthContext);
   console.log("authuserToken",userToken)
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -396,7 +396,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                justifyContent:"center"}}
             >
             
-             <ActivityIndicator size={"large"} color={"000"}/>
+             <ActivityIndicator size={"large"} color={"#000000"}/>
             </TouchableOpacity>):(
                <TouchableOpacity
               style={[styles.button, {justifyContent: 'space-evenly'}]}
