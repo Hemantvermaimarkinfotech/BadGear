@@ -94,12 +94,12 @@ const renderRelatedProductItem = ({item, navigation, fetchProductDetails}) => (
 
 const ProductDetailsPage = ({route, navigation}) => {
   const {productId, productName, productDescription, productImg, productPrice} = route.params;
-  console.log('productIdparmasdata', productId,productName, productDescription, productImg, productPrice); 
+
   const [productDetails, setProductDetails] = useState();
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSize, setSelectedSize] = useState("M");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken, setUserToken} = useContext(AuthContext);
-  console.log("authuserToken",userToken)
+
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
@@ -129,14 +129,13 @@ const ProductDetailsPage = ({route, navigation}) => {
       }
 
       const data = await response.json();
-      console.log('Product Details:', data);
+
 
       // Set main product details
       setProductDetails(data.data[0]);
 
       // If related products are included in the main product details, you can extract them directly
       const relatedProducts = data.data[0].related_products;
-      console.log('Related Products:', relatedProducts);
       setRelatedProducts(relatedProducts);
     } catch (error) {
       console.error('Error fetching product details:', error);
@@ -155,7 +154,6 @@ const ProductDetailsPage = ({route, navigation}) => {
 
 
   const addToCart = async (productId) => {
-    console.log("userTokennnnnnnnnnnnnnnnnnnnn:", userToken);
     console.log("productId:", productId);
    
     // Create a FormData object to send as the request body
@@ -164,9 +162,8 @@ const ProductDetailsPage = ({route, navigation}) => {
     formData.append('size', selectedSize); 
     formData.append('quantity', selectedQuantity);
     formData.append('price',productDetails?.price); 
-  
-    console.log("FormData:", formData); // Log FormData object
-    const token=userToken?.token
+ 
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     setLoadingCart(true)
     try {
       // Make POST request to the API endpoint
@@ -176,28 +173,30 @@ const ProductDetailsPage = ({route, navigation}) => {
         {
           headers: {
             'Content-Type': 'multipart/form-data', // Set the Content-Type header for FormData
-            Authorization: `${token}`,// Set Authorization header using userToken.token
+            Authorization: `${tokenToUse}`,// Set Authorization header using userToken.token
           },
         }
       );
   
-      console.log('Response data:', response.data); // Log response data
+
   
-    } catch (error) {
+    } 
+    
+    catch (error) {
       if (error.response) {
         console.error('Error adding to cart:', error.response.status);
         if (error.response.status === 403) {
-          console.error('Authorization error:', error.response.data);
+          console.log('Authorization error:', error.response.data);
           alert('Authorization error: Please check your credentials.');
         } else {
-          console.error('Server Error:', error.response.data);
+          console.log('Server Error:', error.response.data);
           alert('Failed to add item to cart. Please try again later.');
         }
       } else if (error.request) {
-        console.error('Request made but no response received:', error.request);
+        console.log('Request made but no response received:', error.request);
         alert('No response from server. Please check your network connection.');
       } else {
-        console.error('Error setting up the request:', error.message);
+        console.log('Error setting up the request:', error.message);
         alert('An unexpected error occurred. Please try again later.');
       }
     }finally{
@@ -571,7 +570,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                 }}>
                 Ratings & Reviews
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={()=>navigation.navigate("AddReview")}>
                 <Text
                   style={{
                     color: '#F10C18',
@@ -829,6 +828,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: '#E5E5E5',
     borderWidth: 1,
+    marginBottom:80
   },
   button: {
     flexDirection: 'row',

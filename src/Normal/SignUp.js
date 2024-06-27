@@ -110,7 +110,7 @@ const SignUp = ({ navigation }) => {
             />
             <TouchableOpacity>
               {isEmailValid ? (
-                <AntDesign name="checkcircle" size={20} color="#6CC57C" />
+                 <Image source={require("../assets/accept.png")} style={{height:20,width:20}}/>
               ) : (
                 null
               )}
@@ -127,7 +127,7 @@ const SignUp = ({ navigation }) => {
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Image
-                source={showPassword ? require('../assets/eye.png') : require('../assets/view.png')}
+                source={showPassword ? require('../assets/view.png') : require('../assets/eye.png')}
                 style={styles.eyeIcon}
               />
             </TouchableOpacity>

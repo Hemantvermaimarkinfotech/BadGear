@@ -14,7 +14,6 @@ const AuthProvider = ({ children }) => {
       if (value !== null) {
         setUserId(JSON.parse(value));
         setUserToken(JSON.parse(value));
-     
       }
     } catch (error) {
       // Error retrieving data

@@ -17,8 +17,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('nitishh123@gmail.com');
-  const [password, setPassword] = useState('1234567');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { setUserToken ,setUserId} = useContext(AuthContext);
   console.log("setuserID",setUserId)
@@ -101,7 +101,6 @@ const Login = ({ navigation }) => {
           />
           <TouchableOpacity>
           {isEmailValid ? (
-            // <AntDesign name="checkcircle" size={20} color="#6CC57C" />
             <Image source={require("../assets/accept.png")} style={{height:20,width:20}}/>
           ) : (
             null

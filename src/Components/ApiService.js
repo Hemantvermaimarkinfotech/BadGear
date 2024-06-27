@@ -52,14 +52,11 @@ export const getCategory = async (userToken) => {
         },
       }
     );
-    console.log("item",response?.data)
     const categoryData = response.data.data.map((item) => {
      
       // Check if item.cat_image is empty
       if (!item.cat_image.trim()) {
-        // Find corresponding dummy data from CatDATA based on item.cat_id
         const dummyData = CatDATA.find((cat) => cat.id === item.cat_id.toString());
-        // If dummy data is found, return it
         if (dummyData) {
           return {
             ...item,
@@ -174,7 +171,7 @@ export const AddWishlist = async (productId) => {
         },
       },
     );
-    console.log("add to Wishlistttttt", response.data);
+    console.log("add & Remove", response.data);
     return response.data; // Return the data
   } catch (error) {
     console.error('Error adding product to Wishlist:', error);

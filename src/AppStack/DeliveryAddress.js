@@ -49,12 +49,11 @@ const DeliveryAddress = ({navigation}) => {
   const shippingaddress = `${shipping?.shipping_address},${shipping?.shipping_city},${shipping?.shipping_company},${shipping?.shipping_country},${shipping?.shipping_company},${shipping?.shipping_last_name},${shipping?.shipping_first_name}, 
   ${shipping?.shipping_phone},${shipping?.shipping_email},${shipping?.shipping_postcode},${shipping?.shipping_state}`;
 
-  const getAddressData = async (token, addressType) => {
+  const getAddressData = async (addressType) => {
+    setLoading(true)
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     try {
-      if (!token) {
-        console.error('User token is not available');
-        return;
-      }
+     
   
       let url;
       if (addressType === 'billing') {
@@ -66,7 +65,7 @@ const DeliveryAddress = ({navigation}) => {
       const response = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: token,
+          Authorization: `${tokenToUse}`,
         },
       });
   
@@ -82,6 +81,7 @@ const DeliveryAddress = ({navigation}) => {
       }
     } catch (error) {
       console.error(`Error fetching ${addressType} Profile:`, error);
+      setLoading(false)
       // Handle error appropriately
     } finally {
       setLoading(false);
@@ -89,20 +89,32 @@ const DeliveryAddress = ({navigation}) => {
   };
   
 
-  useEffect(() => {
-    if (userToken && userToken.token) {
-      getAddressData(userToken.token, 'billing');
-      getAddressData(userToken.token, 'shipping');
-    }
-  }, [userToken]);
+  // useEffect(() => {
+  //   if (userToken && userToken.token) {
+  //     getAddressData('billing');
+  //     getAddressData('shipping');
+  //   }
+  // }, [userToken]);
+
+  // useEffect(() => {
+  //   console.log('hello');
+  //   if (isFocused && userToken && userToken.token) {
+  //     getAddressData('billing');
+  //     getAddressData('shipping');
+  //   }
+  // }, [isFocused, userToken]); // useEffect depends on isFocused
 
   useEffect(() => {
-    console.log('hello');
-    if (isFocused && userToken && userToken.token) {
-      getAddressData(userToken.token, 'billing');
-      getAddressData(userToken.token, 'shipping');
-    }
-  }, [isFocused, userToken]); // useEffect depends on isFocused
+    const fetchData = async () => {
+      if (isFocused) {
+         getAddressData('billing');
+         getAddressData('shipping');
+      }
+    };
+  
+    fetchData();
+  }, [isFocused]);
+  
 
   const handleRadioPress = id => {
     setSelectedId(id);

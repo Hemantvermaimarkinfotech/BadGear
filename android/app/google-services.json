@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "4922710333",
+    "project_id": "badgear-eec3f",
+    "storage_bucket": "badgear-eec3f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4922710333:android:a5ba9904ed589512c44d54",
+        "android_client_info": {
+          "package_name": "com.badgear"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwqlGbP2PWMUS-nPoItrv-hIHqMth5HIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

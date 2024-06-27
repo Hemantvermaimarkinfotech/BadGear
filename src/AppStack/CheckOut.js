@@ -9,6 +9,7 @@ import {
   ScrollView,
   Modal,
   Button,
+  Dimensions,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import MainHeader from '../Components/MainHeader';
@@ -18,14 +19,22 @@ import {AuthContext} from '../Components/AuthProvider';
 import Loader from '../Components/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import he from 'he';
+import {useFocusEffect} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
+import CustomCreditCardInput from '../Components/CustomCreditCardInput';
 
+const screenHeight = Dimensions.get('window').height;
+  const screenWidth = Dimensions.get('window').width;
+  let modalHeight = screenHeight - 100; // Adjust as needed based on your layout
+  let modalWidth = screenWidth - 40; // Adjust as needed based on your layout
+
+  // Adjust modal height for medium and large devices
+  if (screenWidth > 360) {
+    modalHeight = screenHeight - 200;
+  }
 const Checkout = ({navigation, route}) => {
-  const {
-    cartItems,
-    totalAmount,
-    selectedBillingAddress,
-    selectedShippingAddress,
-  } = route.params;
+  const {totalAmount, selectedBillingAddress, selectedShippingAddress} =
+    route.params;
   //   console.log("selectedBillingAddress",selectedBillingAddress)
   //   console.log("selectedShippingAddress",selectedShippingAddress)
   //   console.log('cartitmscheckoutpage', cartItems, totalAmount);
@@ -33,8 +42,40 @@ const Checkout = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [billingAddress, setBillingAddress] = useState(null); // State for storing billing address
   const [shippingAddress, setShippingAddress] = useState(null);
-  const [cartitems, setCartItems] = useState(null);
+  const [cartItems, setCartItems] = useState(null);
   const [totalAmountState, setTotalAmountState] = useState(null);
+  const isFocused = useIsFocused();
+  const [cardDetails, setCardDetails] = useState(null);
+  const [isCardInputVisible, setIsCardInputVisible] = useState(false);
+
+  const handlePayment = async () => {
+    // Show the modal containing the credit card input
+    setIsCardInputVisible(true);
+  };
+
+  const closeCardModal = () => {
+    setIsCardInputVisible(false);
+  };
+
+  // const handlePayment = async () => {
+  //   console.log("hello")
+  //   // Implement payment processing logic here (communicate with backend)
+  //   if (cardData) {
+  //     // Send cardData (e.g., card number, expiration date, CVV) to your backend
+  //     const response = await fetch('https://yourbackend.com/process_payment', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ cardData }),
+  //     });
+
+  //     // Process the response from your backend as needed
+  //     const result = await response.json();
+  //     console.log('Payment Result:', result);
+  //   }
+  // };
+
   const order = [
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
@@ -42,7 +83,7 @@ const Checkout = ({navigation, route}) => {
   const {userToken} = useContext(AuthContext);
   const calculateTotal = () => {
     let total = 0;
-  
+
     if (Array.isArray(cartItems)) {
       cartItems.forEach(item => {
         const price = parseFloat(item.price);
@@ -51,39 +92,45 @@ const Checkout = ({navigation, route}) => {
         }
       });
     }
-  
+
     return total.toFixed(2); // Format total amount to two decimal places
   };
-  
 
   const continueShopping = () => {
     // Close the modal and navigate to home screen
     setShowModal(false);
-    navigation.navigate('Home'); // Navigate to your home screen route
+    navigation.navigate('BottomTab'); // Navigate to your home screen route
   };
 
   useEffect(() => {
+    console.log('helooooooooooooooooooo');
     const fetchAddressesAndCartItems = async () => {
       try {
         const billingAddress = await AsyncStorage.getItem('billingAddress');
         const shippingAddress = await AsyncStorage.getItem('shippingAddress');
         const cartItems = await AsyncStorage.getItem('cartItems');
         const totalAmount = await AsyncStorage.getItem('totalAmount');
+        const [isCardInputVisible, setIsCardInputVisible] = useState(false);
+
+        const handlePayment = async () => {
+          // Show the modal containing the credit card input
+          setIsCardInputVisible(true);
+        };
 
         if (
-          billingAddress !== null &&
-          shippingAddress !== null &&
-          cartItems !== null &&
-          totalAmount !== null
+          billingAddress !== undefined &&
+          shippingAddress !== undefined &&
+          cartItems !== undefined &&
+          totalAmount !== undefined
         ) {
           setBillingAddress(JSON.parse(billingAddress));
           setShippingAddress(JSON.parse(shippingAddress));
           setCartItems(JSON.parse(cartItems));
           setTotalAmountState(parseFloat(totalAmount));
 
-          console.log('Billing Address:', JSON.parse(billingAddress));
-          console.log('Shipping Address:', JSON.parse(shippingAddress));
-          console.log('Cart Items:', JSON.parse(cartItems));
+          console.log('Billing Addresssss:', billingAddress);
+          console.log('Shipping Addresssss:', shippingAddress);
+          console.log('Cart Itemssssss:', JSON.parse(cartItems));
           console.log('Total Amount:', totalAmount);
         } else {
           console.log('Some data is missing in AsyncStorage');
@@ -91,20 +138,56 @@ const Checkout = ({navigation, route}) => {
       } catch (error) {
         console.error('Failed to fetch data from AsyncStorage:', error);
         // Handle error as needed
-      } finally {
-        setLoading(false); // Ensure loading state is turned off
       }
     };
 
     fetchAddressesAndCartItems(); // Call the async function
   }, []);
 
-  console.log(
-    'billingAddressbillingAddress',
-    billingAddress?.billing_first_name,
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchAddressesAndCartItems = async () => {
+        try {
+          const billingAddress = await AsyncStorage.getItem('billingAddress');
+          const shippingAddress = await AsyncStorage.getItem('shippingAddress');
+          const cartItems = await AsyncStorage.getItem('cartItems');
+          const totalAmount = await AsyncStorage.getItem('totalAmount');
+
+          if (
+            billingAddress !== undefined &&
+            shippingAddress !== undefined &&
+            cartItems !== undefined &&
+            totalAmount !== undefined
+          ) {
+            setBillingAddress(JSON.parse(billingAddress));
+            setShippingAddress(JSON.parse(shippingAddress));
+            setCartItems(JSON.parse(cartItems));
+            setTotalAmountState(parseFloat(totalAmount));
+
+            console.log('Billing Address:', billingAddress);
+            console.log('Shipping Address:', shippingAddress);
+            console.log('Cart Items:', JSON.parse(cartItems));
+            console.log('Total Amount:', totalAmount);
+          } else {
+            console.log('Some data is missing in AsyncStorage');
+          }
+        } catch (error) {
+          console.error('Failed to fetch data from AsyncStorage:', error);
+          // Handle error as needed
+        }
+      };
+
+      fetchAddressesAndCartItems(); // Call the async function
+
+      return () => {
+        // Cleanup function if needed
+      };
+    }, []),
   );
 
   const handleOrderSubmission = async () => {
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
     setLoading(true);
     try {
       // Prepare data object with billing, shipping, and cart items data
@@ -130,9 +213,10 @@ const Checkout = ({navigation, route}) => {
         shipping_phone: shippingAddress.phone,
         product_name: cartItems.name,
         quantity: cartItems.quantity,
-        Subtotal: totalAmount.subtotal,
-        total: totalAmount.total,
-        Shipping: totalAmount.shipping,
+        card_details: cardDetails,
+        // Subtotal: totalAmount.subtotal,
+        // total: totalAmount.total,
+        // Shipping: totalAmount.shipping,
         payment_method: 'Stripe', // Assuming this is static or from another source
         status: 'DONE', // Assuming this is static or from another source
         order_id: '2123', // Assuming this is static or from another source
@@ -142,7 +226,7 @@ const Checkout = ({navigation, route}) => {
         method: 'post',
         url: 'https://bad-gear.com/wp-json/get-CheckoutDetails/v1/get_CheckoutDetails',
         headers: {
-          Authorization: `Bearer ${userToken?.token}`,
+          Authorization: `${tokenToUse}`,
           'Content-Type': 'application/json',
         },
         data: data,
@@ -157,11 +241,11 @@ const Checkout = ({navigation, route}) => {
         setShowModal(true);
       } else {
         // Handle error cases
-        console.error('API Error:', response.data.error);
+        console.log('API Error:', response.data.error);
         // Optionally, handle error state or show error message to user
       }
     } catch (error) {
-      console.error('API Request Failed:', error);
+      console.log('API Request Failed:', error);
       // Handle error as needed
     } finally {
       setLoading(false);
@@ -176,7 +260,7 @@ const Checkout = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <MainHeader title={'Checkout'} />
 
-      <ScrollView style={{marginHorizontal: 10}}>
+      <ScrollView style={{marginHorizontal: 10,marginBottom:100}} showsVerticalScrollIndicator={false}>
         <View style={styles.mainView}>
           <TouchableOpacity
             style={styles.row}
@@ -191,7 +275,10 @@ const Checkout = ({navigation, route}) => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <Image source={require("../assets/location.png")} style={{height:22,width:22,tintColor:"#FFFFFF"}}/>
+                <Image
+                  source={require('../assets/location.png')}
+                  style={{height: 22, width: 22, tintColor: '#FFFFFF'}}
+                />
               </View>
 
               <View style={{justifyContent: 'center', marginLeft: 10}}>
@@ -235,7 +322,10 @@ const Checkout = ({navigation, route}) => {
               </View>
             </View>
 
-          <Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
+            <Image
+              source={require('../assets/arrow-right.png')}
+              style={{height: 22, width: 22, tintColor: '#000000'}}
+            />
           </TouchableOpacity>
 
           <View
@@ -248,7 +338,7 @@ const Checkout = ({navigation, route}) => {
             }}
           />
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity style={styles.row} onPress={handlePayment}>
             <View style={{flexDirection: 'row', justifyContent: 'center'}}>
               <View
                 style={{
@@ -258,30 +348,36 @@ const Checkout = ({navigation, route}) => {
                   width: 55,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginLeft:10
+                  marginLeft: 10,
                 }}>
-                 <Image source={require("../assets/credit-card.png")} style={{height:22,width:22,tintColor:"#FFFFFF"}}/>
+                <Image
+                  source={require('../assets/credit-card.png')}
+                  style={{height: 22, width: 22, tintColor: '#FFFFFF'}}
+                />
               </View>
 
               <TouchableOpacity
                 style={{justifyContent: 'center', marginLeft: 10}}
-                onPress={() => navigation.navigate('Payment')}>
+                >
                 <Text style={{color: '#000000', fontSize: 15}}>Payment</Text>
-              <View>
-              <Text
-                  style={{
-                    color: '#000000',
-                    fontSize: 12,
-                    fontFamily: 'Gilroy-Regular',
-                    marginVertical: 5,
-                  }}>
-                  <Text> X X X X X X X X X X X X 3436</Text>
-                </Text>
-              </View>
+                <View>
+                  <Text
+                    style={{
+                      color: '#000000',
+                      fontSize: 12,
+                      fontFamily: 'Gilroy-Regular',
+                      marginVertical: 5,
+                    }}>
+                    <Text> X X X X X X X X X X X X 3436</Text>
+                  </Text>
+                </View>
               </TouchableOpacity>
             </View>
 
-            <Image source={require("../assets/arrow-right.png")} style={{height:22,width:22,tintColor:"#000000"}}/>
+            <Image
+              source={require('../assets/arrow-right.png')}
+              style={{height: 22, width: 22, tintColor: '#000000'}}
+            />
           </TouchableOpacity>
 
           <View
@@ -308,35 +404,34 @@ const Checkout = ({navigation, route}) => {
               </View>
             ))} */}
 
-{cartItems && cartItems.length > 0 ? (
-  cartItems.map((item, index) => {
-    const undefinedRates = item.price;
-    return (
-      <View
-        key={index}
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginTop: 10,
-        }}>
-        <View style={{width: '70%'}}>
-          <Text style={styles.orderText}>
-            {he.decode(item?.product_name)}
-          </Text>
-        </View>
-        <Text style={styles.orderText}>
-          $
-          {item && undefinedRates !== undefined
-            ? item.price
-            : '0.00'}
-        </Text>
-      </View>
-    );
-  })
-) : (
-  <Text>No items in the cart</Text>
-)}
-
+            {cartItems && cartItems.length > 0 ? (
+              cartItems.map((item, index) => {
+                const undefinedRates = item.price;
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginTop: 10,
+                    }}>
+                    <View style={{width: '70%'}}>
+                      <Text style={styles.orderText}>
+                        {he.decode(item?.product_name)}
+                      </Text>
+                    </View>
+                    <Text style={styles.orderText}>
+                      $
+                      {item && undefinedRates !== undefined
+                        ? item.price
+                        : '0.00'}
+                    </Text>
+                  </View>
+                );
+              })
+            ) : (
+              <Text>No items in the cart</Text>
+            )}
           </View>
 
           <View
@@ -375,6 +470,7 @@ const Checkout = ({navigation, route}) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
               marginTop: 10,
+              
             }}>
             <Text
               style={[
@@ -393,6 +489,8 @@ const Checkout = ({navigation, route}) => {
           </View>
         </View>
       </ScrollView>
+
+      <View></View>
       <View
         style={{
           height: 1,
@@ -453,6 +551,24 @@ const Checkout = ({navigation, route}) => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={isCardInputVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeCardModal}>
+        <View style={styles.cardmodalContainer}>
+          <View style={[styles.cardModalContent,{height: modalHeight, width: modalWidth}]}>
+            <CustomCreditCardInput  />
+            <TouchableOpacity style={{position:"absolute",top:25,right:20}}  onPress={closeCardModal}>
+          <Image
+            source={require('../assets/close.png')}
+            style={{height: 14, width: 14, tintColor: '#000000',}}
+          />
+        </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -495,13 +611,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   modalContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: '100%',
+    alignSelf: 'center',
+    flex: 1,
   },
   modalContent: {
-    width: '80%',
+    width: '90%',
     height: 200,
     backgroundColor: 'white',
     borderRadius: 10,
@@ -534,5 +652,86 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Gilroy-Regular',
     marginVertical: 5,
+  },
+  cardmodalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: '100%',
+    alignSelf: 'center',
+    flex: 1,
+  },
+  cardModalContent: {
+    width: '90%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent:"center"
+    
+  },
+
+  cardField: {
+    width: '100%',
+    height: 50,
+    marginVertical: 20,
+  },
+  cardModalCloseButton: {
+    backgroundColor: '#F10C18',
+    height: 55,
+    width: '80%',
+    alignSelf: 'center',
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  cardModalCloseText: {
+    color: '#FFFFFF',
+    fontFamily: 'Gilroy-Bold',
+    fontSize: 18,
+  },
+  addCardButton: {
+    position: 'absolute',
+    bottom: 100,
+    right: 20,
+    backgroundColor: '#F10C18',
+    height: 55,
+    width: 180,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    elevation: 5,
+  },
+  addCardText: {
+    color: '#FFFFFF',
+    fontFamily: 'Gilroy-Bold',
+    fontSize: 18,
+  },
+  creditcard: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+
+  cardModalCloseButton: {
+    backgroundColor: '#F10C18',
+    height: 55,
+    width: '80%',
+    alignSelf: 'center',
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  cardModalCloseText: {
+    color: '#FFFFFF',
+    fontFamily: 'Gilroy-Bold',
+    fontSize: 18,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

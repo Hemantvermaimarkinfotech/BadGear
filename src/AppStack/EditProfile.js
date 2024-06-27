@@ -10,8 +10,8 @@ import axios from "react-native-axios"
 const EditProfile = ({route,navigation}) => {
   const {profileData} = route.params;
   console.log("profileDataaaaa",profileData)
-  const [name,setName]=useState(profileData[0]?.userName.charAt(0).toUpperCase() + profileData[0]?.userName.slice(1))
-  const [email,setEmail]=useState(profileData[0]?.userEmail)
+  const [name,setName]=useState(profileData ? profileData[0]?.userName.charAt(0).toUpperCase() + profileData[0]?.userName.slice(1):"")
+  const [email,setEmail]=useState(profileData ? profileData[0]?.userEmail:"")
   const [loading,setLoading]=useState(false)
 
 const {userToken}=useContext(AuthContext)

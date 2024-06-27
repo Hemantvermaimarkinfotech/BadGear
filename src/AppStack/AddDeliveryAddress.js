@@ -70,53 +70,6 @@ const AddDeliveryAddress = ({navigation}) => {
     );
   };
 
-  // const AddBillingAddress = async () => {
-  //   setLoading(true);
-  
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append('first_name', firstName);
-  //     formData.append('last_name', lastName);
-  //     formData.append('company', company);
-  //     formData.append('country', country);
-  //     formData.append('street_address', streetaddress);
-  //     formData.append('city', city);
-  //     formData.append('state', state);
-  //     formData.append('zipcode', zipcode);
-  //     formData.append('phone', phone);
-  //     formData.append('email', email);
-  
-  //     console.log('FormData:', formData); // Check formData for debugging
-  
-  //     const response = await axios.post(
-  //       'https://bad-gear.com/wp-json/add-billing-address/v1/BillingAddress',
-  //       formData,
-  //       {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //           Authorization: `Bearer ${userToken.token}`,
-  //         },
-  //       }
-  //     );
-  
-  //     console.log('Response Billing updated:', response?.data);
-  //     navigation.goBack();
-  //   } catch (error) {
-  //     console.error('Error updating Billing address:', error);
-  //     if (error.response) {
-  //       console.error('Response Data:', error.response.data);
-  //       console.error('Response Status:', error.response.status);
-  //     }
-  //     // Handle specific error cases here
-  //     if (error.response && error.response.status === 403) {
-  //       Alert.alert('Access Denied', 'You do not have permission to perform this action.');
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
 
 
   
@@ -139,11 +92,11 @@ const AddDeliveryAddress = ({navigation}) => {
       console.log('FormData:', formData); // Check formData for debugging
   
       // Replace with your actual token retrieval logic
-      const token = userToken?.token
+      const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
   
       const headers = {
         'Content-Type': 'multipart/form-data',
-        Authorization: `${token}`,
+        Authorization: `${tokenToUse}`,
        
       };
   
@@ -202,11 +155,11 @@ const AddDeliveryAddress = ({navigation}) => {
       console.log('FormData:', formData); // Check formData for debugging
   
       // Replace with your actual token retrieval logic
-      const token = userToken?.token
+      const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
   
       const headers = {
         'Content-Type': 'multipart/form-data',
-        Authorization: `${token}`,
+        Authorization: `${tokenToUse}`,
        
       };
   
@@ -405,7 +358,7 @@ const AddDeliveryAddress = ({navigation}) => {
                 fontFamily: 'Gilroy-Medium',
                 marginTop: 20,
               }}>
-              zipcode
+              Zipcode
             </Text>
             <View style={styles.inputcontainer}>
               <TextInput 
@@ -422,7 +375,7 @@ const AddDeliveryAddress = ({navigation}) => {
                 fontFamily: 'Gilroy-Medium',
                 marginTop: 20,
               }}>
-              phone
+              Phone
             </Text>
             <View style={styles.inputcontainer}>
               <TextInput 
@@ -628,7 +581,7 @@ const AddDeliveryAddress = ({navigation}) => {
                  fontFamily: 'Gilroy-Medium',
                  marginTop: 20,
                }}>
-               zipcode
+               Zipcode
              </Text>
              <View style={styles.inputcontainer}>
                <TextInput 
@@ -644,7 +597,7 @@ const AddDeliveryAddress = ({navigation}) => {
                  fontFamily: 'Gilroy-Medium',
                  marginTop: 20,
                }}>
-               phone
+               Phone
              </Text>
              <View style={styles.inputcontainer}>
                <TextInput 
@@ -811,6 +764,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F10C18',
+    marginBottom:50
   },
   buttonText: {
     color: 'white',
@@ -824,6 +778,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 8,
     width: '90%',
+    flex:1,
+    justifyContent:"center",
+    paddingHorizontal:12
   },
   bottomSelectButton:{
     height: 100,
@@ -837,6 +794,6 @@ const styles = StyleSheet.create({
     
   },
   textform:{
-    color: '#000000',fontSize:15 
+    color: '#000000',fontSize:15 ,justifyContent:"center"
   }
 });

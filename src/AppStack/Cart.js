@@ -31,7 +31,11 @@ const Cart = () => {
   const {userToken} = useContext(AuthContext);
 
   console.log('userTokenCart', userToken);
+  console.log('userToken.token', userToken.token);
 
+
+
+  
   const goBack = () => {
     navigation.goBack();
   };
@@ -149,13 +153,13 @@ const Cart = () => {
     // data.forEach((value, key) => {
     //   console.log(`${key}: ${value}`);
     // });
-
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     console.log('dataaa', data);
     let config = {
       method: 'post',
       url: 'https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems',
       headers: {
-        Authorization: `${userToken?.token}`,
+        Authorization: `${tokenToUse}`,
         'Content-Type': 'multipart/form-data',
       },
       data: data,
@@ -181,12 +185,12 @@ const Cart = () => {
 
   const getCartItems = async () => {
     setLoading(true);
-
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     let config = {
       method: 'get',
       url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
       headers: {
-        Authorization: `${userToken?.token}`,
+        Authorization: `${tokenToUse}`,
       },
     };
 
@@ -211,10 +215,11 @@ const Cart = () => {
         await AsyncStorage.setItem('cartItems', JSON.stringify(itemsWithQuantity));
         await AsyncStorage.setItem('totalAmount', totalAmount);
       } else {
-        console.error('Error: Unexpected response format:', response);
+        console.log('Error: Unexpected response format:', response);
       }
     } catch (error) {
-      console.error('Error fetching Cart Items:', error);
+      console.log('Error fetching Cart Items:', error);
+      setLoading(false)
     } finally {
       setLoading(false);
     }
@@ -242,6 +247,65 @@ const getTotalAmount = () => {
 
 
   return (
+    // <SafeAreaView style={styles.container}>
+    //   <View style={styles.header}>
+    //     <TouchableOpacity onPress={goBack}>
+    //       <Image
+    //         source={require('../assets/next.png')}
+    //         style={styles.headerIcon}
+    //       />
+    //     </TouchableOpacity>
+    //     <Text style={styles.headerText}>Cart</Text>
+    //   </View>
+
+    //   {loading ? (
+    //     <View style={styles.loadingContainer}>
+    //       <ActivityIndicator size="large" color="#F10C18" />
+    //     </View>
+    //   ) : (
+    //     <>
+    //       {
+    //         cartItems.length > 0 ? (
+    //           <>
+    //             <View style={styles.totalItemsContainer}>
+    //               <Text style={styles.totalItemsText}>
+    //                 {cartItems.length} Items Selected
+    //               </Text>
+    //               <Text style={styles.totalAmountText}>
+    //                 ${getTotalAmount()}
+    //               </Text>
+    //             </View>
+
+    //             <View style={{marginBottom: 200}}>
+    //               <FlatList
+    //                 data={cartItems}
+    //                 renderItem={({item}) => renderCartItem({item})}
+    //                 keyExtractor={item => item.product_id.toString()}
+    //                 nestedScrollEnabled={true}
+    //               />
+
+    //               <TouchableOpacity
+    //                 style={styles.placeOrderButton}
+    //                 onPress={() => {
+    //                   console.log('Navigating to Checkout with:', {
+    //                     cartItems,
+    //                     totalAmount: getTotalAmount(),
+    //                   });
+    //                   navigation.navigate('Checkout', {
+    //                     cartItems,
+    //                     totalAmount: getTotalAmount(),
+    //                   });
+    //                 }}>
+    //                 <Text style={styles.placeOrderText}>Place Order</Text>
+    //               </TouchableOpacity>
+    //             </View>
+    //           </>
+    //         ) : null // Render nothing if cartItems.length is 0
+    //       }
+    //     </>
+    //   )}
+    // </SafeAreaView>
+
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={goBack}>
@@ -259,44 +323,49 @@ const getTotalAmount = () => {
         </View>
       ) : (
         <>
-          {
-            cartItems.length > 0 ? (
-              <>
-                <View style={styles.totalItemsContainer}>
-                  <Text style={styles.totalItemsText}>
-                    {cartItems.length} Items Selected
-                  </Text>
-                  <Text style={styles.totalAmountText}>
-                    ${getTotalAmount()}
-                  </Text>
-                </View>
+          {cartItems.length > 0 ? (
+            <>
+              <View style={styles.totalItemsContainer}>
+                <Text style={styles.totalItemsText}>
+                  {cartItems.length} Items Selected
+                </Text>
+                <Text style={styles.totalAmountText}>
+                  ${getTotalAmount()}
+                </Text>
+              </View>
 
-                <View style={{marginBottom: 200}}>
-                  <FlatList
-                    data={cartItems}
-                    renderItem={({item}) => renderCartItem({item})}
-                    keyExtractor={item => item.product_id.toString()}
-                    nestedScrollEnabled={true}
-                  />
+              <View style={{ marginBottom: 200 }}>
+                <FlatList
+                  data={cartItems}
+                  renderItem={renderCartItem}
+                  keyExtractor={(item) => item.product_id.toString()}
+                  nestedScrollEnabled={true}
+                />
 
-                  <TouchableOpacity
-                    style={styles.placeOrderButton}
-                    onPress={() => {
-                      console.log('Navigating to Checkout with:', {
-                        cartItems,
-                        totalAmount: getTotalAmount(),
-                      });
-                      navigation.navigate('Checkout', {
-                        cartItems,
-                        totalAmount: getTotalAmount(),
-                      });
-                    }}>
-                    <Text style={styles.placeOrderText}>Place Order</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            ) : null // Render nothing if cartItems.length is 0
-          }
+                <TouchableOpacity
+                  style={styles.placeOrderButton}
+                  onPress={() => {
+                    console.log('Navigating to Checkout with:', {
+                      cartItems,
+                      totalAmount: getTotalAmount(),
+                    });
+                    navigation.navigate('Checkout', {
+                      cartItems,
+                      totalAmount: getTotalAmount(),
+                    });
+                  }}
+                >
+                  <Text style={styles.placeOrderText}>Place Order</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <View style={styles.noCartContainer}>
+              <Text style={{ color: '#000000',
+              fontSize: 20,
+              fontFamily: 'Gilroy-Medium'}}>No items in the cart</Text>
+            </View>
+          )}
         </>
       )}
     </SafeAreaView>
@@ -481,7 +550,9 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 15,
     fontFamily: 'Gilroy-SemiBold',
-  },
+  },noCartContainer:{
+    flex:1,justifyContent:"center",alignItems:"center"
+  }
 });
 
 export default Cart;

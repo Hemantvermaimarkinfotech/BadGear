@@ -22,7 +22,7 @@ import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
 import he from 'he';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Skeleton from '../Components/Skelton';
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
@@ -35,7 +35,6 @@ const CatDATA = [
   {id: '4', text: 'Bad Woman', image: require('../assets/cat1.png')},
   {id: '5', text: 'Hats', image: require('../assets/cat2.png')},
   {id: '6', text: '18 to Life', image: require('../assets/cat3.png')},
-  // category data
 ];
 
 const Home = ({navigation, item}) => {
@@ -44,14 +43,13 @@ const Home = ({navigation, item}) => {
   const [categories, setCategories] = useState([]);
   const {userToken} = useContext(AuthContext);
   const [userData, setUserData] = useState(null); // State for userData
-console.log("userTokenHomePAge",userToken)
+
 
 
   const [Arrivals, setArrivals] = useState([]);
   const [username, setUsername] = useState('');
   const [wishlist, setWishlist] = useState([]); // State for wishlist
-  // const [userDataa, setUserData] = useState(null); // State for userData
-  // console.log("userDataa",userDataa)
+
 
   const ensureMinLength = (str, minLength) => {
     if (str.length >= minLength) return str;
@@ -111,28 +109,24 @@ console.log("userTokenHomePAge",userToken)
 
         // Fetch banner
         const bannerResponse = await getBanner(userToken);
-        // console.log('bannerResponse', bannerResponse);
         if (bannerResponse.status === 'success') {
           const {data} = bannerResponse; // Destructuring the data
           setBanner(data);
-          // console.log('Banner data set:', data);
         } else {
-          console.log('Error fetching banner:', bannerResponse);
+          console.log('Error fetching banner:');
         }
 
         // Fetch categories
         const categoriesResponse = await getCategory(userToken);
-        // console.log('categoriesResponse', categoriesResponse);
         setCategories(categoriesResponse);
 
         // Fetch new arrivals
-        const newArrivalsResponse = await getNewArrivals(userToken);
-        // console.log('newArrivalsResponse', newArrivalsResponse);
+        const newArrivalsResponse = await getNewArrivals(userToken)
 
         // Decode HTML entities in arrival data
         const decodedArrivalsResponse = newArrivalsResponse.map(arrival => ({
           ...arrival,
-          title: arrival.title ? he.decode(arrival.title) : '', // Add a check for undefined title
+          title: arrival.title ? he.decode(arrival.title) : '', 
           // Add more fields to decode if necessary
         }));
 
@@ -148,6 +142,7 @@ console.log("userTokenHomePAge",userToken)
     fetchData(); // Call the combined fetchData function
   }, [userToken]);
 
+ 
 
 
   const isItemInWishlist = productId => {
@@ -155,13 +150,9 @@ console.log("userTokenHomePAge",userToken)
   };
 
   const addToWishlist = async productId => {
-    console.log('productId', productId);
     try {
-      // Call AddWishlist function to add product to wishlist
       const response = await AddWishlist(productId);
-      // If the request is successful
       if (response.status === 'success') {
-        // console.log('Product added to wishlist:', response.successmsg);
         setWishlist([...wishlist, productId]);
        
         // Return true to indicate success
@@ -191,41 +182,38 @@ console.log("userTokenHomePAge",userToken)
 
     return (
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('ProductDetails', {ProductId: item.cat_id})
-        }
-        style={styles.categoryItem}
-        key={item.cat_id}>
-        <View style={styles.catitem}>
-          {loading ? ( // Check if loading
-            <ShimmerPlaceholder
-              style={styles.image}
-              duration={1000} // Duration of the shimmer animation
-            />
-          ) : (
-            <Image style={styles.image} source={imageSource} />
-          )}
-        </View>
-        <Text
-          style={{
-            textAlign: 'center',
-            color: '#000000',
-            fontSize: 15,
-            fontWeight: '600',
-            fontFamily: 'Gilroy-SemiBold',
-          }}>
-          {loading ? ( // Check if loading
-            <ShimmerPlaceholder
-              style={{width: 100, marginTop: 5}}
-              duration={1000} // Duration of the shimmer animation
-            />
-          ) : item?.cat_name.length > 14 ? (
-            item?.cat_name.substring(0, 14) + '...'
-          ) : (
-            item?.cat_name
-          )}
-        </Text>
-      </TouchableOpacity>
+      onPress={() => navigation.navigate('ProductDetails', { ProductId: item.cat_id })}
+      style={styles.categoryItem}
+      key={item.cat_id}>
+      <View style={styles.catitem}>
+        {loading ? (
+          <Skeleton
+            style={styles.image}
+            skeletonHeight={60}
+            skeletonWidth={60}
+            borderRadius={30}
+          />
+        ) : (
+          <Image style={styles.image} source={imageSource} />
+        )}
+      </View>
+      <Text
+        style={{
+          textAlign: 'center',
+          color: '#000000',
+          fontSize: 15,
+          fontWeight: '600',
+          fontFamily: 'Gilroy-SemiBold',
+        }}>
+        {loading ? (
+          <Skeleton style={{ width: 100, marginTop: 5 }} skeletonHeight={16} skeletonWidth={100}/>
+        ) : item?.cat_name.length > 14 ? (
+          item?.cat_name.substring(0, 14) + '...'
+        ) : (
+          item?.cat_name
+        )}
+      </Text>
+    </TouchableOpacity>
     );
   };
 
@@ -259,7 +247,6 @@ console.log("userTokenHomePAge",userToken)
         </Text>
         <TouchableOpacity
           onPress={() => {
-            console.log('Item:', item); // Console log the item
             addToWishlist(item.id);
           }}
           style={{
@@ -304,7 +291,8 @@ console.log("userTokenHomePAge",userToken)
               fontSize: 22,
               fontFamily: 'Gilroy-SemiBold',
             }}>
-            Welcome {userData && capitalizeFirstLetter(JSON.parse(userData).user_data.data.user_login)}
+            {/* Welcome {userData && capitalizeFirstLetter(JSON.parse(userData).user_data.data.user_login)} */}
+            Welocome Jack
           </Text>
         </View>
         <View
@@ -336,11 +324,12 @@ console.log("userTokenHomePAge",userToken)
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.banner}>
           {loading ? (
-            <ShimmerPlaceholder
-              style={{width: '98%', height: 200, borderRadius: 20}}
-              duration={1000}
-              colors={['#CCCCCC', '#DDDDDD', '#CCCCCC']}
-            />
+             <Skeleton
+             style={{ width: '98%', height: 200, borderRadius: 20 }}
+             skeletonHeight={200}
+             skeletonWidth={'98%'}
+             borderRadius={20}
+           />
           ) : (
             <>
               <View style={{height: 200, width: '98%'}}>
@@ -418,7 +407,7 @@ console.log("userTokenHomePAge",userToken)
               }}>
               New Arrivals
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('NewArrivel')}>
+            <TouchableOpacity onPress={() => navigation.navigate('NewArrival')}>
               <Text
                 style={{
                   color: '#000000',
@@ -453,9 +442,11 @@ console.log("userTokenHomePAge",userToken)
                     }>
                     <View style={[styles.Arrivelitem, {marginTop: 10}]}>
                       {loading ? (
-                        <ShimmerPlaceholder
+                        <Skeleton
                           style={[styles.Arrivalimage, {height: 150}]}
                           duration={1000}
+                          skeletonHeight={150}
+                          skeletonWidth={125}
                         />
                       ) : (
                         item?.product_img && (
@@ -474,7 +465,7 @@ console.log("userTokenHomePAge",userToken)
                         marginTop: 10,
                       }}>
                       {loading ? ( // Check if loading
-                        <ShimmerPlaceholder
+                        <Skeleton
                           style={{
                             color: '#000000',
                             fontSize: 14,
@@ -482,6 +473,8 @@ console.log("userTokenHomePAge",userToken)
                             textAlign: 'center',
                             fontWeight: '600',
                           }}
+                          skeletonHeight={20}
+                          skeletonWidth={120}
                           duration={1000}
                         />
                       ) : (
@@ -534,7 +527,7 @@ console.log("userTokenHomePAge",userToken)
                     </View>
                     <View style={{justifyContent: 'center', marginTop: 10}}>
                       {loading ? ( // Check if loading
-                        <ShimmerPlaceholder // Render ShimmerPlaceholder when loading
+                        <Skeleton // Render ShimmerPlaceholder when loading
                           duration={1000}
                           style={{
                             width: 60, // Adjust width according to your text size
@@ -542,6 +535,10 @@ console.log("userTokenHomePAge",userToken)
                             borderRadius: 2,
                             marginLeft: 18, // Adjust borderRadius as needed
                           }}
+                          skeletonHeight={16}
+                          skeletonWidth={60}
+                          marginLeft={18}
+                          marginTop={0}
                         />
                       ) : (
                         <Text

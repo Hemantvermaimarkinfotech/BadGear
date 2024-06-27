@@ -15,45 +15,6 @@ import {getCategory} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
 import he from  "he"
 
-// This is Category data
-const CategoryDATA = [
-  {
-    id: '1',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '2',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '3',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '4',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '5',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival1.png'),
-    rate: '$39.95 - $44.95',
-  },
-  {
-    id: '6',
-    text: 'Kenworth Teal Flag Hoodie',
-    image: require('../assets/Arrival2.png'),
-    rate: '$39.95 - $44.95',
-  },
-];
 
 //   This is renderCategoryitme
 const rendercategoryItem = ({ item,navigation }) => {
@@ -105,7 +66,6 @@ const Category = ({navigation}) => {
       try {
         setLoading(true); // Set loading to true when fetching starts
         const fetchedCategories = await getCategory(userToken);
-        console.log(fetchedCategories);
         setCategories(fetchedCategories);
       } catch (error) {
         console.log('Error fetching categories:', error);
@@ -183,36 +143,3 @@ const styles = StyleSheet.create({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const rendercategoryItem = ({item, navigation}) => (
-//   <TouchableOpacity
-//   onPress={() =>
-//     navigation.navigate('ProductDetails', {
-//       productId: item.cat_id,
-//     })}>
-//    <View style={styles.Catitem}>
-//   {item.cat_image && item.cat_image.trim() !== '' ? (
-//     <Image style={styles.Catimage} source={{uri: item.cat_image}} />
-//   ) : (
-//     <Image style={styles.Catimage} source={require('../assets/Arrival1.png')} />
-//   )}
-  
-// </View>
