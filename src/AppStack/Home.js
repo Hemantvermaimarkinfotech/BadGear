@@ -172,51 +172,50 @@ const Home = ({navigation, item}) => {
     }
   };
 
-  const renderCategoryItem = ({item}) => {
-    const catDataItem = CatDATA.find(
-      dataItem => dataItem.text === item.cat_name,
-    );
-    const imageSource = catDataItem
-      ? catDataItem.image
-      : require('../assets/cat1.png');
-
+  const renderCategoryItem = ({ item }) => {
+    const catDataItem = CatDATA.find(dataItem => dataItem.text === item.cat_name);
+    const imageSource = catDataItem ? catDataItem.image : require('../assets/cat1.png');
+  
     return (
       <TouchableOpacity
-      onPress={() => navigation.navigate('ProductDetails', { ProductId: item.cat_id })}
-      style={styles.categoryItem}
-      key={item.cat_id}>
-      <View style={styles.catitem}>
-        {loading ? (
-          <Skeleton
-            style={styles.image}
-            skeletonHeight={60}
-            skeletonWidth={60}
-            borderRadius={30}
-          />
-        ) : (
-          <Image style={styles.image} source={imageSource} />
-        )}
-      </View>
-      <Text
-        style={{
-          textAlign: 'center',
-          color: '#000000',
-          fontSize: 15,
-          fontWeight: '600',
-          fontFamily: 'Gilroy-SemiBold',
-        }}>
-        {loading ? (
-          <Skeleton style={{ width: 100, marginTop: 5 }} skeletonHeight={16} skeletonWidth={100}/>
-        ) : item?.cat_name.length > 14 ? (
-          item?.cat_name.substring(0, 14) + '...'
-        ) : (
-          item?.cat_name
-        )}
-      </Text>
-    </TouchableOpacity>
+        onPress={() => navigation.navigate('ProductDetails', { ProductId: item.cat_id })}
+        style={styles.categoryItem}
+        key={item.cat_id}
+        disabled={loading} // Disable TouchableOpacity when loading is true
+      >
+        <View style={styles.catitem}>
+          {loading ? (
+            <Skeleton
+              style={styles.image}
+              skeletonHeight={60}
+              skeletonWidth={60}
+              borderRadius={30}
+            />
+          ) : (
+            <Image style={styles.image} source={imageSource} />
+          )}
+        </View>
+        <Text
+          style={{
+            textAlign: 'center',
+            color: '#000000',
+            fontSize: 15,
+            fontWeight: '600',
+            fontFamily: 'Gilroy-SemiBold',
+          }}
+        >
+          {loading ? (
+            <Skeleton style={{ width: 100, marginTop: 5 }} skeletonHeight={16} skeletonWidth={100} />
+          ) : item?.cat_name.length > 14 ? (
+            item?.cat_name.substring(0, 14) + '...'
+          ) : (
+            item?.cat_name
+          )}
+        </Text>
+      </TouchableOpacity>
     );
   };
-
+  
   const renderBestSellingItem = ({item, navigation}) => (
     <View activeOpacity={0.92} style={[{width: imageWidth, marginTop: 10}]}>
       <View style={styles.Arrivelitem}>
@@ -429,74 +428,77 @@ const Home = ({navigation, item}) => {
               renderItem={({item}) => {
                 return (
                   <TouchableOpacity
-                    activeOpacity={0.92}
-                    style={{width: imageWidth}}
-                    onPress={() =>
-                      navigation.navigate('ProductDetails', {
-                        productId: item.product_id,
-                        productName: item.product_name,
-                        productDescription: item.description,
-                        productImg: item.product_img,
-                        productPrice: item.price,
-                      })
-                    }>
-                    <View style={[styles.Arrivelitem, {marginTop: 10}]}>
-                      {loading ? (
-                        <Skeleton
-                          style={[styles.Arrivalimage, {height: 150}]}
-                          duration={1000}
-                          skeletonHeight={150}
-                          skeletonWidth={125}
+                  activeOpacity={0.92}
+                  style={{ width: imageWidth }}
+                  onPress={() =>
+                    navigation.navigate('ProductDetails', {
+                      productId: item.product_id,
+                      productName: item.product_name,
+                      productDescription: item.description,
+                      productImg: item.product_img,
+                      productPrice: item.price,
+                    })
+                  }
+                  disabled={loading} // Disable TouchableOpacity when loading is true
+                >
+                  <View style={[styles.Arrivelitem, { marginTop: 10 }]}>
+                    {loading ? (
+                      <Skeleton
+                        style={[styles.Arrivalimage, { height: 150 }]}
+                        duration={1000}
+                        skeletonHeight={150}
+                        skeletonWidth={125}
+                      />
+                    ) : (
+                      item?.product_img && (
+                        <Image
+                          style={styles.Arrivalimage}
+                          source={{ uri: item.product_img }}
                         />
-                      ) : (
-                        item?.product_img && (
-                          <Image
-                            style={styles.Arrivalimage}
-                            source={{uri: item.product_img}}
-                          />
-                        )
-                      )}
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        paddingHorizontal: 10,
-                        marginTop: 10,
-                      }}>
-                      {loading ? ( // Check if loading
-                        <Skeleton
-                          style={{
-                            color: '#000000',
-                            fontSize: 14,
-                            width: 120,
-                            textAlign: 'center',
-                            fontWeight: '600',
-                          }}
-                          skeletonHeight={20}
-                          skeletonWidth={120}
-                          duration={1000}
-                        />
-                      ) : (
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            color: '#000000',
-                            fontSize: 15,
-                            width: 120,
-                            textAlign: 'center',
-                            fontWeight: '600',
-                            fontFamily: 'Gilroy-SemiBold',
-                            lineHeight: 18,
-                          }}>
-                          {he.decode(item.product_name)}
-                        </Text>
-                      )}
-                      <TouchableOpacity
-                        onPress={async () => {
-                          const addedToWishlist = await addToWishlist(
-                            item.product_id,
-                          );
+                      )
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingHorizontal: 10,
+                      marginTop: 10,
+                    }}
+                  >
+                    {loading ? ( // Check if loading
+                      <Skeleton
+                        style={{
+                          color: '#000000',
+                          fontSize: 14,
+                          width: 120,
+                          textAlign: 'center',
+                          fontWeight: '600',
+                        }}
+                        skeletonHeight={20}
+                        skeletonWidth={120}
+                        duration={1000}
+                      />
+                    ) : (
+                      <Text
+                        numberOfLines={2}
+                        style={{
+                          color: '#000000',
+                          fontSize: 15,
+                          width: 120,
+                          textAlign: 'center',
+                          fontWeight: '600',
+                          fontFamily: 'Gilroy-SemiBold',
+                          lineHeight: 18,
+                        }}
+                      >
+                        {he.decode(item.product_name)}
+                      </Text>
+                    )}
+                    <TouchableOpacity
+                      onPress={async () => {
+                        if (!loading) { // Check if not loading
+                          const addedToWishlist = await addToWishlist(item.product_id);
                           if (addedToWishlist) {
                             setWishlist([...wishlist, item.product_id]);
                           } else {
@@ -506,54 +508,57 @@ const Home = ({navigation, item}) => {
                               ),
                             );
                           }
-                        }}
+                        }
+                      }}
+                      style={{
+                        height: 30,
+                        width: 30,
+                        backgroundColor: '#fff',
+                        borderRadius: 30,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: loading ? 0.5 : 1, // Reduce opacity when loading
+                        pointerEvents: loading ? 'none' : 'auto', // Disable pointer events when loading
+                      }}
+                      key={`${item.id}_heart`}
+                    >
+                      <Image
+                        source={require('../assets/heart.png')}
+                        style={{ tintColor: '#000000' }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{ justifyContent: 'center', marginTop: 10 }}>
+                    {loading ? ( // Check if loading
+                      <Skeleton // Render ShimmerPlaceholder when loading
+                        duration={1000}
                         style={{
-                          height: 30,
-                          width: 30,
-                          backgroundColor: '#fff',
-                          borderRadius: 30,
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          width: 60, // Adjust width according to your text size
+                          height: 16, // Adjust height according to your text size
+                          borderRadius: 2,
+                          marginLeft: 18, // Adjust marginLeft as needed
                         }}
-                        key={`${item.id}_heart`}>
-                        
-                     
-                        <Image
-        source={ require('../assets/heart.png')}
-        style={{ tintColor: '#000000'}}
-      />
-                      
-                      </TouchableOpacity>
-                    </View>
-                    <View style={{justifyContent: 'center', marginTop: 10}}>
-                      {loading ? ( // Check if loading
-                        <Skeleton // Render ShimmerPlaceholder when loading
-                          duration={1000}
-                          style={{
-                            width: 60, // Adjust width according to your text size
-                            height: 16, // Adjust height according to your text size
-                            borderRadius: 2,
-                            marginLeft: 18, // Adjust borderRadius as needed
-                          }}
-                          skeletonHeight={16}
-                          skeletonWidth={60}
-                          marginLeft={18}
-                          marginTop={0}
-                        />
-                      ) : (
-                        <Text
-                          style={{
-                            color: '#000000',
-                            fontSize: 17,
-                            fontWeight: '500',
-                            marginLeft: 18,
-                            fontFamily: 'Gilroy-SemiBold',
-                          }}>
-                          {item?.price}
-                        </Text>
-                      )}
-                    </View>
-                  </TouchableOpacity>
+                        skeletonHeight={16}
+                        skeletonWidth={60}
+                        marginLeft={18}
+                        marginTop={0}
+                      />
+                    ) : (
+                      <Text
+                        style={{
+                          color: '#000000',
+                          fontSize: 17,
+                          fontWeight: '500',
+                          marginLeft: 18,
+                          fontFamily: 'Gilroy-SemiBold',
+                        }}
+                      >
+                        {item?.price}
+                      </Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+                
                 );
               }}
               keyExtractor={(item, index) => index.toString()}

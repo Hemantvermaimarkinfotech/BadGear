@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/Feather';
-import { AuthContext } from './AuthProvider';
-const TitleHeader = ({title}) => {
+
+const TitleHeader = ({title,cartLenth}) => {
   const navigation = useNavigation();
-  const { cartLength } = useContext(AuthContext);
-  console.log(" cartLength ", cartLength )
+
+
+
+  
 
   const goBack = () => {
     navigation.goBack();
@@ -71,7 +73,7 @@ const TitleHeader = ({title}) => {
               style={styles.headericon}
             />
           <View style={{height:18,width:18,backgroundColor:"#F10C18",borderRadius:8,position:"absolute",top:-8,right:10,justifyContent:"center",alignItems:"center"}}>
-              <Text style={{color:"#fff",fontSize:12}}>{cartLength}</Text>
+              <Text style={{color:"#fff",fontSize:12}}>0</Text>
             </View>
           </TouchableOpacity>
         </View>

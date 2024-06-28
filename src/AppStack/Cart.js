@@ -29,6 +29,8 @@ const Cart = () => {
   const [country, setCountry] = useState('1');
   const [selectedCartItem, setSelectedCartItem] = useState(null); // State to hold selected cart item's data
   const {userToken} = useContext(AuthContext);
+  const [cartLength, setCartLength] = useState(0);
+console.log("cartLenth",cartLength)
 
   console.log('userTokenCart', userToken);
   console.log('userToken.token', userToken.token);
@@ -214,6 +216,7 @@ const Cart = () => {
         // Store cart items and total amount in AsyncStorage
         await AsyncStorage.setItem('cartItems', JSON.stringify(itemsWithQuantity));
         await AsyncStorage.setItem('totalAmount', totalAmount);
+        setCartLength(itemsWithQuantity.length);
       } else {
         console.log('Error: Unexpected response format:', response);
       }

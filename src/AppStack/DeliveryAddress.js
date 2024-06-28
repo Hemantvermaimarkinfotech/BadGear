@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Image
+  Image,
 } from 'react-native';
 import MainHeader from '../Components/MainHeader';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -32,15 +32,13 @@ const DeliveryAddress = ({navigation}) => {
   const isFocused = useIsFocused(); // useIsFocused hook to track screen focus
   const [selectedAddress, setselectedAddress] = useState('billingaddress');
 
-  const handleBillingPress = (addressId) => {
-   setSelectedBilling(!selectedBilling)
+  const handleBillingPress = addressId => {
+    setSelectedBilling(!selectedBilling);
   };
-  
+
   const handleShippingPress = () => {
     setSelectedShipping(!selectedShipping); // Toggle selectedShipping state
   };
-  
-  
 
   const billingaddress = `${billling?.billing_address},${billling?.billing_city},${billling?.billing_company},${billling?.billing_country},${billling?.billing_last_name},${billling?.billing_first_name}, 
   ${billling?.billing_phone},${billling?.billing_email},${billling?.billing_postcode},${billling?.billing_state}`;
@@ -49,45 +47,51 @@ const DeliveryAddress = ({navigation}) => {
   const shippingaddress = `${shipping?.shipping_address},${shipping?.shipping_city},${shipping?.shipping_company},${shipping?.shipping_country},${shipping?.shipping_company},${shipping?.shipping_last_name},${shipping?.shipping_first_name}, 
   ${shipping?.shipping_phone},${shipping?.shipping_email},${shipping?.shipping_postcode},${shipping?.shipping_state}`;
 
-  const getAddressData = async (addressType) => {
-    setLoading(true)
-    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+  const getAddressData = async addressType => {
+    setLoading(true);
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
     try {
-     
-  
       let url;
       if (addressType === 'billing') {
-        url = 'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress';
+        url =
+          'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress';
       } else if (addressType === 'shipping') {
-        url = 'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress';
+        url =
+          'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress';
       }
-  
+
       const response = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `${tokenToUse}`,
         },
       });
-  
+
       const responseData = response.data.data;
       console.log(`${addressType} Response Data:`, responseData);
-  
+
       if (addressType === 'billing') {
         setBilling(responseData);
-        await AsyncStorage.setItem('billingAddress', JSON.stringify(responseData));
+        await AsyncStorage.setItem(
+          'billingAddress',
+          JSON.stringify(responseData),
+        );
       } else if (addressType === 'shipping') {
         setShipping(responseData);
-        await AsyncStorage.setItem('shippingAddress', JSON.stringify(responseData));
+        await AsyncStorage.setItem(
+          'shippingAddress',
+          JSON.stringify(responseData),
+        );
       }
     } catch (error) {
       console.error(`Error fetching ${addressType} Profile:`, error);
-      setLoading(false)
+      setLoading(false);
       // Handle error appropriately
     } finally {
       setLoading(false);
     }
   };
-  
 
   // useEffect(() => {
   //   if (userToken && userToken.token) {
@@ -107,20 +111,17 @@ const DeliveryAddress = ({navigation}) => {
   useEffect(() => {
     const fetchData = async () => {
       if (isFocused) {
-         getAddressData('billing');
-         getAddressData('shipping');
+        getAddressData('billing');
+        getAddressData('shipping');
       }
     };
-  
+
     fetchData();
   }, [isFocused]);
-  
 
   const handleRadioPress = id => {
     setSelectedId(id);
   };
-
- 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -135,46 +136,50 @@ const DeliveryAddress = ({navigation}) => {
           <View>
             <View style={{width: '95%', alignSelf: 'center'}}>
               {billingaddress ? (
-             <TouchableOpacity
-             style={styles.row}
-             onPress={handleBillingPress}
-           >
-             <View style={{ flexDirection: 'row', width: '90%' }}>
-               <View style={[styles.iconContainer]}>
-                 <Image source={require("../assets/home.png")} style={{height:30,width:30,tintColor:"#ffffff"}}/>
-               </View>
-               <View style={{ justifyContent: 'center', marginLeft: 10 }}>
-                 <Text style={{ color: '#000000', fontSize: 15 }}>
-                   Billing Address
-                 </Text>
-                 <Text
-                   style={{
-                     color: '#000000',
-                     fontSize: 12,
-                     fontFamily: 'Gilroy-Regular',
-                     marginVertical: 5,
-                     lineHeight: 15,
-                   }}
-                 >
-                   {billingaddress}
-                 </Text>
-               </View>
-             </View>
-             <View style={{ marginLeft: 10, width: '10%' }}>
-               {selectedBilling && (
-                //  <MaterialIcons
-                //    name="radio-button-checked"
-                //    size={24}
-                //    color={'red'}
-                //    onPress={() => setselectedAddress('selectedBilling')}
-                //  />
-                <TouchableOpacity  onPress={() => setselectedAddress('selectedBilling')}>
-                  <Image source={require("../assets/round.png")} style={{height:20,width:20,tintColor:"#F10C18"}}/>
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={handleBillingPress}>
+                  <View style={{flexDirection: 'row', width: '90%'}}>
+                    <View style={[styles.iconContainer]}>
+                      <Image
+                        source={require('../assets/home.png')}
+                        style={{height: 30, width: 30, tintColor: '#ffffff'}}
+                      />
+                    </View>
+                    <View style={{justifyContent: 'center', marginLeft: 10}}>
+                      <Text style={{color: '#000000', fontSize: 15}}>
+                        Billing Address
+                      </Text>
+                      <Text
+                        style={{
+                          color: '#000000',
+                          fontSize: 12,
+                          fontFamily: 'Gilroy-Regular',
+                          marginVertical: 5,
+                          lineHeight: 15,
+                        }}>
+                        {billingaddress}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={{marginLeft: 10, width: '10%'}}>
+                    {selectedBilling && (
+                      //  <MaterialIcons
+                      //    name="radio-button-checked"
+                      //    size={24}
+                      //    color={'red'}
+                      //    onPress={() => setselectedAddress('selectedBilling')}
+                      //  />
+                      <TouchableOpacity
+                        onPress={() => setselectedAddress('selectedBilling')}>
+                        <Image
+                          source={require('../assets/round.png')}
+                          style={{height: 20, width: 20, tintColor: '#F10C18'}}
+                        />
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </TouchableOpacity>
-               )}
-             </View>
-           </TouchableOpacity>
-           
               ) : (
                 <Text
                   style={{
@@ -200,59 +205,63 @@ const DeliveryAddress = ({navigation}) => {
             </View>
 
             <View style={{width: '95%', alignSelf: 'center'}}>
-            <TouchableOpacity
-  style={styles.row}
-  onPress={handleShippingPress}
->
-  <View style={{ flexDirection: 'row', width: '90%' }}>
-    <View style={[styles.iconContainer]}>
-    <Image source={require("../assets/location.png")} style={{height:30,width:30,tintColor:"#ffffff"}}/>
-    </View>
-    <View style={{ justifyContent: 'center', marginLeft: 10 }}>
-      <Text style={{ color: '#000000', fontSize: 15 }}>
-        Shipping Address
-      </Text>
-      {shippingaddress ? (
-        <Text
-          style={{
-            color: '#000000',
-            fontSize: 12,
-            fontFamily: 'Gilroy-Regular',
-            marginVertical: 5,
-            lineHeight: 15,
-          }}
-        >
-          {shippingaddress}
-        </Text>
-      ) : (
-        <Text
-          style={{
-            color: '#808080',
-            fontSize: 12,
-            fontFamily: 'Gilroy-Regular',
-            marginVertical: 5,
-            lineHeight: 15,
-          }}
-        >
-          No shipping address found
-        </Text>
-      )}
-    </View>
-  </View>
-  <View style={{ marginLeft: 10, width: '10%' }}>
-    {selectedShipping && (
-      // <MaterialIcons
-      //   name="radio-button-checked"
-      //   size={24}
-      //   color={'red'}
-      // />
+              <TouchableOpacity
+                style={styles.row}
+                onPress={handleShippingPress}>
+                <View style={{flexDirection: 'row', width: '90%'}}>
+                  <View style={[styles.iconContainer]}>
+                    <Image
+                      source={require('../assets/location.png')}
+                      style={{height: 30, width: 30, tintColor: '#ffffff'}}
+                    />
+                  </View>
+                  <View style={{justifyContent: 'center', marginLeft: 10}}>
+                    <Text style={{color: '#000000', fontSize: 15}}>
+                      Shipping Address
+                    </Text>
+                    {shippingaddress ? (
+                      <Text
+                        style={{
+                          color: '#000000',
+                          fontSize: 12,
+                          fontFamily: 'Gilroy-Regular',
+                          marginVertical: 5,
+                          lineHeight: 15,
+                        }}>
+                        {shippingaddress}
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          color: '#808080',
+                          fontSize: 12,
+                          fontFamily: 'Gilroy-Regular',
+                          marginVertical: 5,
+                          lineHeight: 15,
+                        }}>
+                        No shipping address found
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <View style={{marginLeft: 10, width: '10%'}}>
+                  {selectedShipping && (
+                    // <MaterialIcons
+                    //   name="radio-button-checked"
+                    //   size={24}
+                    //   color={'red'}
+                    // />
 
-      <TouchableOpacity  onPress={() => setselectedAddress('selectedBilling')}>
-      <Image source={require("../assets/round.png")} style={{height:20,width:20,tintColor:"#F10C18"}}/>
-    </TouchableOpacity>
-    )}
-  </View>
-</TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setselectedAddress('selectedBilling')}>
+                      <Image
+                        source={require('../assets/round.png')}
+                        style={{height: 20, width: 20, tintColor: '#F10C18'}}
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </TouchableOpacity>
 
               <View
                 style={{
@@ -272,31 +281,38 @@ const DeliveryAddress = ({navigation}) => {
           style={styles.addAddressButton}
           onPress={() => navigation.navigate('AddDeliveryAddress')}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Image source={require("../assets/plus.png")} style={{height:20,width:20,tintColor:"#000000"}}/>
+            <Image
+              source={require('../assets/plus.png')}
+              style={{height: 20, width: 20, tintColor: '#000000'}}
+            />
             <Text style={styles.addAddressButtonText}>Add Address</Text>
           </View>
 
-          <Image source={require("../assets/arrow-right.png")} style={{height:20,width:20,tintColor:"#000000"}}/>
+          <Image
+            source={require('../assets/arrow-right.png')}
+            style={{height: 20, width: 20, tintColor: '#000000'}}
+          />
         </TouchableOpacity>
       </View>
 
       <View style={styles.bottomButtonContainer}>
-      <TouchableOpacity
-  style={styles.button}
-  onPress={() => {
-    const selectedBillingAddress = selectedBilling ? billingaddress : null;
-    const selectedShippingAddress = selectedShipping ? shippingaddress : null;
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            const selectedBillingAddress = selectedBilling
+              ? billingaddress
+              : null;
+            const selectedShippingAddress = selectedShipping
+              ? shippingaddress
+              : null;
 
-    navigation.navigate('Checkout', { 
-      selectedBillingAddress,
-      selectedShippingAddress
-    });
-  }}
->
-  <Text style={styles.buttonText}>Save Address</Text>
-</TouchableOpacity>
-
-
+            navigation.navigate('Checkout', {
+              selectedBillingAddress,
+              selectedShippingAddress,
+            });
+          }}>
+          <Text style={styles.buttonText}>Save Address</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
