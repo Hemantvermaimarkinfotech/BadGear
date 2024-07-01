@@ -7,19 +7,26 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert 
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import {Dropdown} from 'react-native-element-dropdown';
 import {AuthContext} from '../Components/AuthProvider';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {AirbnbRating} from 'react-native-ratings';
+import axios from 'react-native-axios';
+import Loader from '../Components/Loader';
 
-
-const AddReview = () => {
+const AddReview = ({route}) => {
+  const productDetails = route.params;
+  console.log('proudctId', productDetails?.productId);
+  const {userToken} = useContext(AuthContext);
+  const attributes = productDetails?.productDetails.attributes;
   const [text, setText] = useState('');
   const [rating, setRating] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleRating = value => {
     setRating(value);
@@ -52,6 +59,50 @@ const AddReview = () => {
     {label: 'December', value: '12'},
   ];
 
+  const addReview = () => {
+    if (isNaN(rating) || rating < 1 || rating > 5) {
+      Alert.alert('Warning', 'Please select a valid rating.');
+      return;
+    }
+
+    if (!text.trim().length) {
+      Alert.alert('Warning', 'Please provide a review.');
+      return;
+    }
+
+    setLoading(true)
+    let data = new FormData();
+    data.append('product_id', productDetails?.productId);
+    data.append('rating', rating);
+    data.append('review', text);
+
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
+
+    let config = {
+      method: 'post',
+      url: 'https://bad-gear.com/wp-json/addProductReview/v1/addProduct_Review',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `${tokenToUse}`,
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then(response => {
+        console.log(JSON.stringify(response.data));
+        Alert.alert('Success', 'Review added successfully.'); 
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TitleHeader title={'AddReview'} />
@@ -68,7 +119,7 @@ const AddReview = () => {
               alignItems: 'center',
             }}>
             <Image
-              source={require('../assets/cat3.png')}
+              source={{uri: productDetails?.productDetails.product_img}}
               style={{height: 60, width: 60, borderRadius: 5}}
             />
           </View>
@@ -80,7 +131,7 @@ const AddReview = () => {
                 color: '#000000',
                 fontFamily: 'Gilroy-SemiBold',
               }}>
-              LumbarCloud™ Hybrid
+              {productDetails?.productDetails.product_name}
             </Text>
             <View style={{flexDirection: 'row'}}>
               <Text
@@ -89,7 +140,7 @@ const AddReview = () => {
                   color: '#000000',
                   fontFamily: 'Gilroy-Medium',
                 }}>
-                $45
+                {productDetails?.productDetails.price}
               </Text>
               <View
                 style={{
@@ -182,17 +233,27 @@ const AddReview = () => {
           />
         </View>
 
-        {/* {loading ? 
-             (   <TouchableOpacity style={styles.button}>
-             <Loader/>
-         </TouchableOpacity>):(
-              <TouchableOpacity style={styles.button} onPress={()=>updateProfile()}>
-              <Text style={styles.buttonText}>Save</Text>
+        {loading ? (
+          <View
+            style={{
+              height: 55,
+              width: '100%',
+              alignSelf: 'center',
+              borderColor: '#F10C18',
+              borderRadius: 8,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 30,
+              marginBottom: 80,
+            }}
+            onPress={() => addReview()}>
+            <Loader />
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.button} onPress={() => addReview()}>
+            <Text style={styles.buttonText}>Submit</Text>
           </TouchableOpacity>
-             )} */}
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -240,7 +301,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F10C18',
     marginTop: 30,
-    marginBottom:80
+    marginBottom: 80,
   },
   buttonText: {
     color: 'white',
@@ -287,7 +348,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#000000',
-    fontFamily:"Gilroy-Medium"
+    fontFamily: 'Gilroy-Medium',
   },
   dropdownList: {
     borderColor: '#DEDEDE',

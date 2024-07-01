@@ -9,24 +9,20 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
-  Button,
   Dimensions,
   Alert,
 } from 'react-native';
-import CustomDropdownPicker from '../Components/CustomDropDownPicker';
 import TitleHeader from '../Components/TitleHeader';
-import DropDownPicker from 'react-native-dropdown-picker';
-import {AddCart, AddWishlist} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
 import Modal from 'react-native-modal';
 import axios from 'react-native-axios';
 import FormData from 'form-data';
-import Loader from '../Components/Loader';
-
+import {useIsFocused} from '@react-navigation/native';
+import {AirbnbRating} from 'react-native-ratings';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
-const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
+const aspectRatio = 16 / 25;
 
 const renderRelatedProductItem = ({item, navigation, fetchProductDetails}) => (
   <TouchableOpacity
@@ -93,10 +89,10 @@ const renderRelatedProductItem = ({item, navigation, fetchProductDetails}) => (
 );
 
 const ProductDetailsPage = ({route, navigation}) => {
-  const {productId, productName, productDescription, productImg, productPrice} = route.params;
-
+  const {productId, productName, productDescription, productImg, productPrice} =
+    route.params;
   const [productDetails, setProductDetails] = useState();
-  const [selectedSize, setSelectedSize] = useState("M");
+  const [selectedSize, setSelectedSize] = useState('M');
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken, setUserToken} = useContext(AuthContext);
 
@@ -104,10 +100,31 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [loadingCart,setLoadingCart]=useState(false)
-  const [loadingWishlist,setLoadingWishlist]=useState(false)
+  const [loadingCart, setLoadingCart] = useState(false);
+  const [loadingWishlist, setLoadingWishlist] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [visibleReviews, setVisibleReviews] = useState(3);
+  const [review, setReview] = useState();
+  const isFocused = useIsFocused();
 
-  // console.log("relatedProductsrelatedProducts",relatedProducts)
+  const sumOfRatings = review?.data.reduce((accumulator, currentValue) => {
+    return accumulator + parseInt(currentValue.rating);
+  }, 0);
+
+  const averageRating = sumOfRatings/review?.data.length;
+  const roundedAverage = averageRating.toFixed(2);
+
+console.log(`Average Rating: ${roundedAverage}`);
+
+  useEffect(() => {
+    if (review && review.length > 0) {
+      setVisibleReviews(showAllReviews ? review.length : 3);
+    }
+  }, [review, showAllReviews]);
+
+  const toggleReviews = () => {
+    setShowAllReviews(!showAllReviews);
+  };
 
   console.log('size', selectedSize);
   console.log('quantity', selectedQuantity);
@@ -119,7 +136,6 @@ const ProductDetailsPage = ({route, navigation}) => {
   // Inside your fetchProductDetails function
   const fetchProductDetails = async productId => {
     try {
-      // Fetch main product details
       const response = await fetch(
         `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
       );
@@ -129,12 +145,7 @@ const ProductDetailsPage = ({route, navigation}) => {
       }
 
       const data = await response.json();
-
-
-      // Set main product details
       setProductDetails(data.data[0]);
-
-      // If related products are included in the main product details, you can extract them directly
       const relatedProducts = data.data[0].related_products;
       setRelatedProducts(relatedProducts);
     } catch (error) {
@@ -146,25 +157,23 @@ const ProductDetailsPage = ({route, navigation}) => {
   };
 
   useEffect(() => {
-    // Fetch product details when the component mounts
     fetchProductDetails(productId);
     ``;
   }, []);
 
+  const addToCart = async productId => {
+    console.log('productId:', productId);
 
-
-  const addToCart = async (productId) => {
-    console.log("productId:", productId);
-   
     // Create a FormData object to send as the request body
     let formData = new FormData();
-    formData.append('product_id', productId); 
-    formData.append('size', selectedSize); 
+    formData.append('product_id', productId);
+    formData.append('size', selectedSize);
     formData.append('quantity', selectedQuantity);
-    formData.append('price',productDetails?.price); 
- 
-    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
-    setLoadingCart(true)
+    formData.append('price', productDetails?.price);
+
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
+    setLoadingCart(true);
     try {
       // Make POST request to the API endpoint
       const response = await axios.post(
@@ -173,16 +182,11 @@ const ProductDetailsPage = ({route, navigation}) => {
         {
           headers: {
             'Content-Type': 'multipart/form-data', // Set the Content-Type header for FormData
-            Authorization: `${tokenToUse}`,// Set Authorization header using userToken.token
+            Authorization: `${tokenToUse}`, // Set Authorization header using userToken.token
           },
-        }
+        },
       );
-  
-
-  
-    } 
-    
-    catch (error) {
+    } catch (error) {
       if (error.response) {
         console.error('Error adding to cart:', error.response.status);
         if (error.response.status === 403) {
@@ -199,58 +203,95 @@ const ProductDetailsPage = ({route, navigation}) => {
         console.log('Error setting up the request:', error.message);
         alert('An unexpected error occurred. Please try again later.');
       }
-    }finally{
-      setLoadingCart(false)
+    } finally {
+      setLoadingCart(false);
     }
   };
 
-
-  const AddWishlist = async (productId) => {
-    console.log("productiddd", productId);
+  const AddWishlist = async productId => {
+    console.log('productiddd', productId);
     setLoadingWishlist(true);
     let config = {
       method: 'post',
       url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
-      headers: { }
+      headers: {},
     };
-    
-    axios.request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        Alert.alert(JSON.stringify(response.data))
+
+    axios
+      .request(config)
+      .then(response => {
+        Alert.alert(JSON.stringify(response.data));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       })
       .finally(() => {
         setLoadingWishlist(false);
       });
   };
-  
-  
-  
 
+  const getReview = () => {
+    let config = {
+      method: 'get',
+      url: `https://bad-gear.com/wp-json/getProductReview/v1/getProduct_Review?product_id=${productId}`,
+      headers: {},
+    };
 
-  
+    axios
+      .request(config)
+      .then(response => {
+        console.log(JSON.stringify(response.data));
+        setReview(response?.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    if (isFocused) {
+      getReview();
+    }
+  }, [isFocused]);
 
-  
-  
-  
+  const renderItem = ({item}) => (
+    <View style={styles.reviewContainer}>
+      {/* Review details */}
+      <View style={styles.reviewDetails}>
+        {/* Ratings and reviews count */}
 
-  
+        {/* Individual review */}
+        <View style={styles.individualReview}>
+          {/* Rating block */}
+          <View style={styles.ratingBlock}>
+            <Text style={styles.ratingValue}>{item?.rating}</Text>
+            <Image
+              source={require('../assets/star.png')}
+              style={{height: 15, width: 15, resizeMode: 'contain'}}
+            />
+          </View>
+
+          {/* Review content */}
+          <View style={styles.reviewContent}>
+            <Text style={styles.reviewTitle}>{item?.review}</Text>
+            <View style={styles.reviewMeta}>
+              <Text style={styles.reviewAuthor}>David</Text>
+              <Text style={styles.reviewDate}>{item?.date}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* This is headerpart */}
       <TitleHeader title={productDetails?.product_name} />
-      {/* header part end */}
       {loading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator color="#F10C18" size="large" />
         </View>
       ) : (
         <ScrollView>
-          {/* Upper image */}
           <View style={styles.productbox}>
             {productDetails?.product_img ? (
               <Image
@@ -261,8 +302,6 @@ const ProductDetailsPage = ({route, navigation}) => {
               <Text style={{color: '#000000'}}>No Image Available</Text>
             )}
           </View>
-
-          {/* Upper image end */}
 
           <View style={{marginTop: 10, width: '95%'}}>
             <Text
@@ -319,18 +358,17 @@ const ProductDetailsPage = ({route, navigation}) => {
                 <TouchableOpacity
                   style={[
                     styles.sizebox,
-                    selectedSize === size && styles.selectedSizebox, // Apply selected style if size is selected
+                    selectedSize === size && styles.selectedSizebox,
                   ]}
                   key={index}
                   onPress={() =>
-                  
                     setSelectedSize(selectedSize === size ? null : size)
                   } // Toggle selection
                 >
                   <Text
                     style={[
                       styles.sizetext,
-                      selectedSize === size && styles.selectedSizetext, // Apply selected text style if size is selected
+                      selectedSize === size && styles.selectedSizetext,
                     ]}>
                     {size}
                   </Text>
@@ -380,59 +418,10 @@ const ProductDetailsPage = ({route, navigation}) => {
               paddingHorizontal: 10,
               marginTop: 20,
             }}>
-           {loadingWishlist ?
-            ( <TouchableOpacity
-              style={{backgroundColor: '#fff',
-                borderColor: '#F10C18',
-                height: 50,
-                width: '47%',
-                alignSelf: 'center',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderRadius: 10,
-                borderColor: '#707070',
-                borderWidth: 1,
-               justifyContent:"center"}}
-            >
-            
-             <ActivityIndicator size={"large"} color={"#000000"}/>
-            </TouchableOpacity>):(
-               <TouchableOpacity
-              style={[styles.button, {justifyContent: 'space-evenly'}]}
-              onPress={() => {
-                console.log('Prouduct Idd:', productId); 
-                // Log productId to console
-                AddWishlist(productId); // Call addToCart function with productId
-              }}>
-              <Image
-                source={require('../assets/heart2.png')}
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: '#000000',
-                  resizeMode: 'contain',
-                }}
-
-               
-              />
-              <Text
-                style={{
-                  color: '#000000',
-                  fontSize: 20,
-                  fontWeight: 600,
-                  fontFamily: 'Gilroy-SemiBold',
-                }}>
-                Wishlist
-              </Text>
-            </TouchableOpacity>
-            )}
-            
-             {loadingCart ? (
+            {loadingWishlist ? (
               <TouchableOpacity
-              style={[
-                
-                {
-                  backgroundColor: '#F10C18',
+                style={{
+                  backgroundColor: '#fff',
                   borderColor: '#F10C18',
                   height: 50,
                   width: '47%',
@@ -442,56 +431,92 @@ const ProductDetailsPage = ({route, navigation}) => {
                   borderRadius: 10,
                   borderColor: '#707070',
                   borderWidth: 1,
-                 justifyContent:"center"
-                  
-                },
-              ]}
-             >
-            
-            <ActivityIndicator size={"large"} color={"#fff"}/>
-            </TouchableOpacity>
-             ):(
-              <TouchableOpacity
-              style={[
-                styles.button,
-                {
-                  backgroundColor: '#F10C18',
-                  borderColor: '#F10C18',
-                  paddingHorizontal: 20,
-                },
-              ]}
-              onPress={() => {
-                console.log('Prouduct Idd:', productId); 
-                // Log productId to console
-                addToCart(productId); // Call addToCart function with productId
-              }}>
-              <Image
-                source={require('../assets/Cart.png')}
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: '#FFFFFF',
-                  resizeMode: 'contain',
-                }}
-              />
-              <Text
-                style={{
-                  color: '#FFFFFF',
-                  fontSize: 18,
-                  fontFamily: 'Gilroy-SemiBold',
+                  justifyContent: 'center',
                 }}>
-               AddToCart
-              </Text>
-            </TouchableOpacity>
-             )}
-        
+                <ActivityIndicator size={'large'} color={'#000000'} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.button, {justifyContent: 'space-evenly'}]}
+                onPress={() => {
+                  console.log('Prouduct Idd:', productId);
+                  // Log productId to console
+                  AddWishlist(productId); // Call addToCart function with productId
+                }}>
+                <Image
+                  source={require('../assets/heart2.png')}
+                  style={{
+                    height: 20,
+                    width: 20,
+                    tintColor: '#000000',
+                    resizeMode: 'contain',
+                  }}
+                />
+                <Text
+                  style={{
+                    color: '#000000',
+                    fontSize: 20,
+                    fontWeight: 600,
+                    fontFamily: 'Gilroy-SemiBold',
+                  }}>
+                  Wishlist
+                </Text>
+              </TouchableOpacity>
+            )}
 
-
-
-
-
-
-
+            {loadingCart ? (
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: '#F10C18',
+                    borderColor: '#F10C18',
+                    height: 50,
+                    width: '47%',
+                    alignSelf: 'center',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderRadius: 10,
+                    borderColor: '#707070',
+                    borderWidth: 1,
+                    justifyContent: 'center',
+                  },
+                ]}>
+                <ActivityIndicator size={'large'} color={'#fff'} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: '#F10C18',
+                    borderColor: '#F10C18',
+                    paddingHorizontal: 20,
+                  },
+                ]}
+                onPress={() => {
+                  console.log('Prouduct Idd:', productId);
+                  // Log productId to console
+                  addToCart(productId); // Call addToCart function with productId
+                }}>
+                <Image
+                  source={require('../assets/Cart.png')}
+                  style={{
+                    height: 20,
+                    width: 20,
+                    tintColor: '#FFFFFF',
+                    resizeMode: 'contain',
+                  }}
+                />
+                <Text
+                  style={{
+                    color: '#FFFFFF',
+                    fontSize: 18,
+                    fontFamily: 'Gilroy-SemiBold',
+                  }}>
+                  AddToCart
+                </Text>
+              </TouchableOpacity>
+            )}
           </TouchableOpacity>
           {/* Wishlist $ AddCart Button End */}
 
@@ -570,7 +595,13 @@ const ProductDetailsPage = ({route, navigation}) => {
                 }}>
                 Ratings & Reviews
               </Text>
-              <TouchableOpacity onPress={()=>navigation.navigate("AddReview")}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('AddReview', {
+                    productDetails: productDetails,
+                    productId: productId,
+                  })
+                }>
                 <Text
                   style={{
                     color: '#F10C18',
@@ -582,111 +613,21 @@ const ProductDetailsPage = ({route, navigation}) => {
                 </Text>
               </TouchableOpacity>
             </View>
+            <View style={styles.ratingCount}></View>
+            <View style={{alignSelf: 'center', width: '90%'}}>
+              <Image
+                source={require('../assets/Reviewstar.png')}
+                style={{marginTop: 10}}
+              />
+              <Text style={styles.ratingText}>
+              {sumOfRatings} ratings and {review?.data.length} reviews
+              </Text>
 
-            <Image
-              source={require('../assets/Reviewstar.png')}
-              style={{marginLeft: 20, marginTop: 10}}
-            />
-
-            <View
-              style={{
-                marginTop: 10,
-                borderRadius: 10,
-                alignSelf: 'center',
-                width: '90%',
-                // borderWidth:1
-              }}>
-              <View
-                style={{
-                  height: 100,
-                  borderBottomColor: '#D6D6D6',
-                  borderBottomWidth: 0.4,
-                  width: '100%',
-                }}>
-                <View>
-                  <Text
-                    style={{
-                      color: '#000000',
-                      fontSize: 14,
-                      fontWeight: 500,
-                      fontFamily: 'Gilroy-Medium',
-                    }}>
-                    26 ratings and 24 reviews
-                  </Text>
-                  <View
-                    style={{
-                      marginTop: 10,
-                      borderRadius: 10,
-                      width: '100%',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
-                    <View
-                      style={{
-                        height: 28,
-                        width: '20%',
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: 25,
-                        borderColor: '#707070',
-                        borderWidth: 1,
-                        flexDirection: 'row',
-                        justifyContent: 'space-around',
-                        alignItems: 'center',
-                      }}>
-                      <Text
-                        style={{
-                          color: '#000000',
-                          fontSize: 13,
-                          fontWeight: 600,
-                        }}>
-                        5
-                      </Text>
-                      <Image
-                        source={require('../assets/star.png')}
-                        style={{height: 15, width: 15, resizeMode: 'contain'}}
-                      />
-                    </View>
-
-                    <View style={{width: '80%', marginLeft: 10}}>
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 500,
-                          marginTop: 5,
-                          color: '#000000',
-                          fontFamily: 'Gilroy-Medium',
-                        }}>
-                        Cozy Comfort and Style Combined!
-                      </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          marginTop: 10,
-                          width: '100%',
-                          paddingRight: 10,
-                        }}>
-                        <Text
-                          style={{
-                            color: '#000000',
-                            fontSize: 14,
-                            fontWeight: 700,
-                          }}>
-                          David
-                        </Text>
-                        <Text
-                          style={{
-                            color: '#4B4B4B',
-                            fontSize: 13,
-                            fontWeight: 300,
-                          }}>
-                          5 days ago
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
+              <FlatList
+                data={review?.data}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+              />
             </View>
           </View>
         </ScrollView>
@@ -820,7 +761,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   Review: {
-    height: 350,
     width: '90%',
     alignSelf: 'center',
     backgroundColor: '#FFFFFF',
@@ -828,7 +768,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: '#E5E5E5',
     borderWidth: 1,
-    marginBottom:80
+    marginBottom: 80,
   },
   button: {
     flexDirection: 'row',
@@ -897,4 +837,86 @@ const styles = StyleSheet.create({
     height: 145,
     borderRadius: 15,
   },
+  reviewContainer: {
+    marginTop: 10,
+    borderRadius: 10,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  reviewDetails: {
+    height: 100,
+    borderBottomColor: '#D6D6D6',
+    borderBottomWidth: 0.4,
+    width: '100%',
+  },
+  ratingCount: {
+    paddingHorizontal: 10,
+  },
+  ratingText: {
+    color: '#000000',
+    fontSize: 14,
+    fontWeight: '500',
+    fontFamily: 'Gilroy-Medium',
+    marginTop: 10,
+  },
+  individualReview: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
+  ratingBlock: {
+    height: 28,
+    width: '20%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 25,
+    borderColor: '#707070',
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  ratingValue: {
+    color: '#000000',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  reviewContent: {
+    width: '80%',
+    marginLeft: 10,
+  },
+  reviewTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 5,
+    color: '#000000',
+    fontFamily: 'Gilroy-Medium',
+  },
+  reviewMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    width: '100%',
+    paddingRight: 10,
+  },
+  reviewAuthor: {
+    color: '#000000',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  reviewDate: {
+    color: '#4B4B4B',
+    fontSize: 13,
+    fontWeight: '300',
+  },
+  // emptyView: {
+  //   borderBottomWidth: 0.2,
+  //   borderColor: lightGrey,
+  //   marginBottom: scale(16),
+  // },
+  // viewAll: {
+  //   fontSize: scale(15),
+  //   color: black,
+  //   textDecorationLine: 'underline',
+  // },
 });
