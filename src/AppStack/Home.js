@@ -23,6 +23,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import he from 'he';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Skeleton from '../Components/Skelton';
+import axios from "react-native-axios"
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
@@ -127,7 +128,6 @@ const Home = ({navigation, item}) => {
         const decodedArrivalsResponse = newArrivalsResponse.map(arrival => ({
           ...arrival,
           title: arrival.title ? he.decode(arrival.title) : '', 
-          // Add more fields to decode if necessary
         }));
 
         setArrivals(decodedArrivalsResponse);
@@ -142,35 +142,40 @@ const Home = ({navigation, item}) => {
     fetchData(); // Call the combined fetchData function
   }, [userToken]);
 
- 
 
 
-  const isItemInWishlist = productId => {
-    return wishlist.includes(productId);
-  };
 
-  const addToWishlist = async productId => {
-    try {
-      const response = await AddWishlist(productId);
-      if (response.status === 'success') {
-        setWishlist([...wishlist, productId]);
-       
-        // Return true to indicate success
-        return true;
-      } else {
-        console.error(
-          'Failed to add product to wishlist:',
-          response.error_code,
-        );
-        // Return false to indicate failure
-        return false;
-      }
-    } catch (error) {
-      console.error('Error adding product to wishlist:', error);
-      // Return false to indicate failure
-      return false;
+  const addToWishlist = async (productId) => {
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
+  
+    let config = {
+      method: 'post',
+      url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
+      headers: {
+        Authorization: `${tokenToUse}`,
+      },
+    };
+  
+  try {
+    const response = await axios.request(config);
+    console.log(JSON.stringify(response.data));
+
+    if (response.data.status === 'success') {
+      console.log("succesfully add and delete wishlist")
+    } else {
+      console.log('Error: Unexpected response format:', response);
     }
-  };
+  } catch (error) {
+    console.log('Error deleting Wishlist Item:', error);
+  }
+};
+
+
+
+
+
+  
 
   const renderCategoryItem = ({ item }) => {
     const catDataItem = CatDATA.find(dataItem => dataItem.text === item.cat_name);
@@ -496,37 +501,40 @@ const Home = ({navigation, item}) => {
                       </Text>
                     )}
                     <TouchableOpacity
-                      onPress={async () => {
-                        if (!loading) { // Check if not loading
-                          const addedToWishlist = await addToWishlist(item.product_id);
-                          if (addedToWishlist) {
-                            setWishlist([...wishlist, item.product_id]);
-                          } else {
-                            setWishlist(
-                              wishlist.filter(
-                                productId => productId !== item.product_id,
-                              ),
-                            );
-                          }
-                        }
-                      }}
-                      style={{
-                        height: 30,
-                        width: 30,
-                        backgroundColor: '#fff',
-                        borderRadius: 30,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: loading ? 0.5 : 1, // Reduce opacity when loading
-                        pointerEvents: loading ? 'none' : 'auto', // Disable pointer events when loading
-                      }}
-                      key={`${item.id}_heart`}
+                      // onPress={async () => {
+                      //   if (!loading) { // Check if not loading
+                      //     const addedToWishlist = await addToWishlist(item.product_id);
+                      //     if (addedToWishlist) {
+                      //       setWishlist([...wishlist, item.product_id]);
+                      //     } else {
+                      //       setWishlist(
+                      //         wishlist.filter(
+                      //           productId => productId !== item.product_id,
+                      //         ),
+                      //       );
+                      //     }
+                      //   }
+                      // }}
+                      // style={{
+                      //   height: 30,
+                      //   width: 30,
+                      //   backgroundColor: '#fff',
+                      //   borderRadius: 30,
+                      //   alignItems: 'center',
+                      //   justifyContent: 'center',
+                      //   opacity: loading ? 0.5 : 1, // Reduce opacity when loading
+                      //   pointerEvents: loading ? 'none' : 'auto', // Disable pointer events when loading
+                      // }}
+                      // key={`${item.id}_heart`}
+                      onPress={()=>{console.log(item.product_id);}}
                     >
                       <Image
                         source={require('../assets/heart.png')}
                         style={{ tintColor: '#000000' }}
                       />
                     </TouchableOpacity>
+
+
                   </View>
                   <View style={{ justifyContent: 'center', marginTop: 10 }}>
                     {loading ? ( // Check if loading

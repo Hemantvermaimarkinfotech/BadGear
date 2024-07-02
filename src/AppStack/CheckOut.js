@@ -136,7 +136,7 @@ const Checkout = ({navigation, route}) => {
           console.log('Some data is missing in AsyncStorage');
         }
       } catch (error) {
-        console.error('Failed to fetch data from AsyncStorage:', error);
+        console.log('Failed to fetch data from AsyncStorage:', error);
         // Handle error as needed
       }
     };
@@ -172,7 +172,7 @@ const Checkout = ({navigation, route}) => {
             console.log('Some data is missing in AsyncStorage');
           }
         } catch (error) {
-          console.error('Failed to fetch data from AsyncStorage:', error);
+          console.log('Failed to fetch data from AsyncStorage:', error);
           // Handle error as needed
         }
       };

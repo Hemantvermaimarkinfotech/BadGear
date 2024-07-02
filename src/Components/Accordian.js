@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet ,Image} from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -15,7 +15,8 @@ const Accordion = ({ title, children }) => {
       <View style={styles.header}>
         <Text style={styles.headerText}>{title}</Text>
         <TouchableOpacity onPress={toggleExpanded}>
-          <Icon name={collapsed ? 'expand-more' : 'expand-less'} size={24} color="#000" />
+          {/* <Icon name={collapsed ? 'expand-more' : 'expand-less'} size={24} color="#000" /> */}
+          <Image source={require("../assets/down-arrow.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
         </TouchableOpacity>
       </View>
       <Collapsible collapsed={collapsed} align="center">

@@ -35,7 +35,7 @@ export const getNewArrivals = async (userToken, page = 1) => {
     return response.data.data; // Return the data
     
   } catch (error) {
-    console.error('Error fetching new arrivals:', error);
+    console.log('Error fetching new arrivals:', error);
     throw error;
   }
 };
@@ -87,7 +87,7 @@ export const getBanner = async () => {
     );
     return response.data; // Return the data
   } catch (error) {
-    console.error('Error fetching banner:', error);
+    console.log('Error fetching banner:', error);
     throw error;
   }
 };
@@ -106,7 +106,7 @@ export const getWishList = async () => {
     // console.log('WishList data:', responseData); // Log the data to the console
     return responseData; // Return the data
   } catch (error) {
-    console.error('Error fetching WishList:', error);
+    console.log('Error fetching WishList:', error);
     throw error;
   }
 };
@@ -126,7 +126,7 @@ export const getProductDetails = async (productId) => {
     return response.data; // Return the data
   
   } catch (error) {
-    console.error('Error fetching product details:', error);
+    console.log('Error fetching product details:', error);
     throw error;
   }
 }
@@ -152,7 +152,7 @@ export const AddCart = async (productId, size, quantity, price) => {
     console.log("add to cart", response.data?.successmsg);
     return response.data?.successmsg; // Return the success message
   } catch (error) {
-    console.error('Error adding product to cart:', error);
+    console.log('Error adding product to cart:', error);
     throw error;
   }
 };
@@ -160,21 +160,21 @@ export const AddCart = async (productId, size, quantity, price) => {
 
 
 
-export const AddWishlist = async (productId) => {
-  console.log("product_id", productId);
-  try {
-    const response = await axios.post(
-      `${BASE_URL}add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    console.log("add & Remove", response.data);
-    return response.data; // Return the data
-  } catch (error) {
-    console.error('Error adding product to Wishlist:', error);
-    throw error;
-  }
-};
+// export const AddWishlist = async (productId) => {
+//   console.log("product_id", productId);
+//   try {
+//     const response = await axios.post(
+//       `${BASE_URL}add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       },
+//     );
+//     console.log("add & Remove", response.data);
+//     return response.data; // Return the data
+//   } catch (error) {
+//     console.error('Error adding product to Wishlist:', error);
+//     throw error;
+//   }
+// };

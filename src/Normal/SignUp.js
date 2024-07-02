@@ -72,15 +72,15 @@ const SignUp = ({ navigation }) => {
       setUserId(response.data?.user_id)
     } catch (error) {
       setLoading(false);
-      console.error('Error:', error);
+      console.log('Error:', error);
       if (error.response) {
-        console.error('Server Error Response:', error.response.data);
+        console.log('Server Error Response:', error.response.data);
         Alert.alert('Error', error.response.data.errormsg || 'An error occurred. Please try again.');
       } else if (error.request) {
-        console.error('No Server Response:', error.request);
+        console.log('No Server Response:', error.request);
         Alert.alert('Network Error', 'No response from server. Please check your internet connection.');
       } else {
-        console.error('Request Error:', error.message);
+        console.log('Request Error:', error.message);
         Alert.alert('Unexpected Error', 'An unexpected error occurred. Please try again later.');
       }
     }

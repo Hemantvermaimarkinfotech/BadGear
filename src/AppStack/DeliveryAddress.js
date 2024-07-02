@@ -85,7 +85,7 @@ const DeliveryAddress = ({navigation}) => {
         );
       }
     } catch (error) {
-      console.error(`Error fetching ${addressType} Profile:`, error);
+      console.log(`Error fetching ${addressType} Profile:`, error);
       setLoading(false);
       // Handle error appropriately
     } finally {

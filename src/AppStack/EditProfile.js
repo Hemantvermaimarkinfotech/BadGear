@@ -26,7 +26,7 @@ const updateProfile = async () => {
 
   try {
     if (!userToken.token) {
-      console.error('User token is not available');
+      console.log('User token is not available');
       return;
     }
 
@@ -56,7 +56,7 @@ const updateProfile = async () => {
       // Handle error appropriately
     }
   } catch (error) {
-    console.error('Error updating Profile:', error);
+    console.log('Error updating Profile:', error);
     Alert.alert('Error', 'Failed to update profile. Please try again.');
     // Handle error appropriately
   } finally {

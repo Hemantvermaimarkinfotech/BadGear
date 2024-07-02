@@ -31,15 +31,15 @@ const Search = () => {
           if (data.status === 'success') {
             setSearchResults(data.data);
           } else {
-            console.error('Search failed:', data.error);
+            console.log('Search failed:', data.error);
           }
         } catch (error) {
-          console.error('Error parsing JSON:', error);
+          console.log('Error parsing JSON:', error);
           console.log('Raw response:', text); // Log the raw response for debugging
         }
       })
       .catch(error => {
-        console.error('Error fetching search results:', error);
+        console.log('Error fetching search results:', error);
       })
       .finally(() => {
         setLoading(false);

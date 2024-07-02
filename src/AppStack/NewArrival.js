@@ -59,7 +59,7 @@ const NewArrival = ({ navigation }) => {
         setAllLoaded(true);
       }
     } catch (error) {
-      console.error('Error fetching new arrivals:', error);
+      console.log('Error fetching new arrivals:', error);
     } finally {
       setLoading(false);
     }

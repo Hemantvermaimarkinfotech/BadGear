@@ -151,10 +151,6 @@ console.log("cartLenth",cartLength)
     let data = new FormData();
     data.append('product_id', productId);
 
-    // Log FormData content
-    // data.forEach((value, key) => {
-    //   console.log(`${key}: ${value}`);
-    // });
     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     console.log('dataaa', data);
     let config = {
@@ -176,10 +172,10 @@ console.log("cartLenth",cartLength)
           prevItems.filter(item => item.product_id !== productId),
         );
       } else {
-        console.error('Error: Unexpected response format:', response);
+        console.log('Error: Unexpected response format:', response);
       }
     } catch (error) {
-      console.error('Error deleting Cart Item:', error);
+      console.log('Error deleting Cart Item:', error);
     }
   };
 

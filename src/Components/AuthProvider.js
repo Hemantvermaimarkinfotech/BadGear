@@ -67,7 +67,7 @@ const AuthProvider = ({ children }) => {
         setUserToken(userData);
       }
     } catch (error) {
-      console.error('Error retrieving user data:', error);
+      console.log('Error retrieving user data:', error);
     }
   };
 
@@ -81,7 +81,7 @@ const AuthProvider = ({ children }) => {
         setCartLength(parsedCartItems.length); // Update cartLength based on cartItems length
       }
     } catch (error) {
-      console.error('Error fetching cart items from AsyncStorage:', error);
+      console.log('Error fetching cart items from AsyncStorage:', error);
     }
   };
 
@@ -97,7 +97,7 @@ const AuthProvider = ({ children }) => {
       setCartLength(newCartItems.length);
       await AsyncStorage.setItem('cartItems', JSON.stringify(newCartItems));
     } catch (error) {
-      console.error('Error updating cart items:', error);
+      console.log('Error updating cart items:', error);
     }
   };
 

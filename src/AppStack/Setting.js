@@ -37,7 +37,7 @@ const Setting = ({navigation}) => {
       console.log('Response Data:', responseData);
       setProfileData(responseData);
     } catch (error) {
-      console.error('Error fetching Profile:', error);
+      console.log('Error fetching Profile:', error);
       // Handle error appropriately
     }finally {
       setLoading(false); // Set loading state to false regardless of success or error

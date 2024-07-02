@@ -68,7 +68,7 @@ const Welcome = ({ navigation }) => {
             resizeMode="stretch"
             paused={isPaused}
             onEnd={onEnd}
-            onError={(error) => console.error('Video Error: ', error)} // Add error handling
+            onError={(error) => console.log('Video Error: ', error)} // Add error handling
             controls={false} // Disables video controls
           />
           {/* Skip button */}

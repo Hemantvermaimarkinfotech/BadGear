@@ -113,10 +113,10 @@ const AddDeliveryAddress = ({navigation}) => {
       navigation.goBack()
   
     } catch (error) {
-      console.error('Error updating Billing address:', error);
+      console.log('Error updating Billing address:', error);
       if (error.response) {
-        console.error('Response Data:', error.response.data);
-        console.error('Response Status:', error.response.status);
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
         if (error.response.status === 403) {
           // Alert.alert('Access Denied', 'You do not have permission to perform this action.');
           console.log('Access Denied: You do not have permission to perform this action.');
@@ -175,10 +175,10 @@ const AddDeliveryAddress = ({navigation}) => {
       // navigation.goBack(); // Uncomment this if you're using navigation
   navigation.goBack()
     } catch (error) {
-      console.error('Error updating Billing address:', error);
+      console.log('Error updating Billing address:', error);
       if (error.response) {
-        console.error('Response Data:', error.response.data);
-        console.error('Response Status:', error.response.status);
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
         if (error.response.status === 403) {
           // Alert.alert('Access Denied', 'You do not have permission to perform this action.');
           console.log('Access Denied: You do not have permission to perform this action.');

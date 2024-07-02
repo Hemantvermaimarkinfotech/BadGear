@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Alert,
+  Button
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import {AuthContext} from '../Components/AuthProvider';
@@ -19,7 +20,7 @@ import axios from 'react-native-axios';
 import FormData from 'form-data';
 import {useIsFocused} from '@react-navigation/native';
 import {AirbnbRating} from 'react-native-ratings';
-
+import AntDesign from "react-native-vector-icons/AntDesign"
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25;
@@ -104,17 +105,44 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [loadingWishlist, setLoadingWishlist] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [visibleReviews, setVisibleReviews] = useState(3);
+ 
   const [review, setReview] = useState();
+  
   const isFocused = useIsFocused();
 
   const sumOfRatings = review?.data.reduce((accumulator, currentValue) => {
     return accumulator + parseInt(currentValue.rating);
-  }, 0);
+  }, 0) || 0; // Ensure a default value of 0 if review.data is undefined or empty
+  
+  const averageRating = sumOfRatings / (review?.data.length || 1); // Use || 1 to prevent division by zero
+  const roundedAverage = averageRating.toFixed(2); // Round to 2 decimal
+  
 
-  const averageRating = sumOfRatings/review?.data.length;
-  const roundedAverage = averageRating.toFixed(2);
 
-console.log(`Average Rating: ${roundedAverage}`);
+  const renderStars = () => {
+    const stars = [];
+    const fullStars = Math.floor(averageRating);
+    const halfStar = averageRating - fullStars >= 0.5;
+
+    // Full stars
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<Text key={`full-${i}`} style={{ fontSize: 20, color: '#FFD700' }}>&#9733;</Text>);
+    }
+
+    // Half star
+    if (halfStar) {
+      stars.push(<Text key="half" style={{ fontSize: 20, color: '#FFD700' }}>&#9734;</Text>);
+    }
+
+    // Empty stars
+    const emptyStars = 5 - stars.length;
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Text key={`empty-${i}`} style={{ fontSize: 20, color: '#CCCCCC' }}>&#9734;</Text>);
+    }
+
+    return stars;
+  };
+
 
   useEffect(() => {
     if (review && review.length > 0) {
@@ -149,7 +177,7 @@ console.log(`Average Rating: ${roundedAverage}`);
       const relatedProducts = data.data[0].related_products;
       setRelatedProducts(relatedProducts);
     } catch (error) {
-      console.error('Error fetching product details:', error);
+      console.log('Error fetching product details:', error);
       setProductDetails(null);
     } finally {
       setLoading(false); // Set loading to false after fetching is done
@@ -188,7 +216,7 @@ console.log(`Average Rating: ${roundedAverage}`);
       );
     } catch (error) {
       if (error.response) {
-        console.error('Error adding to cart:', error.response.status);
+        console.log('Error adding to cart:', error.response.status);
         if (error.response.status === 403) {
           console.log('Authorization error:', error.response.data);
           alert('Authorization error: Please check your credentials.');
@@ -283,6 +311,7 @@ console.log(`Average Rating: ${roundedAverage}`);
     </View>
   );
 
+
   return (
     <SafeAreaView style={styles.container}>
       <TitleHeader title={productDetails?.product_name} />
@@ -291,7 +320,7 @@ console.log(`Average Rating: ${roundedAverage}`);
           <ActivityIndicator color="#F10C18" size="large" />
         </View>
       ) : (
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.productbox}>
             {productDetails?.product_img ? (
               <Image
@@ -615,19 +644,35 @@ console.log(`Average Rating: ${roundedAverage}`);
             </View>
             <View style={styles.ratingCount}></View>
             <View style={{alignSelf: 'center', width: '90%'}}>
-              <Image
-                source={require('../assets/Reviewstar.png')}
-                style={{marginTop: 10}}
-              />
+             <View style={{flexDirection:"row",alignItems:"center",marginTop:5}}>
+            
+             {renderStars()}
+             <View style={{flexDirection:"row",alignItems:"center",marginLeft:10}}>
+              <Text style={{color:"#000000",fontSize:18,opacity:0.6}}>Out of 5 /</Text>
+             <Text style={{color:"#000000",fontSize:15}}>{roundedAverage}</Text>
+             </View>
+             </View>
+    
               <Text style={styles.ratingText}>
               {sumOfRatings} ratings and {review?.data.length} reviews
               </Text>
 
-              <FlatList
-                data={review?.data}
+             <View>
+             <FlatList showsVerticalScrollIndicator={false}
+                data={showAllReviews ? review?.data :review?.data.slice(0,3)}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
               />
+              {!showAllReviews && ( // Render the 'Show All' button only if showAll is false
+        <Button
+          title="Show All"
+          color={"#F10C18"}
+          onPress={toggleReviews}
+          
+        />
+      )}
+             </View>
+             
             </View>
           </View>
         </ScrollView>
@@ -769,6 +814,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     borderWidth: 1,
     marginBottom: 80,
+    paddingBottom:22
   },
   button: {
     flexDirection: 'row',
@@ -908,6 +954,9 @@ const styles = StyleSheet.create({
     color: '#4B4B4B',
     fontSize: 13,
     fontWeight: '300',
+  },
+  starContainer: {
+    padding: 6,
   },
   // emptyView: {
   //   borderBottomWidth: 0.2,

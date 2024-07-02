@@ -8,79 +8,122 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {getWishList} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
 import axios from 'react-native-axios';
 
-const renderWishList = ({item, navigation}) => {
-  return (
-    <View style={styles.cartItem}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{uri: item.image}} // Set the source to item.image
-          style={styles.image}
-        />
-      </View>
-      <View style={styles.detailsContainer}>
-        {item.name ? (
-          <Text style={styles.itemText}>{item?.name}</Text>
-        ) : (
-          <Text style={styles.itemText}>No name Available</Text>
-        )}
-        {item.price ? (
-          <Text style={styles.itemRate}>$ {item.price}</Text>
-        ) : (
-          <Text style={styles.itemRate}>$ 200</Text>
-        )}
-        <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-          <Text style={styles.moveToCart}>Move to Cart</Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity style={styles.removeButton}>
-        <Text style={styles.removeButtonText}>×</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const WishList = () => {
+const WishlistScreen = () => {
   const navigation = useNavigation();
   const goBack = () => {
     navigation.goBack();
   };
 
-  const [wishlist, setWishList] = useState([]);
+  const [wishlist, setWishList] = useState();
+
   const [loading, setLoading] = useState(false); // Add loading state
   const {userToken} = useContext(AuthContext);
-  // console.log("wishlist",wishlist)
-
-  useEffect(() => {
-    fetchData(); // Call the combined fetchData function
-  }, []);
 
   const fetchData = () => {
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
     setLoading(true);
     let config = {
       method: 'get',
       url: 'https://bad-gear.com/wp-json/get-wishlist/v1/getWishlist?',
       headers: {
-        Authorization: `${userToken?.token}`,
+        Authorization: `${tokenToUse}`,
       },
     };
 
     axios
       .request(config)
       .then(response => {
-        console.log(JSON.stringify(response.data));
-        setWishList(JSON.stringify(response.data));
+        console.log('WishList Data found Successfully', response.data.data);
+        setWishList(response.data.data); // Assuming setWishList expects an array of objects
       })
       .catch(error => {
         console.log(error);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
+
+
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const deleteWishlistItem = async (productId) => {
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
+  
+    let config = {
+      method: 'post',
+      url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
+      headers: {
+        Authorization: `${tokenToUse}`,
+      },
+    };
+  
+  try {
+    const response = await axios.request(config);
+    console.log(JSON.stringify(response.data));
+
+    if (response.data.status === 'success') {
+      setWishList(prevItems =>
+        prevItems.filter(item => item.product_id !== productId),
+      );
+    } else {
+      console.log('Error: Unexpected response format:', response);
+    }
+  } catch (error) {
+    console.log('Error deleting Wishlist Item:', error);
+  }
+};
+  
+  const renderItem = ({item}) => (
+    <View style={styles.cartItem}>
+      <View style={styles.imageContainer}>
+        <Image source={{uri: item.image}} style={styles.image} />
+      </View>
+      <View style={styles.detailsContainer}>
+        <Text style={styles.itemText}>{item?.name}</Text>
+
+        <Text style={styles.itemRate}>$ {item.price}</Text>
+
+        <TouchableOpacity>
+          <Text style={styles.moveToCart}>Move to Cart</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        style={styles.removeButton}
+        onPress={() => {
+          Alert.alert(
+            'Delete Item',
+            'Are you sure you want to delete this item?',
+            [
+              {text: 'Cancel', style: 'cancel'},
+              {
+                text: 'OK',
+                onPress: () => {
+                  console.log(item.product_id);
+                  deleteWishlistItem(item.product_id);
+                },
+              },
+            ],
+            {cancelable: true},
+          );
+        }}>
+        <Text style={styles.removeButtonText}>×</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -97,14 +140,7 @@ const WishList = () => {
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator size={'large'} color={'#F10C18'} />
         </View>
-      ) : wishlist.data && wishlist.data.length > 0 ? (
-        <FlatList
-          numColumns={1}
-          data={wishlist.data}
-          renderItem={({item}) => renderWishList({item, navigation})}
-          keyExtractor={item => item.product_id}
-        />
-      ) : (
+      ) : wishlist && wishlist.length === 0 ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Text
             style={{
@@ -112,9 +148,16 @@ const WishList = () => {
               fontSize: 20,
               fontFamily: 'Gilroy-Medium',
             }}>
-            No wishlist items available
+            No items in wishlist
           </Text>
         </View>
+      ) : (
+        <FlatList
+          data={wishlist}
+          renderItem={renderItem}
+          keyExtractor={item => item.product_id}
+          contentContainerStyle={styles.container}
+        />
       )}
     </SafeAreaView>
   );
@@ -230,4 +273,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WishList;
+export default WishlistScreen;
