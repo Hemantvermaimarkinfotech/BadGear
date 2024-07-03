@@ -21,6 +21,7 @@ import FormData from 'form-data';
 import {useIsFocused} from '@react-navigation/native';
 import {AirbnbRating} from 'react-native-ratings';
 import AntDesign from "react-native-vector-icons/AntDesign"
+import {useToast, ToastProvider} from 'react-native-toast-notifications';
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25;
@@ -105,11 +106,12 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [loadingWishlist, setLoadingWishlist] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [visibleReviews, setVisibleReviews] = useState(3);
+  const [toastVisible, setToastVisible] = useState(false);
  
   const [review, setReview] = useState();
   
   const isFocused = useIsFocused();
-
+  const {toast} = useToast();
   const sumOfRatings = review?.data.reduce((accumulator, currentValue) => {
     return accumulator + parseInt(currentValue.rating);
   }, 0) || 0; // Ensure a default value of 0 if review.data is undefined or empty
@@ -214,12 +216,17 @@ const ProductDetailsPage = ({route, navigation}) => {
           },
         },
       );
+
+      setToastVisible(true);
+      setTimeout(() => {
+        setToastVisible(false);
+      }, 3000);
     } catch (error) {
       if (error.response) {
         console.log('Error adding to cart:', error.response.status);
         if (error.response.status === 403) {
           console.log('Authorization error:', error.response.data);
-          alert('Authorization error: Please check your credentials.');
+          alert('Please check your credentials.');
         } else {
           console.log('Server Error:', error.response.data);
           alert('Failed to add item to cart. Please try again later.');
@@ -248,7 +255,8 @@ const ProductDetailsPage = ({route, navigation}) => {
     axios
       .request(config)
       .then(response => {
-        Alert.alert(JSON.stringify(response.data));
+        Alert.alert(JSON.stringify(response.data.successmsg));
+     
       })
       .catch(error => {
         console.log(error);
@@ -466,11 +474,10 @@ const ProductDetailsPage = ({route, navigation}) => {
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
-                style={[styles.button, {justifyContent: 'space-evenly'}]}
+                style={[styles.button, {justifyContent: 'space-between'}]}
                 onPress={() => {
                   console.log('Prouduct Idd:', productId);
-                  // Log productId to console
-                  AddWishlist(productId); // Call addToCart function with productId
+                  AddWishlist(productId); 
                 }}>
                 <Image
                   source={require('../assets/heart2.png')}
@@ -485,7 +492,6 @@ const ProductDetailsPage = ({route, navigation}) => {
                   style={{
                     color: '#000000',
                     fontSize: 20,
-                    fontWeight: 600,
                     fontFamily: 'Gilroy-SemiBold',
                   }}>
                   Wishlist
@@ -520,12 +526,16 @@ const ProductDetailsPage = ({route, navigation}) => {
                     backgroundColor: '#F10C18',
                     borderColor: '#F10C18',
                     paddingHorizontal: 20,
+                    borderColor:"#F10C18"
+                   
+                    
+                
                   },
                 ]}
                 onPress={() => {
                   console.log('Prouduct Idd:', productId);
                   // Log productId to console
-                  addToCart(productId); // Call addToCart function with productId
+                  addToCart(productId); 
                 }}>
                 <Image
                   source={require('../assets/Cart.png')}
@@ -541,6 +551,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                     color: '#FFFFFF',
                     fontSize: 18,
                     fontFamily: 'Gilroy-SemiBold',
+                    marginTop:3
                   }}>
                   AddToCart
                 </Text>
@@ -705,6 +716,12 @@ const ProductDetailsPage = ({route, navigation}) => {
           </View>
         </View>
       </Modal>
+
+      {toastVisible && (
+            <View style={styles.toast}>
+              <Text style={styles.toastText}>Added Cart Succesfuly!</Text>
+            </View>
+          )}
     </SafeAreaView>
   );
 };
@@ -827,7 +844,7 @@ const styles = StyleSheet.create({
     borderColor: '#707070',
     borderWidth: 1,
     paddingHorizontal: 30,
-    backgroundColor: '#fff',
+    
   },
   qty: {
     justifyContent: 'space-evenly',
@@ -957,6 +974,24 @@ const styles = StyleSheet.create({
   },
   starContainer: {
     padding: 6,
+  },
+  toast: {
+    position: 'absolute',
+    bottom: 50,
+    backgroundColor: '#D5FFC4',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    width: '90%',
+    alignSelf: 'center',
+    height: 65,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toastText: {
+    color: '#000000',
+    fontSize: 18,
+    fontFamily: 'Montserrat, SemiBold',
   },
   // emptyView: {
   //   borderBottomWidth: 0.2,

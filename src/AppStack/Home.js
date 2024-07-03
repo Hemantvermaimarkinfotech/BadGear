@@ -313,7 +313,7 @@ const Home = ({navigation, item}) => {
               style={styles.headericon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('search')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Search')}>
             {/* <AntDesign name="search" size={22} color={'#000'} /> */}
             <Image source={require("../assets/search.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
           </TouchableOpacity>

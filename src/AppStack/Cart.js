@@ -30,14 +30,8 @@ const Cart = () => {
   const [selectedCartItem, setSelectedCartItem] = useState(null); // State to hold selected cart item's data
   const {userToken} = useContext(AuthContext);
   const [cartLength, setCartLength] = useState(0);
-console.log("cartLenth",cartLength)
+  console.log("cartlenthh",cartLength)
 
-  console.log('userTokenCart', userToken);
-  console.log('userToken.token', userToken.token);
-
-
-
-  
   const goBack = () => {
     navigation.goBack();
   };
@@ -49,16 +43,28 @@ console.log("cartLenth",cartLength)
     {label: 'XL', value: '4'},
   ];
 
-  const updateQuantity = (item, quantityChange) => {
+
+  const updateQuantity = async (item, quantityChange) => {
     const updatedCartItems = cartItems.map(cartItem => {
       if (cartItem.product_id === item.product_id) {
-        const newQuantity = Math.max(1, cartItem.quantity + quantityChange); // Ensure quantity is at least 1
+        const newQuantity = Math.max(1, cartItem.quantity + quantityChange);
         return { ...cartItem, quantity: newQuantity };
       }
       return cartItem;
     });
     setCartItems(updatedCartItems);
+  
+    // Update cart length
+    setCartLength(updatedCartItems.length);
+  
+    // Update AsyncStorage with the new cartItems
+    try {
+      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    } catch (error) {
+      console.log('Error updating AsyncStorage:', error);
+    }
   };
+  
 
 
   const renderCartItem = ({item}) => (
@@ -84,10 +90,12 @@ console.log("cartLenth",cartLength)
                 onPress={() => updateQuantity(item, -1)}>
                 <Text style={styles.btntext}>-</Text>
               </TouchableOpacity>
-              <Text style={styles.quantityText}>{item.quantity}</Text>
+            
+             <Text style={styles.quantityText}>{item.quantity}</Text>
               <TouchableOpacity
                 style={styles.qtybtn}
-                onPress={() => updateQuantity(item, 1)}>
+                onPress={() =>{ updateQuantity(item, 1)
+                 } }>
                 <Text style={styles.btntext}>+</Text>
               </TouchableOpacity>
             </View>
@@ -212,6 +220,7 @@ console.log("cartLenth",cartLength)
         // Store cart items and total amount in AsyncStorage
         await AsyncStorage.setItem('cartItems', JSON.stringify(itemsWithQuantity));
         await AsyncStorage.setItem('totalAmount', totalAmount);
+        await AsyncStorage.setItem('cartItemsprice', JSON.stringify(itemsWithQuantity));
         setCartLength(itemsWithQuantity.length);
       } else {
         console.log('Error: Unexpected response format:', response);
@@ -224,9 +233,13 @@ console.log("cartLenth",cartLength)
     }
   };
 
+  
+
   useEffect(() => {
     getCartItems();
   }, []);
+
+
 
 
  // Function to calculate total amount
@@ -246,64 +259,6 @@ const getTotalAmount = () => {
 
 
   return (
-    // <SafeAreaView style={styles.container}>
-    //   <View style={styles.header}>
-    //     <TouchableOpacity onPress={goBack}>
-    //       <Image
-    //         source={require('../assets/next.png')}
-    //         style={styles.headerIcon}
-    //       />
-    //     </TouchableOpacity>
-    //     <Text style={styles.headerText}>Cart</Text>
-    //   </View>
-
-    //   {loading ? (
-    //     <View style={styles.loadingContainer}>
-    //       <ActivityIndicator size="large" color="#F10C18" />
-    //     </View>
-    //   ) : (
-    //     <>
-    //       {
-    //         cartItems.length > 0 ? (
-    //           <>
-    //             <View style={styles.totalItemsContainer}>
-    //               <Text style={styles.totalItemsText}>
-    //                 {cartItems.length} Items Selected
-    //               </Text>
-    //               <Text style={styles.totalAmountText}>
-    //                 ${getTotalAmount()}
-    //               </Text>
-    //             </View>
-
-    //             <View style={{marginBottom: 200}}>
-    //               <FlatList
-    //                 data={cartItems}
-    //                 renderItem={({item}) => renderCartItem({item})}
-    //                 keyExtractor={item => item.product_id.toString()}
-    //                 nestedScrollEnabled={true}
-    //               />
-
-    //               <TouchableOpacity
-    //                 style={styles.placeOrderButton}
-    //                 onPress={() => {
-    //                   console.log('Navigating to Checkout with:', {
-    //                     cartItems,
-    //                     totalAmount: getTotalAmount(),
-    //                   });
-    //                   navigation.navigate('Checkout', {
-    //                     cartItems,
-    //                     totalAmount: getTotalAmount(),
-    //                   });
-    //                 }}>
-    //                 <Text style={styles.placeOrderText}>Place Order</Text>
-    //               </TouchableOpacity>
-    //             </View>
-    //           </>
-    //         ) : null // Render nothing if cartItems.length is 0
-    //       }
-    //     </>
-    //   )}
-    // </SafeAreaView>
 
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>

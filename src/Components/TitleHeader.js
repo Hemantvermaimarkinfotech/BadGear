@@ -60,11 +60,7 @@ const TitleHeader = ({title,cartLenth}) => {
               style={styles.headericon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('search')}>
-            {/* <Image
-            source={require('../assets/search.png')}
-            style={[styles.headericon,{tintColor:"#000000"}]}
-          /> */}
+          <TouchableOpacity onPress={() => navigation.navigate('Search')}>
              <Image source={require("../assets/search.png")} style={{height:25,width:25,tintColor:"#000000"}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Cart')}>

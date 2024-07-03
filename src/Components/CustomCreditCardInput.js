@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     borderWidth: 1,
     borderRadius: 5,
+    justifyContent:"center"
   },
   cardheaderName: {
     color: '#000000',

@@ -15,7 +15,7 @@ import {getWishList} from '../Components/ApiService';
 import {AuthContext} from '../Components/AuthProvider';
 import axios from 'react-native-axios';
 
-const WishlistScreen = () => {
+const WishList = () => {
   const navigation = useNavigation();
   const goBack = () => {
     navigation.goBack();
@@ -273,4 +273,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WishlistScreen;
+export default WishList;

@@ -4,7 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
+import he from "he";
+
 const { width } = Dimensions.get('window');
+
 const numColumns = 2;
 
 const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
@@ -53,16 +56,16 @@ const Search = () => {
   }, [searchQuery]);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity key={item.id} style={{ width: "50%",alignSelf:"center"}} onPress={() =>
+    <TouchableOpacity key={item.id} style={{ width: "50%",alignSelf:"center"}}  onPress={() =>
       navigation.navigate('ProductDetails', {
-        productId: item.id,
+        productId: item.post_id,
       })
     }>
       <View style={styles.Catitem}>
         {loading ? ( // Check if loading
           <ShimmerPlaceholder
             style={styles.Catimage}
-            duration={1000} // Duration of the shimmer animation
+            duration={1000} 
           />
         ) : (
           <Image style={styles.Catimage} source={{ uri: item.image }} />
@@ -70,61 +73,19 @@ const Search = () => {
       </View>
       <View
         style={{
-          flexDirection: 'row',
           paddingHorizontal: 10,
           marginTop: 1,
         }}>
-        <Text
+        <Text 
+        numberOfLines={2}
           style={{
             color: '#000000',
             fontSize: 15,
             width: 120,
-            fontWeight: '600',
             fontFamily: "Gilroy-SemiBold",
             lineHeight: 18
           }}>
-          {loading ? ( // Check if loading
-            <ShimmerPlaceholder
-              style={{ width: 100 }}
-              duration={1000} // Duration of the shimmer animation
-            />
-          ) : (
-            item?.title
-          )}
-        </Text>
-        <View
-          style={{
-            height: 30,
-            width: 30,
-            backgroundColor: '#fff',
-            borderRadius: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginLeft: 10
-          }}>
-          <Image
-            source={require('../assets/heart.png')}
-            style={{ tintColor: '#000000' }}
-          />
-        </View>
-      </View>
-      <View style={{justifyContent: 'center',marginTop:5}}>
-        <Text
-          style={{
-            color: '#000000',
-            fontSize: 17,
-            fontWeight: 500,
-            marginLeft: 18,
-            fontFamily:"Gilroy-SemiBold"
-          }}>
-          {loading ? ( // Check if loading
-            <ShimmerPlaceholder
-              style={{ width: 80 }}
-              duration={1000} // Duration of the shimmer animation
-            />
-          ) : (
-            `$${item?.price ?? 'N/A'}`
-          )}
+        {he.decode(item?.title)}
         </Text>
       </View>
     </TouchableOpacity>
@@ -134,24 +95,16 @@ const Search = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <Image source={require("../assets/search.png")} style={{height:24,width:24,tintColor:"#F10C18"}}/>
-        <TextInput
+       <View style={{justifyContent:"center",}}>
+       <TextInput
           placeholder="Search here..."
           placeholderTextColor="rgba(30, 30, 50, 0.6)"
           style={styles.input}
           value={searchQuery}
           onChangeText={text => setSearchQuery(text)}
         />
+       </View>
       </View>
-      {/* <View style={{ width: "100%", alignSelf: "center", marginBottom: 120 }}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={searchResults}
-          numColumns={2}
-          renderItem={renderItem}
-          keyExtractor={item => item.id ? item.id.toString() : Math.random().toString()} // Handle missing id
-          contentContainerStyle={styles.flatListContent}
-        />
-      </View> */}
 
 
       {loading ? (
@@ -159,7 +112,7 @@ const Search = () => {
       <ActivityIndicator color="#F10C18" size="large" />
     </View>
   ) : (
-    <View style={{ width: "100%", alignSelf: "center", marginBottom: 120 }}>
+    <View style={{ width: "100%", alignSelf: "center", marginBottom: 120,}}>
       <FlatList
           showsVerticalScrollIndicator={false}
           data={searchResults}
@@ -189,6 +142,8 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(112, 112, 112, 0.3)',
     height: 60,
     paddingHorizontal: 20,
+    alignItems:"center"
+    
   },
   input: {
     flex: 1,
