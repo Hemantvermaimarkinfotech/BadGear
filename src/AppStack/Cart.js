@@ -130,37 +130,42 @@ const Cart = () => {
             </View>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => {
-            Alert.alert(
-              'Delete Item',
-              'Are you sure you want to delete this item?',
-              [
-                {text: 'Cancel', style: 'cancel'},
-                {
-                  text: 'OK',
-                  onPress: () => {
-                    console.log(item.product_id); // Optionally, log item.id again here
-                    DeleteCart(item.product_id);
-                  },
-                },
-              ],
-              {cancelable: true},
-            );
-          }}>
-          <Text style={styles.closeButtonText}>X</Text>
-        </TouchableOpacity>
+       
+
+<TouchableOpacity
+      style={styles.closeButton}
+      onPress={() => {
+        Alert.alert(
+          'Delete Item',
+          'Are you sure you want to delete this item?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'OK',
+              onPress: () => {
+                console.log(item.product_id);
+                DeleteCart(item.product_id);
+              },
+            },
+          ],
+          { cancelable: true },
+        );
+      }}>
+      <Text style={styles.closeButtonText}>X</Text>
+      {loading && <ActivityIndicator />} 
+    </TouchableOpacity>
       </View>
     </View>
   );
 
-  const DeleteCart = async productId => {
+
+  const DeleteCart = async (productId) => {
+    setLoading(true)
     let data = new FormData();
     data.append('product_id', productId);
-
+  
     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
-    console.log('dataaa', data);
+  
     let config = {
       method: 'post',
       url: 'https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems',
@@ -170,27 +175,29 @@ const Cart = () => {
       },
       data: data,
     };
-
+  
     try {
       const response = await axios.request(config);
       console.log(JSON.stringify(response.data));
-
+  
       if (response.data.status === 'success') {
-        setCartItems(prevItems =>
-          prevItems.filter(item => item.product_id !== productId),
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.product_id !== productId)
         );
       } else {
         console.log('Error: Unexpected response format:', response);
       }
     } catch (error) {
       console.log('Error deleting Cart Item:', error);
+    } finally {
+      setLoading(false); // Update loading state here
     }
   };
-
-
+  
 
   const getCartItems = async () => {
-    setLoading(true);
+    setLoading(true); // Set loading to true when fetching cart items
+  
     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     let config = {
       method: 'get',
@@ -199,40 +206,45 @@ const Cart = () => {
         Authorization: `${tokenToUse}`,
       },
     };
-
+  
     try {
       const response = await axios.request(config);
       console.log(JSON.stringify(response.data));
-
+  
       if (response.data.status === 'success') {
-        const itemsWithQuantity = response.data.data.map(item => ({
+        const itemsWithQuantity = response.data.data.map((item) => ({
           ...item,
           quantity: 1, // Default quantity when fetching items
         }));
         setCartItems(itemsWithQuantity);
-
+  
         // Calculate total amount
         const totalAmount = itemsWithQuantity.reduce(
           (total, item) => total + item.price * item.quantity,
           0
         ).toFixed(2);
-
+  
         // Store cart items and total amount in AsyncStorage
-        await AsyncStorage.setItem('cartItems', JSON.stringify(itemsWithQuantity));
+        await AsyncStorage.setItem(
+          'cartItems',
+          JSON.stringify(itemsWithQuantity)
+        );
         await AsyncStorage.setItem('totalAmount', totalAmount);
-        await AsyncStorage.setItem('cartItemsprice', JSON.stringify(itemsWithQuantity));
+        await AsyncStorage.setItem(
+          'cartItemsprice',
+          JSON.stringify(itemsWithQuantity)
+        );
         setCartLength(itemsWithQuantity.length);
       } else {
         console.log('Error: Unexpected response format:', response);
       }
     } catch (error) {
       console.log('Error fetching Cart Items:', error);
-      setLoading(false)
     } finally {
-      setLoading(false);
+      setLoading(false); // Always set loading to false when fetch operation completes
     }
   };
-
+  
   
 
   useEffect(() => {

@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Alert,
-  Button
+  Button,
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import {AuthContext} from '../Components/AuthProvider';
@@ -20,75 +20,11 @@ import axios from 'react-native-axios';
 import FormData from 'form-data';
 import {useIsFocused} from '@react-navigation/native';
 import {AirbnbRating} from 'react-native-ratings';
-import AntDesign from "react-native-vector-icons/AntDesign"
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useToast, ToastProvider} from 'react-native-toast-notifications';
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25;
-
-const renderRelatedProductItem = ({item, navigation, fetchProductDetails}) => (
-  <TouchableOpacity
-    activeOpacity={0.92}
-    style={[{width: imageWidth, marginTop: 10}]}>
-    <View style={styles.Arrivelitem}>
-      <Image source={{uri: item?.featured_img}} style={styles.Arrivalimage} />
-    </View>
-
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        marginTop: 10,
-        marginLeft: 20,
-      }}>
-      <Text
-        numberOfLines={2}
-        style={{
-          color: '#000000',
-          fontSize: 15,
-          width: 100,
-          textAlign: 'center',
-          fontWeight: 600,
-          fontFamily: 'Gilroy-SemiBold',
-        }}
-        key={`${item.id}_text`}>
-        {item?.title}
-      </Text>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('WishList')}
-        style={{
-          height: 30,
-          width: 30,
-          backgroundColor: '#fff',
-          borderRadius: 30,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        key={`${item.id}_heart`}>
-        <Image
-          source={require('../assets/heart.png')}
-          style={{tintColor: '#000000'}}
-        />
-      </TouchableOpacity>
-    </View>
-
-    <View style={{justifyContent: 'center', marginTop: 10}}>
-      <Text
-        style={{
-          color: '#000000',
-          fontSize: 17,
-          fontWeight: 500,
-          marginLeft: 18,
-          fontFamily: 'Gilroy-SemiBold',
-        }}
-        key={`${item.id}_rate`}>
-        $ {item?.price}
-      </Text>
-    </View>
-  </TouchableOpacity>
-);
 
 const ProductDetailsPage = ({route, navigation}) => {
   const {productId, productName, productDescription, productImg, productPrice} =
@@ -107,19 +43,18 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [visibleReviews, setVisibleReviews] = useState(3);
   const [toastVisible, setToastVisible] = useState(false);
- 
+
   const [review, setReview] = useState();
-  
+
   const isFocused = useIsFocused();
   const {toast} = useToast();
-  const sumOfRatings = review?.data.reduce((accumulator, currentValue) => {
-    return accumulator + parseInt(currentValue.rating);
-  }, 0) || 0; // Ensure a default value of 0 if review.data is undefined or empty
-  
+  const sumOfRatings =
+    review?.data.reduce((accumulator, currentValue) => {
+      return accumulator + parseInt(currentValue.rating);
+    }, 0) || 0; // Ensure a default value of 0 if review.data is undefined or empty
+
   const averageRating = sumOfRatings / (review?.data.length || 1); // Use || 1 to prevent division by zero
   const roundedAverage = averageRating.toFixed(2); // Round to 2 decimal
-  
-
 
   const renderStars = () => {
     const stars = [];
@@ -128,23 +63,34 @@ const ProductDetailsPage = ({route, navigation}) => {
 
     // Full stars
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<Text key={`full-${i}`} style={{ fontSize: 20, color: '#FFD700' }}>&#9733;</Text>);
+      stars.push(
+        <Text key={`full-${i}`} style={{fontSize: 20, color: '#FFD700'}}>
+          &#9733;
+        </Text>,
+      );
     }
 
     // Half star
     if (halfStar) {
-      stars.push(<Text key="half" style={{ fontSize: 20, color: '#FFD700' }}>&#9734;</Text>);
+      stars.push(
+        <Text key="half" style={{fontSize: 20, color: '#FFD700'}}>
+          &#9734;
+        </Text>,
+      );
     }
 
     // Empty stars
     const emptyStars = 5 - stars.length;
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Text key={`empty-${i}`} style={{ fontSize: 20, color: '#CCCCCC' }}>&#9734;</Text>);
+      stars.push(
+        <Text key={`empty-${i}`} style={{fontSize: 20, color: '#CCCCCC'}}>
+          &#9734;
+        </Text>,
+      );
     }
 
     return stars;
   };
-
 
   useEffect(() => {
     if (review && review.length > 0) {
@@ -164,16 +110,37 @@ const ProductDetailsPage = ({route, navigation}) => {
     {label: 'Item 3', value: 'item3'},
   ];
   // Inside your fetchProductDetails function
+  // const fetchProductDetails = async productId => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch product details');
+  //     }
+
+  //     const data = await response.json();
+  //     setProductDetails(data.data[0]);
+  //     const relatedProducts = data.data[0].related_products;
+  //     setRelatedProducts(relatedProducts);
+  //   } catch (error) {
+  //     console.log('Error fetching product details:', error);
+  //     setProductDetails(null);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching is done
+  //   }
+  // };
+
   const fetchProductDetails = async productId => {
+    setLoading(true);
     try {
       const response = await fetch(
         `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
       );
-
       if (!response.ok) {
         throw new Error('Failed to fetch product details');
       }
-
       const data = await response.json();
       setProductDetails(data.data[0]);
       const relatedProducts = data.data[0].related_products;
@@ -182,7 +149,7 @@ const ProductDetailsPage = ({route, navigation}) => {
       console.log('Error fetching product details:', error);
       setProductDetails(null);
     } finally {
-      setLoading(false); // Set loading to false after fetching is done
+      setLoading(false);
     }
   };
 
@@ -256,7 +223,6 @@ const ProductDetailsPage = ({route, navigation}) => {
       .request(config)
       .then(response => {
         Alert.alert(JSON.stringify(response.data.successmsg));
-     
       })
       .catch(error => {
         console.log(error);
@@ -289,6 +255,77 @@ const ProductDetailsPage = ({route, navigation}) => {
     }
   }, [isFocused]);
 
+  const renderRelatedProductItem = ({
+    item,
+    navigation,
+  }) => (
+    <TouchableOpacity
+      activeOpacity={0.92}
+      style={[{width: imageWidth, marginTop: 10}]}
+      onPress={() => {
+        console.log(item.id);
+        fetchProductDetails(item.id);
+      }}>
+      <View style={styles.Arrivelitem}>
+        <Image source={{uri: item?.featured_img}} style={styles.Arrivalimage} />
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 15,
+          marginTop: 10,
+          marginLeft: 20,
+        }}>
+        <Text
+          numberOfLines={2}
+          style={{
+            color: '#000000',
+            fontSize: 15,
+            width: 100,
+            textAlign: 'center',
+            fontWeight: 600,
+            fontFamily: 'Gilroy-SemiBold',
+          }}
+          key={`${item.id}_text`}>
+          {item?.title}
+        </Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('WishList')}
+          style={{
+            height: 30,
+            width: 30,
+            backgroundColor: '#fff',
+            borderRadius: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          key={`${item.id}_heart`}>
+          <Image
+            source={require('../assets/heart.png')}
+            style={{tintColor: '#000000'}}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={{justifyContent: 'center', marginTop: 10}}>
+        <Text
+          style={{
+            color: '#000000',
+            fontSize: 17,
+            fontWeight: 500,
+            marginLeft: 18,
+            fontFamily: 'Gilroy-SemiBold',
+          }}
+          key={`${item.id}_rate`}>
+          $ {item?.price}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   const renderItem = ({item}) => (
     <View style={styles.reviewContainer}>
       {/* Review details */}
@@ -318,7 +355,6 @@ const ProductDetailsPage = ({route, navigation}) => {
       </View>
     </View>
   );
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -477,7 +513,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                 style={[styles.button, {justifyContent: 'space-between'}]}
                 onPress={() => {
                   console.log('Prouduct Idd:', productId);
-                  AddWishlist(productId); 
+                  AddWishlist(productId);
                 }}>
                 <Image
                   source={require('../assets/heart2.png')}
@@ -526,16 +562,13 @@ const ProductDetailsPage = ({route, navigation}) => {
                     backgroundColor: '#F10C18',
                     borderColor: '#F10C18',
                     paddingHorizontal: 20,
-                    borderColor:"#F10C18"
-                   
-                    
-                
+                    borderColor: '#F10C18',
                   },
                 ]}
                 onPress={() => {
                   console.log('Prouduct Idd:', productId);
                   // Log productId to console
-                  addToCart(productId); 
+                  addToCart(productId);
                 }}>
                 <Image
                   source={require('../assets/Cart.png')}
@@ -551,7 +584,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                     color: '#FFFFFF',
                     fontSize: 18,
                     fontFamily: 'Gilroy-SemiBold',
-                    marginTop:3
+                    marginTop: 3,
                   }}>
                   AddToCart
                 </Text>
@@ -610,12 +643,14 @@ const ProductDetailsPage = ({route, navigation}) => {
               </TouchableOpacity>
             </View>
             <View>
+             
+
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={relatedProducts}
-                renderItem={({item}) =>
-                  renderRelatedProductItem({item, navigation: navigation})
+                renderItem={(item) =>
+                  renderRelatedProductItem(item, navigation)
                 }
                 keyExtractor={item => item.id}
               />
@@ -655,35 +690,49 @@ const ProductDetailsPage = ({route, navigation}) => {
             </View>
             <View style={styles.ratingCount}></View>
             <View style={{alignSelf: 'center', width: '90%'}}>
-             <View style={{flexDirection:"row",alignItems:"center",marginTop:5}}>
-            
-             {renderStars()}
-             <View style={{flexDirection:"row",alignItems:"center",marginLeft:10}}>
-              <Text style={{color:"#000000",fontSize:18,opacity:0.6}}>Out of 5 /</Text>
-             <Text style={{color:"#000000",fontSize:15}}>{roundedAverage}</Text>
-             </View>
-             </View>
-    
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 5,
+                }}>
+                {renderStars()}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginLeft: 10,
+                  }}>
+                  <Text style={{color: '#000000', fontSize: 18, opacity: 0.6}}>
+                    Out of 5 /
+                  </Text>
+                  <Text style={{color: '#000000', fontSize: 15}}>
+                    {roundedAverage}
+                  </Text>
+                </View>
+              </View>
+
               <Text style={styles.ratingText}>
-              {sumOfRatings} ratings and {review?.data.length} reviews
+                {sumOfRatings} ratings and {review?.data.length} reviews
               </Text>
 
-             <View>
-             <FlatList showsVerticalScrollIndicator={false}
-                data={showAllReviews ? review?.data :review?.data.slice(0,3)}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
-              />
-              {!showAllReviews && ( // Render the 'Show All' button only if showAll is false
-        <Button
-          title="Show All"
-          color={"#F10C18"}
-          onPress={toggleReviews}
-          
-        />
-      )}
-             </View>
-             
+              <View>
+                <FlatList
+                  showsVerticalScrollIndicator={false}
+                  data={
+                    showAllReviews ? review?.data : review?.data.slice(0, 3)
+                  }
+                  renderItem={renderItem}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+                {!showAllReviews && ( // Render the 'Show All' button only if showAll is false
+                  <Button
+                    title="Show All"
+                    color={'#F10C18'}
+                    onPress={toggleReviews}
+                  />
+                )}
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -718,10 +767,10 @@ const ProductDetailsPage = ({route, navigation}) => {
       </Modal>
 
       {toastVisible && (
-            <View style={styles.toast}>
-              <Text style={styles.toastText}>Added Cart Succesfuly!</Text>
-            </View>
-          )}
+        <View style={styles.toast}>
+          <Text style={styles.toastText}>Added Cart Succesfuly!</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -831,7 +880,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     borderWidth: 1,
     marginBottom: 80,
-    paddingBottom:22
+    paddingBottom: 22,
   },
   button: {
     flexDirection: 'row',
@@ -844,7 +893,6 @@ const styles = StyleSheet.create({
     borderColor: '#707070',
     borderWidth: 1,
     paddingHorizontal: 30,
-    
   },
   qty: {
     justifyContent: 'space-evenly',

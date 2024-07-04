@@ -102,8 +102,10 @@ const Home = ({navigation, item}) => {
 
   useEffect( () => {
     const fetchData = async () => {
+      setLoading(true); 
       try {
-        setLoading(true); // Set loading state to true
+     
+
         const userData = await AsyncStorage.getItem('userData');
         setUserData(userData); // Set userData to state
   
@@ -113,6 +115,7 @@ const Home = ({navigation, item}) => {
         if (bannerResponse.status === 'success') {
           const {data} = bannerResponse; // Destructuring the data
           setBanner(data);
+        
         } else {
           console.log('Error fetching banner:');
         }
@@ -132,7 +135,7 @@ const Home = ({navigation, item}) => {
 
         setArrivals(decodedArrivalsResponse);
 
-        setLoading(false);
+       
       } catch (error) {
         console.log('Error fetching data:', error);
         setLoading(false);
@@ -178,8 +181,8 @@ const Home = ({navigation, item}) => {
   
 
   const renderCategoryItem = ({ item }) => {
-    const catDataItem = CatDATA.find(dataItem => dataItem.text === item.cat_name);
-    const imageSource = catDataItem ? catDataItem.image : require('../assets/cat1.png');
+    // const catDataItem = CatDATA.find(dataItem => dataItem.text === item.cat_name);
+    // const imageSource = catDataItem ? catDataItem.image : require('../assets/cat1.png');
   
     return (
       <TouchableOpacity
@@ -197,7 +200,7 @@ const Home = ({navigation, item}) => {
               borderRadius={30}
             />
           ) : (
-            <Image style={styles.image} source={imageSource} />
+            <Image style={styles.image} source={{uri: item.cat_image }}/>
           )}
         </View>
         <Text
@@ -205,12 +208,12 @@ const Home = ({navigation, item}) => {
             textAlign: 'center',
             color: '#000000',
             fontSize: 15,
-            fontWeight: '600',
             fontFamily: 'Gilroy-SemiBold',
+            
           }}
         >
           {loading ? (
-            <Skeleton style={{ width: 100, marginTop: 5 }} skeletonHeight={16} skeletonWidth={100} />
+            <Skeleton style={{ width: 100, marginTop: 5, }} skeletonHeight={16} skeletonWidth={100} />
           ) : item?.cat_name.length > 14 ? (
             item?.cat_name.substring(0, 14) + '...'
           ) : (

@@ -96,14 +96,7 @@ const updateProfile = async () => {
         </View>
 
 
-        {/* <Text style={[styles.text,{marginTop:15}]}>Location</Text>
-        <View style={styles.textInputView}>
-        <TextInput 
-              style={styles.textInput} 
-              placeholder="LH-12, East Wally USA"
-              placeholderTextColor="#999999" // Change placeholder color
-            />
-        </View> */}
+     
         </View>
      </ScrollView>
 
@@ -130,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor:"#FBFCFC"
   },
   textView:{
-    width:"95%",
+    width:"90%",
     marginHorizontal:20,
     alignSelf:"center",
     marginTop:20
