@@ -1,4 +1,4 @@
-import React, {useEffect,useContext} from 'react';
+import React, {useEffect,useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,33 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/Feather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TitleHeader = ({title,cartLenth}) => {
   const navigation = useNavigation();
+  const [userData, setUserData] = useState(null);
+  // console.log("useData",userData?.cart_count)
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+         
+          setUserData(JSON.parse(userData));
+         
+        }
+        const abkc=JSON.parse(userData)
+        console.log("useData",JSON.parse(abkc.cart_count))
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
 
-
-  
 
   const goBack = () => {
     navigation.goBack();
@@ -69,7 +89,7 @@ const TitleHeader = ({title,cartLenth}) => {
               style={styles.headericon}
             />
           <View style={{height:18,width:18,backgroundColor:"#F10C18",borderRadius:8,position:"absolute",top:-8,right:10,justifyContent:"center",alignItems:"center"}}>
-              <Text style={{color:"#fff",fontSize:12}}>0</Text>
+              <Text style={{color:"#fff",fontSize:12}}>{userData?.cart_count}</Text>
             </View>
           </TouchableOpacity>
         </View>

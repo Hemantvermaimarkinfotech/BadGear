@@ -10,29 +10,42 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
+import AuthorizeNet from 'react-native-authorize-net';
 
 const CustomCreditCardInput = () => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
 
-  const handlePayment = () => {
-    // Implement your payment processing logic here
-    if (cardNumber && expiryDate && cvv) {
-      // You can send this data to your backend for further processing
-      const paymentData = {
-        cardNumber,
-        expiryDate,
-        cvv,
-      };
-      console.log('Payment Data:', paymentData);
+   const handlePaymentt = async () => {
+    const apiLoginID = 'YOUR_API_LOGIN_ID';
+    const transactionKey = 'YOUR_TRANSACTION_KEY';
 
-      // Example: Mocking a payment response
-      Alert.alert('Payment Successful', 'Thank you for your payment!');
-    } else {
-      Alert.alert('Error', 'Please fill in all required fields.');
+    const client = new AuthorizeNet({
+      apiLoginID,
+      transactionKey,
+      environment: 'sandbox', // or 'production' for live transactions
+    });
+
+    const transactionRequest = {
+      amount: '10.00',
+      creditCard: {
+        cardNumber: '4111111111111111',
+        expirationDate: '1223',
+        cardCode: '123',
+      },
+    };
+
+    try {
+      const response = await client.createTransaction(transactionRequest);
+      console.log('Transaction response:', response);
+      // Handle success response
+    } catch (error) {
+      console.error('Transaction error:', error);
+      // Handle error
     }
   };
+
 
   const screenWidth = Dimensions.get('window').width;
   const marginRightForExpiry = screenWidth <= 360 ? 40 : 57;
@@ -134,7 +147,7 @@ const CustomCreditCardInput = () => {
       <Text style={[styles.cardheaderName,{fontFamily:"Gilroy-Bold"}]}>$16.3</Text>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handlePaymentt} >
         <Text style={styles.buttonText}>Place Your Order</Text>
       </TouchableOpacity>
 

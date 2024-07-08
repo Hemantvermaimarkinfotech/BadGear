@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,15 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Alert
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import { getNewArrivals } from '../Components/ApiService';
 import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
 import he from "he";
+import { AuthContext } from '../Components/AuthProvider';
+import axios from "react-native-axios"
 
 const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
@@ -24,6 +27,8 @@ const NewArrival = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [allLoaded, setAllLoaded] = useState(false);
+  const {userToken}=useContext(AuthContext)
+  console.log("userToken")
 
   useEffect(() => {
     fetchNewArrivals();
@@ -38,6 +43,77 @@ const NewArrival = ({ navigation }) => {
   //     ) : null
   //   );
   // };
+
+  const addToWishlistt=async()=>{
+  
+}
+  
+  const handleNavigateToProductDetails = (item) => {
+    const tokenExists =  userToken && userToken.token ? userToken.token : userToken;
+    console.log("tokenexitsss",tokenExists)
+
+    if (tokenExists) {
+      navigation.navigate('ProductDetails', {
+        productId: item.product_id,
+      });
+    } else {
+      Alert.alert(
+        'Please Login',
+        'You need to login to view product details.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Login',
+            onPress: () => navigation.navigate('Login'), // Navigate to your login screen
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  };
+
+  // const handleAddToWishlist = (item) => {
+  //   const tokenExists = userToken && userToken.token;
+
+  //   if (tokenExists) {
+  //     // Alert.alert('Wishlist', 'Item added to wishlist successfully.');
+      
+  //   } else {
+  //     navigation.navigate('Login')
+  //   }
+  // };
+
+  const handleAddToWishlist = async (item) => {
+    const tokenExists = userToken && userToken.token;
+    
+    if (tokenExists) {
+      // Assuming productId is defined somewhere in your code
+      const productId = item.productId; 
+  
+      try {
+        const config = {
+          method: 'post',
+          url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
+          headers: {
+            Authorization: `Bearer ${userToken.token}`, // Assuming token is in this format
+          },
+        };
+  
+        const response = await axios.request(config);
+        console.log(response?.data?.successmsg)
+       
+      } catch (error) {
+        console.log('Error adding to Wishlist:', error.message);
+        // Handle network errors or other exceptions
+      }
+    } else {
+      navigation.navigate('Login'); // Assuming navigation is accessible here
+    }
+  };
+  
 
   const fetchNewArrivals = async () => {
     if (loading || allLoaded) return;
@@ -75,9 +151,7 @@ const NewArrival = ({ navigation }) => {
   const renderArrivelItem = ({ item }) => {
     return (
       <TouchableOpacity style={{ width: "50%", marginTop: 20 }} onPress={() =>
-        navigation.navigate('ProductDetails', {
-          productId: item.product_id,
-        })
+        handleNavigateToProductDetails(item)
       }>
         <View style={styles.Catitem}>
           <Image style={styles.Catimage} source={{ uri: item?.product_img }} />
@@ -101,7 +175,7 @@ const NewArrival = ({ navigation }) => {
             }}>
             {he.decode(item?.product_name)}
           </Text>
-          <TouchableOpacity onPress={()=>navigation.navigate("WishList")}
+          <TouchableOpacity onPress={() => handleAddToWishlist(item)}
             style={{
               height: 30,
               width: 30,

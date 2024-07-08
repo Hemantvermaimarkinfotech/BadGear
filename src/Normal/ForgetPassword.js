@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import {
   View,
   Text,
@@ -6,20 +6,54 @@ import {
   SafeAreaView,
   TextInput,
   TouchableOpacity,
+  Image
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import TitleHeader from '../Components/TitleHeader';
+import Loader from '../Components/Loader';
+import { AuthContext } from './AuthProvider';
+import axios from "react-native-axios"
+
 
 const ForgotPassword = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
+  const [loading,setLoading]=useState(false)
 
   const handleEmailChange = (text) => {
     setEmail(text);
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
     setIsEmailValid(isValidEmail);
   };
+
+  const fotgotPassWord=()=>{
+    setLoading(true)
+    let data = JSON.stringify({
+      "email": email
+    });
+    
+    let config = {
+      method: 'post',
+      url: 'https://bad-gear.com/wp-json/forgot-password-api/v1/forgot_password_api',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+      navigation.navigate("Login");
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      setLoading(false); // Set loading to false after request completes
+    });
+};
 
   
 
@@ -37,18 +71,30 @@ const ForgotPassword = ({navigation}) => {
               placeholderTextColor="#23233C"
               color="#23233C"
             />
-            <TouchableOpacity>
+           <TouchableOpacity>
               {isEmailValid ? (
-                <AntDesign name="checkcircle" size={20} color="#6CC57C" />
+                 <Image source={require("../assets/accept.png")} style={{height:20,width:20}}/>
               ) : (
                 null
               )}
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity style={styles.submitButton}>
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
+     {loading ? (
+   <View style={{ justifyContent: 'center',
+   borderWidth:1,
+   alignItems: 'center',
+   borderColor: '#F10C18',
+   height: 55,
+   borderRadius: 10,
+   marginTop: 20,}} >
+  <Loader/>
+ </View>
+     ):(
+      <TouchableOpacity style={styles.submitButton} onPress={()=>fotgotPassWord()}>
+      <Text style={styles.buttonText}>Submit</Text>
+    </TouchableOpacity>
+     )}
         <TouchableOpacity  style={{ justifyContent: "center", alignItems: "center",flexDirection:"row" }}>
           <Text style={styles.signupText}>
             Already have an account?   </Text>
@@ -74,7 +120,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 29,
-    fontWeight: '600',
     textAlign: 'center',
     color: '#000000',
     fontFamily:"Gilroy-SemiBold"

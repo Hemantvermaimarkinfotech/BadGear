@@ -423,6 +423,7 @@ import EditProfile from '../AppStack/EditProfile';
 import Coupons from '../AppStack/Coupons';
 import AntDesign from "react-native-vector-icons/Feather"
 import AddReview from '../AppStack/AddReview';
+import SingleCategory from '../AppStack/SingleCategoy';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -577,6 +578,11 @@ const AppScreenStack = () => {
       <Stack.Screen
         name="NewArrival"
         component={NewArrival}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SingleCategory"
+        component={SingleCategory}
         options={{ headerShown: false }}
       />
       <Stack.Screen

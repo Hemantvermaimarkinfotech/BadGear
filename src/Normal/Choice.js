@@ -7,29 +7,36 @@ import { Platform } from 'react-native';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-const data = [
-  {
-    id: '1',
-    name: 'BAD Gear Shop',
-    image: require('../assets/Swiper.png'),
-    description: 'Shop Now',
-  },
-  {
-    id: '2',
-    name: 'Pulling & Show Schedule',
-    image: require('../assets/Swiper2.png'),
-    description: 'View Events',
-  },
-  {
-    id: '3',
-    name: 'Watch Videos',
-    image: require('../assets/Swiper3.png'),
-    description: 'Watch Videos',
-  },
-  // Add more data as needed
-];
+
+
 
 const Choice = ({ navigation }) => {
+  const data = [
+    {
+      id: '1',
+      name: 'BAD Gear Shop',
+      image: require('../assets/Swiper.png'),
+      description: 'Shop Now',
+      navigateTo: 'NewArrival1',
+    },
+    {
+      id: '2',
+      name: 'Pulling & Show Schedule',
+      image: require('../assets/Swiper2.png'),
+      description: 'View Events',
+      navigateTo: '',
+    },
+    {
+      id: '3',
+      name: 'Watch Videos',
+      image: require('../assets/Swiper3.png'),
+      description: 'Watch Videos',
+    },
+    // Add more data as needed
+  ];
+  const handleNavigation = (screenName) => {
+    navigation.navigate(screenName);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: Platform.OS === 'ios' ? 0.75 : 0.7 }}>
@@ -43,7 +50,8 @@ const Choice = ({ navigation }) => {
             <View key={item.id} style={styles.slide}>
               <Text style={styles.name}>{item.name}</Text>
               <Image source={item.image} style={styles.image} />
-              <View style={styles.descriptionContainer}>
+           <TouchableOpacity onPress={() => handleNavigation(item.navigateTo)}>
+           <View style={styles.descriptionContainer}>
                 <View style={styles.arrowContainer}>
                   <Image
                     source={require('../assets/arrow.png')}
@@ -54,6 +62,7 @@ const Choice = ({ navigation }) => {
                   {item.description}
                 </Text>
               </View>
+           </TouchableOpacity>
             </View>
           ))}
         </Swiper>

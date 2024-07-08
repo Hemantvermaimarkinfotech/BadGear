@@ -59,10 +59,10 @@ const Welcome = ({ navigation }) => {
           </View>
         </ImageBackground>
       ) : (
-        <TouchableOpacity onPress={playVideo} style={styles.videoContainer}>
+        <View onPress={playVideo} style={styles.videoContainer}>
           {/* Video component starts here */}
           <Video
-            source={require('../assets/BadGear.mp4')}
+            source={require('../assets/video1.mp4')}
             ref={videoRef}
             style={styles.fullScreenVideo}
             resizeMode="stretch"
@@ -76,7 +76,7 @@ const Welcome = ({ navigation }) => {
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
           {/* End of Video component */}
-        </TouchableOpacity>
+        </View>
       )}
     </SafeAreaView>
   );

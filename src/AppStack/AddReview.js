@@ -193,7 +193,7 @@ const AddReview = ({route}) => {
               Selected rating: {rating} / 5
             </Text>
           </View>
-          <DropDownPicker
+          {/* <DropDownPicker
             open={isOpen}
             value={rating}
             items={dropdownItems}
@@ -205,7 +205,7 @@ const AddReview = ({route}) => {
             style={styles.dropdown}
             itemStyle={styles.dropdownItem}
             dropDownContainerStyle={styles.dropdownList}
-          />
+          /> */}
         </View>
 
         <Text

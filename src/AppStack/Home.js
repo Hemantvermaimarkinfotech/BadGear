@@ -115,7 +115,7 @@ const Home = ({navigation, item}) => {
         if (bannerResponse.status === 'success') {
           const {data} = bannerResponse; // Destructuring the data
           setBanner(data);
-        
+      
         } else {
           console.log('Error fetching banner:');
         }
@@ -139,6 +139,8 @@ const Home = ({navigation, item}) => {
       } catch (error) {
         console.log('Error fetching data:', error);
         setLoading(false);
+      }finally{
+        setLoading(false)
       }
     };
 
@@ -186,7 +188,7 @@ const Home = ({navigation, item}) => {
   
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('ProductDetails', { ProductId: item.cat_id })}
+        onPress={() => navigation.navigate('SingleCategory', { ProductId: item.cat_id })}
         style={styles.categoryItem}
         key={item.cat_id}
         disabled={loading} // Disable TouchableOpacity when loading is true
@@ -298,8 +300,7 @@ const Home = ({navigation, item}) => {
               fontSize: 22,
               fontFamily: 'Gilroy-SemiBold',
             }}>
-            {/* Welcome {userData && capitalizeFirstLetter(JSON.parse(userData).user_data.data.user_login)} */}
-            Welocome Jack
+            Welcome {userData && capitalizeFirstLetter(JSON.parse(userData).user_data.data.user_login)}
           </Text>
         </View>
         <View

@@ -22,6 +22,8 @@ import {useIsFocused} from '@react-navigation/native';
 import {AirbnbRating} from 'react-native-ratings';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useToast, ToastProvider} from 'react-native-toast-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25;
@@ -43,7 +45,8 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [visibleReviews, setVisibleReviews] = useState(3);
   const [toastVisible, setToastVisible] = useState(false);
-
+  const [userData, setUserData] = useState(null); // State for userData
+  console.log("useData",userData)
   const [review, setReview] = useState();
 
   const isFocused = useIsFocused();
@@ -55,6 +58,28 @@ const ProductDetailsPage = ({route, navigation}) => {
 
   const averageRating = sumOfRatings / (review?.data.length || 1); // Use || 1 to prevent division by zero
   const roundedAverage = averageRating.toFixed(2); // Round to 2 decimal
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          setUserData(userData); // Set userData state
+        } else {
+    
+          console.log('No user data found.');
+        }
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+  
+    fetchUserData(); 
+  }, []);
+  const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  
 
   const renderStars = () => {
     const stars = [];
@@ -184,6 +209,13 @@ const ProductDetailsPage = ({route, navigation}) => {
         },
       );
 
+      // const userData = await AsyncStorage.getItem('userData');
+      // if (userData) {
+      //   const userDataObject = JSON.parse(userData);
+      //   const updatedUserData = { ...userDataObject, cart_count: userDataObject.cart_count + 1 };
+      //   await AsyncStorage.setItem('userData', JSON.stringify(updatedUserData));
+      // }
+
       setToastVisible(true);
       setTimeout(() => {
         setToastVisible(false);
@@ -198,13 +230,7 @@ const ProductDetailsPage = ({route, navigation}) => {
           console.log('Server Error:', error.response.data);
           alert('Failed to add item to cart. Please try again later.');
         }
-      } else if (error.request) {
-        console.log('Request made but no response received:', error.request);
-        alert('No response from server. Please check your network connection.');
-      } else {
-        console.log('Error setting up the request:', error.message);
-        alert('An unexpected error occurred. Please try again later.');
-      }
+      } 
     } finally {
       setLoadingCart(false);
     }
@@ -348,6 +374,7 @@ const ProductDetailsPage = ({route, navigation}) => {
             <Text style={styles.reviewTitle}>{item?.review}</Text>
             <View style={styles.reviewMeta}>
               <Text style={styles.reviewAuthor}>David</Text>
+           
               <Text style={styles.reviewDate}>{item?.date}</Text>
             </View>
           </View>

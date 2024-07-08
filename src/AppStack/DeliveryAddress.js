@@ -93,20 +93,6 @@ const DeliveryAddress = ({navigation}) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (userToken && userToken.token) {
-  //     getAddressData('billing');
-  //     getAddressData('shipping');
-  //   }
-  // }, [userToken]);
-
-  // useEffect(() => {
-  //   console.log('hello');
-  //   if (isFocused && userToken && userToken.token) {
-  //     getAddressData('billing');
-  //     getAddressData('shipping');
-  //   }
-  // }, [isFocused, userToken]); // useEffect depends on isFocused
 
   useEffect(() => {
     const fetchData = async () => {

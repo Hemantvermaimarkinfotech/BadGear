@@ -22,6 +22,7 @@ import he from 'he';
 import {useFocusEffect} from '@react-navigation/native';
 import {useIsFocused} from '@react-navigation/native';
 import CustomCreditCardInput from '../Components/CustomCreditCardInput';
+import AuthorizeNet from 'react-native-authorize-net';
 
 const screenHeight = Dimensions.get('window').height;
   const screenWidth = Dimensions.get('window').width;
@@ -41,6 +42,8 @@ const Checkout = ({navigation, route}) => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [billingAddress, setBillingAddress] = useState(null); // State for storing billing address
+
+
   const [shippingAddress, setShippingAddress] = useState(null);
   const [cartItems, setCartItems] = useState(null);
   const [totalAmountState, setTotalAmountState] = useState(null);
@@ -53,6 +56,7 @@ const Checkout = ({navigation, route}) => {
     setIsCardInputVisible(true);
   };
 
+  
   const closeCardModal = () => {
     setIsCardInputVisible(false);
   };
@@ -75,6 +79,59 @@ const Checkout = ({navigation, route}) => {
   //     console.log('Payment Result:', result);
   //   }
   // };
+
+
+
+
+  useEffect(() => {
+    // Define the async function to fetch addresses
+    async function getAddressData() {
+      const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
+      try {
+        // First API call to get billing address
+        let billingConfig = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: 'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress',
+          headers: { 
+            Authorization: `${tokenToUse}`,
+            'Content-Type': 'application/json',
+          }
+        };
+
+        const billingResponse = await axios(billingConfig);
+        console.log('Billing Address Data:', billingResponse.data);
+
+        // Update billing address state
+        setBillingAddress(billingResponse.data);
+
+        // Second API call to get shipping address
+        let shippingConfig = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: 'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress',
+          headers: { 
+            Authorization: `${tokenToUse}`,
+            'Content-Type': 'application/json',
+          }
+        };
+
+        const shippingResponse = await axios(shippingConfig);
+        console.log('Shipping Address Data:', shippingResponse.data);
+
+        // Update shipping address state
+        setShippingAddress(shippingResponse.data);
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+      }
+    }
+    getAddressData();
+  }, []); 
+
+
+
+
 
   const order = [
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
@@ -103,7 +160,7 @@ const Checkout = ({navigation, route}) => {
   };
 
   useEffect(() => {
-    console.log('helooooooooooooooooooo');
+    
     const fetchAddressesAndCartItems = async () => {
       try {
         const billingAddress = await AsyncStorage.getItem('billingAddress');
@@ -118,18 +175,18 @@ const Checkout = ({navigation, route}) => {
         };
 
         if (
-          billingAddress !== undefined &&
-          shippingAddress !== undefined &&
+          // billingAddress !== undefined &&
+          // shippingAddress !== undefined &&
           cartItems !== undefined &&
           totalAmount !== undefined
         ) {
-          setBillingAddress(JSON.parse(billingAddress));
-          setShippingAddress(JSON.parse(shippingAddress));
+          // setBillingAddress(JSON.parse(billingAddress));
+          // setShippingAddress(JSON.parse(shippingAddress));
           setCartItems(JSON.parse(cartItems));
           setTotalAmountState(parseFloat(totalAmount));
 
-          console.log('Billing Addresssss:', billingAddress);
-          console.log('Shipping Addresssss:', shippingAddress);
+          // console.log('Billing Addresssss:', billingAddress);
+          // console.log('Shipping Addresssss:', shippingAddress);
           console.log('Cart Itemssssss:', JSON.parse(cartItems));
           console.log('Total Amount:', totalAmount);
         } else {
@@ -148,8 +205,8 @@ const Checkout = ({navigation, route}) => {
     React.useCallback(() => {
       const fetchAddressesAndCartItems = async () => {
         try {
-          const billingAddress = await AsyncStorage.getItem('billingAddress');
-          const shippingAddress = await AsyncStorage.getItem('shippingAddress');
+          // const billingAddress = await AsyncStorage.getItem('billingAddress');
+          // const shippingAddress = await AsyncStorage.getItem('shippingAddress');
           const cartItems = await AsyncStorage.getItem('cartItems');
           const totalAmount = await AsyncStorage.getItem('totalAmount');
 
@@ -159,13 +216,13 @@ const Checkout = ({navigation, route}) => {
             cartItems !== undefined &&
             totalAmount !== undefined
           ) {
-            setBillingAddress(JSON.parse(billingAddress));
-            setShippingAddress(JSON.parse(shippingAddress));
+            // setBillingAddress(JSON.parse(billingAddress));
+            // setShippingAddress(JSON.parse(shippingAddress));
             setCartItems(JSON.parse(cartItems));
             setTotalAmountState(parseFloat(totalAmount));
 
-            console.log('Billing Address:', billingAddress);
-            console.log('Shipping Address:', shippingAddress);
+            // console.log('Billing Address:', billingAddress);
+            // console.log('Shipping Address:', shippingAddress);
             console.log('Cart Items:', JSON.parse(cartItems));
             console.log('Total Amount:', totalAmount);
           } else {
@@ -217,9 +274,9 @@ const Checkout = ({navigation, route}) => {
         // Subtotal: totalAmount.subtotal,
         // total: totalAmount.total,
         // Shipping: totalAmount.shipping,
-        payment_method: 'Stripe', // Assuming this is static or from another source
-        status: 'DONE', // Assuming this is static or from another source
-        order_id: '2123', // Assuming this is static or from another source
+        payment_method: 'Stripe',
+        status: 'DONE',
+        order_id: '2123',
       };
 
       let config = {
@@ -263,9 +320,9 @@ const Checkout = ({navigation, route}) => {
       <ScrollView style={{marginHorizontal: 10,marginBottom:100}} showsVerticalScrollIndicator={false}>
         <View style={styles.mainView}>
           <TouchableOpacity
-            style={styles.row}
+            style={[styles.row,{paddingLeft:10}]}
             onPress={() => navigation.navigate('DeliveryAddress')}>
-            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <View style={{flexDirection: 'row',}}>
               <View
                 style={{
                   backgroundColor: '#F10C18',
@@ -274,6 +331,7 @@ const Checkout = ({navigation, route}) => {
                   width: 55,
                   justifyContent: 'center',
                   alignItems: 'center',
+                 
                 }}>
                 <Image
                   source={require('../assets/location.png')}
@@ -281,26 +339,24 @@ const Checkout = ({navigation, route}) => {
                 />
               </View>
 
-              <View style={{justifyContent: 'center', marginLeft: 10}}>
+              <View style={{justifyContent: 'center', marginLeft: 10,}}>
                 <Text style={{color: '#000000', fontSize: 15}}>
                   Delivery/Shipping Address
                 </Text>
-                {billingAddress && (
-                  <>
+             
                     <Text style={styles.addressLabel}>Billing Address:</Text>
                     <View style={{width: '80%'}}>
                       <Text style={styles.addressText}>
-                        {billingAddress.billing_first_name}{' '}
-                        {billingAddress.billing_last_name},{' '}
-                        {billingAddress?.billing_address},{' '}
-                        {billingAddress?.billing_city},{' '}
-                        {billingAddress?.billing_state},{' '}
-                        {billingAddress?.billing_postcode},{' '}
-                        {billingAddress?.billing_country}
+                        {billingAddress?.data?.billing_first_name}{' '}
+                        {billingAddress?.data?.billing_last_name},{' '}
+                        {billingAddress?.data?.billing_address},{' '}
+                        {billingAddress?.data?.billing_city},{' '}
+                        {billingAddress?.data?.billing_state},{' '}
+                        {billingAddress?.data?.billing_postcode},{' '}
+                        {billingAddress?.data?.billing_country}
                       </Text>
                     </View>
-                  </>
-                )}
+                
 
                 {/* Shipping Address */}
                 {shippingAddress && (
@@ -308,14 +364,15 @@ const Checkout = ({navigation, route}) => {
                     <Text style={styles.addressLabel}>Shipping Address:</Text>
                     <View style={{width: '80%'}}>
                       <Text style={styles.addressText}>
-                        {shippingAddress.shipping_first_name}{' '}
-                        {shippingAddress.shipping_last_name},{' '}
-                        {shippingAddress?.shipping_address},{' '}
-                        {shippingAddress?.shipping_city},{' '}
-                        {shippingAddress?.shipping_state},{' '}
-                        {shippingAddress?.shipping_postcode},{' '}
-                        {shippingAddress?.shipping_country}
+                        {shippingAddress.data?.shipping_first_name}{' '}
+                        {shippingAddress.data?.shipping_last_name},{' '}
+                        {shippingAddress?.data?.shipping_address},{' '}
+                        {shippingAddress?.data?.shipping_city},{' '}
+                        {shippingAddress?.data?.shipping_state},{' '}
+                        {shippingAddress?.data?.shipping_postcode},{' '}
+                        {shippingAddress?.data?.shipping_country}
                       </Text>
+                    
                     </View>
                   </>
                 )}

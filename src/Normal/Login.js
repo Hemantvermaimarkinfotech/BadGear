@@ -41,7 +41,7 @@ const Login = ({ navigation }) => {
     const formData = new FormData();
     formData.append('email', email.trim());
     formData.append('password', password.trim());
-  console.log("formData",formData)
+    console.log("formData",formData)
     try {
   
       const response = await fetch('https://bad-gear.com/wp-json/login-api/v1/userLogin', {

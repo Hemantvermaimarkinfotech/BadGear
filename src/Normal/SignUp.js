@@ -14,8 +14,10 @@ import axios from 'react-native-axios';
 import Loader from '../Components/Loader';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; 
 
-const SignUp = ({ navigation }) => {
+const SignUp = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,26 +34,27 @@ const SignUp = ({ navigation }) => {
     setIsEmailValid(isValidEmail);
   };
 
+  
   const handleSignUp = async () => {
     // Validate input fields
     if (!name.trim() || !email.trim() || !password.trim()) {
-      Alert.alert('ALert', 'Please fill in all fields');
+      Alert.alert('Alert', 'Please fill in all fields');
       return;
     }
-
+  
     if (!isEmailValid) {
       Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
-
+  
     setLoading(true);
-
+  
     // Prepare the form data
     const formData = new FormData();
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
-
+  
     try {
       // Send the signup request to the server
       const response = await axios.post(
@@ -64,12 +67,15 @@ const SignUp = ({ navigation }) => {
         },
       );
       console.log('SignUp response:', response.data);
-
+  
       await AsyncStorage.setItem('userData', JSON.stringify(response.data));
-
-      setLoading(false);
-      setUserToken(response.data.token);
-      setUserId(response.data?.user_id)
+  
+      // Set user token and ID
+      // setUserToken(response.data.token);
+      setUserId(response.data?.user_id);
+  
+      // Navigate to Login screen only after successful signup
+      navigation.navigate('Login');
     } catch (error) {
       setLoading(false);
       console.log('Error:', error);
@@ -83,8 +89,11 @@ const SignUp = ({ navigation }) => {
         console.log('Request Error:', error.message);
         Alert.alert('Unexpected Error', 'An unexpected error occurred. Please try again later.');
       }
+    } finally {
+      setLoading(false); // Ensure loading state is set to false in case of any outcome
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
