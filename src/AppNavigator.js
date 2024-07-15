@@ -17,6 +17,7 @@ import WishList from './AppStack/WishList';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import NewArrival from './AppStack/NewArrival';
+import Setting from './AppStack/Setting';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -42,11 +43,8 @@ const AppNavigator = () => {
         component={SubscriptionShop}
         options={{headerShown: false}}
       />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{headerShown: false}}
-      />
+     <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
+
       <Stack.Screen
         name="SignUp"
         component={SignUp}
@@ -62,6 +60,13 @@ const AppNavigator = () => {
         component={NewArrival}
         options={{headerShown: false}}
       />
+       <Stack.Screen
+        name="Setting1"
+        component={Setting}
+        options={{headerShown: false}}
+      />
+
+
     </Stack.Navigator>
   );
 };

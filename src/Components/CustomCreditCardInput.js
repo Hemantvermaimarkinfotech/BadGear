@@ -10,7 +10,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import AuthorizeNet from 'react-native-authorize-net';
+// import AuthorizeNet from 'react-native-authorize-net';
 
 const CustomCreditCardInput = () => {
   const [cardNumber, setCardNumber] = useState('');
@@ -89,12 +89,12 @@ const CustomCreditCardInput = () => {
           justifyContent: 'space-between',
         }}>
         <View style={[styles.InputView, {width: '65%'}]}>
-            <TextInput placeholder='Your Name' placeholderTextColor={"#000000"} style={{fontSize:13,marginLeft:5}}/>
+            <TextInput placeholder='Your Name' placeholderTextColor={"#000000"} style={{fontSize:13,marginLeft:5,opacity:0.5}}/>
         </View>
 
         <View style={styles.InputView}>
 
-        <TextInput placeholder='01 /2001' placeholderTextColor={"#000000"} style={{fontSize:13,marginLeft:5}}/>
+        <TextInput placeholder='01 /2001' placeholderTextColor={"#000000"} style={{fontSize:13,marginLeft:5,opacity:0.5}}/>
         </View>
       </View>
 
@@ -118,16 +118,16 @@ const CustomCreditCardInput = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <View style={[styles.InputView, {width: '65%',flexDirection:"row",alignItems:"center"}]}>
+        <View style={[styles.InputView1, {width: '65%',flexDirection:"row",alignItems:"center",paddingHorizontal:5}]}>
 
             <View>
-                <Image source={require("../assets/shopping.png")} style={{height:30,width:30,marginLeft:5}}/>
+                <Image source={require("../assets/shopping.png")} style={{height:30,width:30}}/>
             </View>
-            <TextInput placeholder='1234567890123456' placeholderTextColor={"#000000"} style={{fontSize:14}}/>
+            <TextInput placeholder='1234 5678 9012' placeholderTextColor={"#000000"} style={{fontSize:14,opacity:0.5,marginLeft:5}}/>
         </View>
 
         <View style={[styles.InputView,{justifyContent:"center"}]}>
-            <TextInput placeholder='****' placeholderTextColor={"#000000"} style={{marginLeft:5,fontSize:13}}/>
+            <TextInput placeholder='****' placeholderTextColor={"#000000"} style={{marginLeft:5,fontSize:14,opacity:0.5}}/>
         </View>
       </View>
 
@@ -159,15 +159,24 @@ const CustomCreditCardInput = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
   },
 
   InputView: {
-    height: 40,
+    height: 45,
     width: '30%',
     borderColor: '#E5E5E5',
     borderWidth: 1,
     borderRadius: 5,
     justifyContent:"center"
+  },
+  InputView1: {
+    height: 45,
+    width: '30%',
+    borderColor: '#E5E5E5',
+    borderWidth: 1,
+    borderRadius: 5,
+    // justifyContent:"center"
   },
   cardheaderName: {
     color: '#000000',
@@ -175,7 +184,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Gilroy-Medium',
   },
   button: {
-    height: 40,
+    height: 50,
     borderColor: '#F10C18',
     borderRadius: 5,
     justifyContent: 'center',

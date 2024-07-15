@@ -53,7 +53,11 @@ const AuthProvider = ({ children }) => {
       console.log('Error updating cart items:', error);
     }
   };
-
+ // Function to handle skip action
+ const skipLogin = () => {
+  setUserToken('dummy-token'); // Set a dummy token to indicate skip
+  setUserId('dummy-id'); // Set a dummy ID to indicate skip
+};
   return (
     <AuthContext.Provider
       value={{
@@ -65,6 +69,7 @@ const AuthProvider = ({ children }) => {
         cartLength,
         setCartLength,
         setUserId,
+        skipLogin,
       }}
     >
       {children}
@@ -73,4 +78,7 @@ const AuthProvider = ({ children }) => {
 };
 
 export { AuthProvider, AuthContext };
+
+
+
 

@@ -33,16 +33,16 @@ const addressesData = [
 
 const AddDeliveryAddress = ({navigation}) => {
   const [addresses, setAddresses] = useState([]);
-  const [firstName, setFirstName] = useState("ntitn");
-  const [lastName, setLastName] = useState("verma");
-  const [company, setCompanyy] = useState("imark");
-  const [country, setCountry] = useState("india");
-  const [streetaddress, setStreetAddress] = useState("house no. 12");
-  const [city, setCity] = useState("hisar");
-  const [state, setState] = useState("haryana");
-  const [zipcode, setZipCode] = useState("123121");
-  const [phone, setphone] = useState("7956746576");
-  const [email, setEmail] = useState("nitin12@gmail.com");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [company, setCompanyy] = useState("");
+  const [country, setCountry] = useState("");
+  const [streetaddress, setStreetAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zipcode, setZipCode] = useState("");
+  const [phone, setphone] = useState("");
+  const [email, setEmail] = useState("");
   const [addressType, setAddressType] = useState(1);
   const {userToken}=useContext(AuthContext)
   const [loading,setLoading]=useState(false)
@@ -411,7 +411,7 @@ const AddDeliveryAddress = ({navigation}) => {
                 fontFamily: 'Gilroy-Bold',
                 marginTop: 20,
               }}>
-              Save Shipping  Address as Delivery
+              Save Address as Delivery
             </Text>
             <View
               style={{

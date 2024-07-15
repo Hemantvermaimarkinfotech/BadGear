@@ -29,12 +29,13 @@ const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25;
 
 const ProductDetailsPage = ({route, navigation}) => {
+  
   const {productId, productName, productDescription, productImg, productPrice} =
     route.params;
   const [productDetails, setProductDetails] = useState();
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const {userToken, setUserToken} = useContext(AuthContext);
+  const {userToken,setUserToken} = useContext(AuthContext);
 
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -79,7 +80,10 @@ const ProductDetailsPage = ({route, navigation}) => {
   const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
-  
+
+  const isDummyToken = () => {
+    return userToken === 'dummy-token';
+  };
 
   const renderStars = () => {
     const stars = [];
@@ -184,6 +188,33 @@ const ProductDetailsPage = ({route, navigation}) => {
   }, []);
 
   const addToCart = async productId => {
+    if (isDummyToken()) {
+      Alert.alert(
+        'Please Login',
+        'You need to login to add products to Cart',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Login',
+            onPress: () => {
+              setUserToken(null);
+              AsyncStorage.removeItem('userData');
+              navigation.reset({
+                index: 4, // Index of the Login screen
+                routes: [{ name: 'Login' }],
+                
+              });
+              
+            },
+          },
+        ]
+      );
+      return;
+    }
+
     console.log('productId:', productId);
 
     // Create a FormData object to send as the request body
@@ -220,6 +251,7 @@ const ProductDetailsPage = ({route, navigation}) => {
       setTimeout(() => {
         setToastVisible(false);
       }, 3000);
+      
     } catch (error) {
       if (error.response) {
         console.log('Error adding to cart:', error.response.status);
@@ -236,7 +268,35 @@ const ProductDetailsPage = ({route, navigation}) => {
     }
   };
 
+
+
   const AddWishlist = async productId => {
+    if (isDummyToken()) {
+      Alert.alert(
+        'Please Login',
+        'You need to login to add products to wishlist.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Login',
+            onPress: () => {
+              setUserToken(null);
+              AsyncStorage.removeItem('userData');
+              navigation.reset({
+                index: 4, // Index of the Login screen
+                routes: [{ name: 'Login' }],
+                
+              });
+              
+            },
+          },
+        ]
+      );
+      return;
+    }
     console.log('productiddd', productId);
     setLoadingWishlist(true);
     let config = {
@@ -438,46 +498,49 @@ const ProductDetailsPage = ({route, navigation}) => {
             </Text>
           </View>
 
-          {/* Product Size */}
-          <View style={{marginTop: 20}}>
-            <Text
-              style={{
-                color: '#000000',
-                fontSize: 18,
-                fontWeight: 700,
-                marginLeft: 20,
-                fontFamily: 'Gilroy-SemiBold',
-              }}>
-              Size:
-            </Text>
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              style={styles.productSize}>
-              {productDetails?.attributes.split(' | ').map((size, index) => (
-                <TouchableOpacity
-                  style={[
-                    styles.sizebox,
-                    selectedSize === size && styles.selectedSizebox,
-                  ]}
-                  key={index}
-                  onPress={() =>
-                    setSelectedSize(selectedSize === size ? null : size)
-                  } // Toggle selection
-                >
-                  <Text
-                    style={[
-                      styles.sizetext,
-                      selectedSize === size && styles.selectedSizetext,
-                    ]}>
-                    {size}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+         {/* Product Size */}
+<View style={{marginTop: 20}}>
+  <Text
+    style={{
+      color: '#000000',
+      fontSize: 18,
+      fontWeight: '700',
+      marginLeft: 20,
+      fontFamily: 'Gilroy-SemiBold',
+    }}>
+    Size:
+  </Text>
+  {productDetails?.attributes ? (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.productSize}>
+      {productDetails.attributes.split(' | ').map((size, index) => (
+        <TouchableOpacity
+          style={[
+            styles.sizebox,
+            selectedSize === size && styles.selectedSizebox,
+          ]}
+          key={index}
+          onPress={() =>
+            setSelectedSize(selectedSize === size ? null : size)
+          }>
+          <Text
+            style={[
+              styles.sizetext,
+              selectedSize === size && styles.selectedSizetext,
+            ]}>
+            {size}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  ) : (
+    <Text style={{marginLeft: 20, marginTop: 10,fontFamily:"Gilroy-Medium",fontSize:14,color:"red"}}>No sizes available</Text>
+  )}
+</View>
+{/* Product Size end */}
 
-          {/* Product Size end */}
 
           {/* Product Qty */}
           <View style={{marginTop: 20}}>
@@ -864,7 +927,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Gilroy-SemiBold',
   },
   productDescription: {
-    height: 200,
+    paddingBottom:20,
     width: '90%',
     alignSelf: 'center',
     backgroundColor: '#FFFFFF',

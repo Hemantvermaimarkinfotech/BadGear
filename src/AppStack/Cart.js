@@ -196,6 +196,7 @@ const Cart = () => {
   
 
   const getCartItems = async () => {
+     
     setLoading(true); // Set loading to true when fetching cart items
   
     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
@@ -301,7 +302,7 @@ const getTotalAmount = () => {
               </View>
 
               <View style={{ marginBottom: 200 }}>
-                <FlatList
+                <FlatList showVerticalScrollIndicator={false}
                   data={cartItems}
                   renderItem={renderCartItem}
                   keyExtractor={(item) => item.product_id.toString()}

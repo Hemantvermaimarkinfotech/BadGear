@@ -16,24 +16,24 @@ const TitleHeader = ({title,cartLenth}) => {
   const [userData, setUserData] = useState(null);
   // console.log("useData",userData?.cart_count)
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await AsyncStorage.getItem('userData');
-        if (userData) {
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const userData = await AsyncStorage.getItem('userData');
+  //       if (userData) {
          
-          setUserData(JSON.parse(userData));
+  //         setUserData(JSON.parse(userData));
          
-        }
-        const abkc=JSON.parse(userData)
-        console.log("useData",JSON.parse(abkc.cart_count))
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
+  //       }
+  //       const abkc=JSON.parse(userData)
+  //       console.log("useData",JSON.parse(abkc.cart_count))
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error);
+  //     }
+  //   };
 
-    fetchUserData();
-  }, []);
+  //   fetchUserData();
+  // }, []);
 
 
 
@@ -89,7 +89,8 @@ const TitleHeader = ({title,cartLenth}) => {
               style={styles.headericon}
             />
           <View style={{height:18,width:18,backgroundColor:"#F10C18",borderRadius:8,position:"absolute",top:-8,right:10,justifyContent:"center",alignItems:"center"}}>
-              <Text style={{color:"#fff",fontSize:12}}>{userData?.cart_count}</Text>
+              {/* <Text style={{color:"#fff",fontSize:12}}>{userData?.cart_count}</Text> */}
+              <Text style={{color:"#fff",fontSize:12}}>0</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -116,3 +117,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 });
+
+
+
+

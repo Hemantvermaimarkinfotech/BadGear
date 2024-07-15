@@ -20,7 +20,9 @@ const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { setUserToken ,setUserId} = useContext(AuthContext);
+  // const { setUserToken ,setUserId} = useContext(AuthContext);
+  const { setUserToken, setUserId, skipLogin } = useContext(AuthContext);
+  console.log("skiploagin",skipLogin)
   console.log("setuserID",setUserId)
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -145,9 +147,9 @@ const Login = ({ navigation }) => {
 
 
      </View>
-      {/* <TouchableOpacity >
+      <TouchableOpacity onPress={skipLogin} >
       <Text style={styles.skipText}>Skip</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
      
     </SafeAreaView>
   );

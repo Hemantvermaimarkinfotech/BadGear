@@ -10,6 +10,7 @@ import {
   Modal,
   Button,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import MainHeader from '../Components/MainHeader';
@@ -22,16 +23,16 @@ import he from 'he';
 import {useFocusEffect} from '@react-navigation/native';
 import {useIsFocused} from '@react-navigation/native';
 import CustomCreditCardInput from '../Components/CustomCreditCardInput';
-import AuthorizeNet from 'react-native-authorize-net';
+// import AuthorizeNet from 'react-native-authorize-net';
 
 const screenHeight = Dimensions.get('window').height;
   const screenWidth = Dimensions.get('window').width;
-  let modalHeight = screenHeight - 100; // Adjust as needed based on your layout
+  let modalHeight = screenHeight - 90; // Adjust as needed based on your layout
   let modalWidth = screenWidth - 40; // Adjust as needed based on your layout
 
   // Adjust modal height for medium and large devices
   if (screenWidth > 360) {
-    modalHeight = screenHeight - 200;
+    modalHeight = screenHeight - 320;
   }
 const Checkout = ({navigation, route}) => {
   const {totalAmount, selectedBillingAddress, selectedShippingAddress} =
@@ -50,6 +51,7 @@ const Checkout = ({navigation, route}) => {
   const isFocused = useIsFocused();
   const [cardDetails, setCardDetails] = useState(null);
   const [isCardInputVisible, setIsCardInputVisible] = useState(false);
+  const [pageloading,setPageloading]=useState(false)
 
   const handlePayment = async () => {
     // Show the modal containing the credit card input
@@ -89,6 +91,7 @@ const Checkout = ({navigation, route}) => {
       const tokenToUse =
       userToken && userToken.token ? userToken.token : userToken;
       try {
+        setPageloading(true);
         // First API call to get billing address
         let billingConfig = {
           method: 'get',
@@ -124,6 +127,8 @@ const Checkout = ({navigation, route}) => {
         setShippingAddress(shippingResponse.data);
       } catch (error) {
         console.error('Error fetching addresses:', error);
+      }finally {
+        setPageloading(false); // Set loading to false after data fetching completes
       }
     }
     getAddressData();
@@ -175,18 +180,11 @@ const Checkout = ({navigation, route}) => {
         };
 
         if (
-          // billingAddress !== undefined &&
-          // shippingAddress !== undefined &&
           cartItems !== undefined &&
           totalAmount !== undefined
         ) {
-          // setBillingAddress(JSON.parse(billingAddress));
-          // setShippingAddress(JSON.parse(shippingAddress));
           setCartItems(JSON.parse(cartItems));
           setTotalAmountState(parseFloat(totalAmount));
-
-          // console.log('Billing Addresssss:', billingAddress);
-          // console.log('Shipping Addresssss:', shippingAddress);
           console.log('Cart Itemssssss:', JSON.parse(cartItems));
           console.log('Total Amount:', totalAmount);
         } else {
@@ -205,8 +203,6 @@ const Checkout = ({navigation, route}) => {
     React.useCallback(() => {
       const fetchAddressesAndCartItems = async () => {
         try {
-          // const billingAddress = await AsyncStorage.getItem('billingAddress');
-          // const shippingAddress = await AsyncStorage.getItem('shippingAddress');
           const cartItems = await AsyncStorage.getItem('cartItems');
           const totalAmount = await AsyncStorage.getItem('totalAmount');
 
@@ -216,13 +212,9 @@ const Checkout = ({navigation, route}) => {
             cartItems !== undefined &&
             totalAmount !== undefined
           ) {
-            // setBillingAddress(JSON.parse(billingAddress));
-            // setShippingAddress(JSON.parse(shippingAddress));
             setCartItems(JSON.parse(cartItems));
             setTotalAmountState(parseFloat(totalAmount));
 
-            // console.log('Billing Address:', billingAddress);
-            // console.log('Shipping Address:', shippingAddress);
             console.log('Cart Items:', JSON.parse(cartItems));
             console.log('Total Amount:', totalAmount);
           } else {
@@ -317,237 +309,242 @@ const Checkout = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <MainHeader title={'Checkout'} />
 
+     {pageloading?(
+   <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+      <ActivityIndicator color={"#F10C18"} size={"large"}/>
+   </View>):(
       <ScrollView style={{marginHorizontal: 10,marginBottom:100}} showsVerticalScrollIndicator={false}>
-        <View style={styles.mainView}>
-          <TouchableOpacity
-            style={[styles.row,{paddingLeft:10}]}
-            onPress={() => navigation.navigate('DeliveryAddress')}>
-            <View style={{flexDirection: 'row',}}>
-              <View
-                style={{
-                  backgroundColor: '#F10C18',
-                  height: 55,
-                  borderRadius: 8,
-                  width: 55,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                 
-                }}>
-                <Image
-                  source={require('../assets/location.png')}
-                  style={{height: 22, width: 22, tintColor: '#FFFFFF'}}
-                />
-              </View>
-
-              <View style={{justifyContent: 'center', marginLeft: 10,}}>
-                <Text style={{color: '#000000', fontSize: 15}}>
-                  Delivery/Shipping Address
-                </Text>
-             
-                    <Text style={styles.addressLabel}>Billing Address:</Text>
-                    <View style={{width: '80%'}}>
-                      <Text style={styles.addressText}>
-                        {billingAddress?.data?.billing_first_name}{' '}
-                        {billingAddress?.data?.billing_last_name},{' '}
-                        {billingAddress?.data?.billing_address},{' '}
-                        {billingAddress?.data?.billing_city},{' '}
-                        {billingAddress?.data?.billing_state},{' '}
-                        {billingAddress?.data?.billing_postcode},{' '}
-                        {billingAddress?.data?.billing_country}
-                      </Text>
-                    </View>
-                
-
-                {/* Shipping Address */}
-                {shippingAddress && (
-                  <>
-                    <Text style={styles.addressLabel}>Shipping Address:</Text>
-                    <View style={{width: '80%'}}>
-                      <Text style={styles.addressText}>
-                        {shippingAddress.data?.shipping_first_name}{' '}
-                        {shippingAddress.data?.shipping_last_name},{' '}
-                        {shippingAddress?.data?.shipping_address},{' '}
-                        {shippingAddress?.data?.shipping_city},{' '}
-                        {shippingAddress?.data?.shipping_state},{' '}
-                        {shippingAddress?.data?.shipping_postcode},{' '}
-                        {shippingAddress?.data?.shipping_country}
-                      </Text>
-                    
-                    </View>
-                  </>
-                )}
-              </View>
+      <View style={styles.mainView}>
+        <TouchableOpacity
+          style={[styles.row,{paddingLeft:10}]}
+          onPress={() => navigation.navigate('DeliveryAddress')}>
+          <View style={{flexDirection: 'row',}}>
+            <View
+              style={{
+                backgroundColor: '#F10C18',
+                height: 55,
+                borderRadius: 8,
+                width: 55,
+                justifyContent: 'center',
+                alignItems: 'center',
+               
+              }}>
+              <Image
+                source={require('../assets/location.png')}
+                style={{height: 22, width: 22, tintColor: '#FFFFFF'}}
+              />
             </View>
 
-            <Image
-              source={require('../assets/arrow-right.png')}
-              style={{height: 22, width: 22, tintColor: '#000000'}}
-            />
-          </TouchableOpacity>
-
-          <View
-            style={{
-              height: 1,
-              width: '100%',
-              marginTop: 15,
-              backgroundColor: '#707070',
-              opacity: 0.3,
-            }}
-          />
-
-          <TouchableOpacity style={styles.row} onPress={handlePayment}>
-            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <View
-                style={{
-                  backgroundColor: '#F10C18',
-                  height: 55,
-                  borderRadius: 8,
-                  width: 55,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginLeft: 10,
-                }}>
-                <Image
-                  source={require('../assets/credit-card.png')}
-                  style={{height: 22, width: 22, tintColor: '#FFFFFF'}}
-                />
-              </View>
-
-              <TouchableOpacity
-                style={{justifyContent: 'center', marginLeft: 10}}
-                >
-                <Text style={{color: '#000000', fontSize: 15}}>Payment</Text>
-                <View>
-                  <Text
-                    style={{
-                      color: '#000000',
-                      fontSize: 12,
-                      fontFamily: 'Gilroy-Regular',
-                      marginVertical: 5,
-                    }}>
-                    <Text> X X X X X X X X X X X X 3436</Text>
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-
-            <Image
-              source={require('../assets/arrow-right.png')}
-              style={{height: 22, width: 22, tintColor: '#000000'}}
-            />
-          </TouchableOpacity>
-
-          <View
-            style={{
-              height: 1,
-              width: '100%',
-              marginTop: 15,
-              backgroundColor: '#707070',
-              opacity: 0.3,
-            }}
-          />
-
-          <View style={{marginTop: 20}}>
-            {/* {order.map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginTop: 10,
-                }}>
-                <Text style={styles.orderText}>{item.name}</Text>
-                <Text style={styles.orderText}>$ {item.price}</Text>
-              </View>
-            ))} */}
-
-            {cartItems && cartItems.length > 0 ? (
-              cartItems.map((item, index) => {
-                const undefinedRates = item.price;
-                return (
-                  <View
-                    key={index}
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginTop: 10,
-                    }}>
-                    <View style={{width: '70%'}}>
-                      <Text style={styles.orderText}>
-                        {he.decode(item?.product_name)}
-                      </Text>
-                    </View>
-                    <Text style={styles.orderText}>
-                      $
-                      {item && undefinedRates !== undefined
-                        ? item.price
-                        : '0.00'}
+            <View style={{justifyContent: 'center', marginLeft: 10,}}>
+              <Text style={{color: '#000000', fontSize: 15}}>
+                Delivery/Shipping Address
+              </Text>
+           
+                  <Text style={styles.addressLabel}>Billing Address:</Text>
+                  <View style={{width: '80%'}}>
+                    <Text style={styles.addressText}>
+                      {billingAddress?.data?.billing_first_name}{' '}
+                      {billingAddress?.data?.billing_last_name},{' '}
+                      {billingAddress?.data?.billing_address},{' '}
+                      {billingAddress?.data?.billing_city},{' '}
+                      {billingAddress?.data?.billing_state},{' '}
+                      {billingAddress?.data?.billing_postcode},{' '}
+                      {billingAddress?.data?.billing_country}
                     </Text>
                   </View>
-                );
-              })
-            ) : (
-              <Text>No items in the cart</Text>
-            )}
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginTop: 10,
-            }}>
-            <Text style={styles.orderText}>Discount</Text>
-            <Text style={styles.orderText}>$ 1699</Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginTop: 10,
-            }}>
-            <Text style={styles.orderText}>Shipping</Text>
-            <Text style={[styles.orderText, {color: '#159e42'}]}>
-              FREE Delivery{' '}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              height: 1,
-              width: '100%',
-              marginTop: 20,
-              backgroundColor: '#707070',
-              opacity: 1,
-            }}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginTop: 10,
               
-            }}>
-            <Text
-              style={[
-                styles.orderText,
-                {fontSize: 22, fontFamily: 'Gilroy-Bold'},
-              ]}>
-              My Order
-            </Text>
-            <Text
-              style={[
-                styles.orderText,
-                {fontSize: 22, fontFamily: 'Gilroy-Bold'},
-              ]}>
-              $ {calculateTotal()}
-            </Text>
-          </View>
-        </View>
-      </ScrollView>
 
-      <View></View>
+              {/* Shipping Address */}
+              {shippingAddress && (
+                <>
+                  <Text style={styles.addressLabel}>Shipping Address:</Text>
+                  <View style={{width: '80%'}}>
+                    <Text style={styles.addressText}>
+                      {shippingAddress.data?.shipping_first_name}{' '}
+                      {shippingAddress.data?.shipping_last_name},{' '}
+                      {shippingAddress?.data?.shipping_address},{' '}
+                      {shippingAddress?.data?.shipping_city},{' '}
+                      {shippingAddress?.data?.shipping_state},{' '}
+                      {shippingAddress?.data?.shipping_postcode},{' '}
+                      {shippingAddress?.data?.shipping_country}
+                    </Text>
+                  
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+
+          <Image
+            source={require('../assets/arrow-right.png')}
+            style={{height: 22, width: 22, tintColor: '#000000'}}
+          />
+        </TouchableOpacity>
+
+        <View
+          style={{
+            height: 1,
+            width: '100%',
+            marginTop: 15,
+            backgroundColor: '#707070',
+            opacity: 0.3,
+          }}
+        />
+
+        <TouchableOpacity style={styles.row} onPress={handlePayment}>
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <View
+              style={{
+                backgroundColor: '#F10C18',
+                height: 55,
+                borderRadius: 8,
+                width: 55,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: 10,
+              }}>
+              <Image
+                source={require('../assets/credit-card.png')}
+                style={{height: 22, width: 22, tintColor: '#FFFFFF'}}
+              />
+            </View>
+
+            <TouchableOpacity
+              style={{justifyContent: 'center', marginLeft: 10}}
+              >
+              <Text style={{color: '#000000', fontSize: 15}}>Payment</Text>
+              <View>
+                <Text
+                  style={{
+                    color: '#000000',
+                    fontSize: 12,
+                    fontFamily: 'Gilroy-Regular',
+                    marginVertical: 5,
+                  }}>
+                  <Text> X X X X X X X X X X X X 3436</Text>
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <Image
+            source={require('../assets/arrow-right.png')}
+            style={{height: 22, width: 22, tintColor: '#000000'}}
+          />
+        </TouchableOpacity>
+
+        <View
+          style={{
+            height: 1,
+            width: '100%',
+            marginTop: 15,
+            backgroundColor: '#707070',
+            opacity: 0.3,
+          }}
+        />
+
+        <View style={{marginTop: 20}}>
+          {/* {order.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 10,
+              }}>
+              <Text style={styles.orderText}>{item.name}</Text>
+              <Text style={styles.orderText}>$ {item.price}</Text>
+            </View>
+          ))} */}
+
+          {cartItems && cartItems.length > 0 ? (
+            cartItems.map((item, index) => {
+              const undefinedRates = item.price;
+              return (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                  }}>
+                  <View style={{width: '70%'}}>
+                    <Text style={styles.orderText}>
+                      {he.decode(item?.product_name)}
+                    </Text>
+                  </View>
+                  <Text style={styles.orderText}>
+                    $
+                    {item && undefinedRates !== undefined
+                      ? item.price
+                      : '0.00'}
+                  </Text>
+                </View>
+              );
+            })
+          ) : (
+            <Text>No items in the cart</Text>
+          )}
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 10,
+          }}>
+          <Text style={styles.orderText}>Discount</Text>
+          <Text style={styles.orderText}>$ 1699</Text>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 10,
+          }}>
+          <Text style={styles.orderText}>Shipping</Text>
+          <Text style={[styles.orderText, {color: '#159e42'}]}>
+            FREE Delivery{' '}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            height: 1,
+            width: '100%',
+            marginTop: 20,
+            backgroundColor: '#707070',
+            opacity: 1,
+          }}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 10,
+            
+          }}>
+          <Text
+            style={[
+              styles.orderText,
+              {fontSize: 22, fontFamily: 'Gilroy-Bold'},
+            ]}>
+            My Order
+          </Text>
+          <Text
+            style={[
+              styles.orderText,
+              {fontSize: 22, fontFamily: 'Gilroy-Bold'},
+            ]}>
+            $ {calculateTotal()}
+          </Text>
+        </View>
+      </View>
+    </ScrollView>
+     )}
+
+    
       <View
         style={{
           height: 1,
@@ -717,6 +714,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     flex: 1,
+  
   },
   cardModalContent: {
     width: '90%',
@@ -724,7 +722,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    justifyContent:"center"
+    justifyContent:"center",
+  
     
   },
 

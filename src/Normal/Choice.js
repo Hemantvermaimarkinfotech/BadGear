@@ -1,16 +1,33 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, {useEffect, useState} from 'react';
+import {View, Text, Image, StyleSheet, Dimensions,ActivityIndicator} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
+import axios from 'react-native-axios';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
 
+const Choice = ({navigation}) => {
+  const [loading, setLoading] = useState(true);
+  const [choice, setChoice] = useState(null);
 
+  const fetchChoiceData = () => {
+    axios.get('https://bad-gear.com/wp-json/welcomescreen/v1/welcome_screen')
+      .then(response => {
+        console.log(JSON.stringify(response.data.data));
+        setChoice(response.data.data);
+        setLoading(false); 
+      })
+      .catch(error => {
+        console.log(error);
+        setLoading(false); 
+      });
+  };
 
-
-const Choice = ({ navigation }) => {
+  useEffect(() => {
+    fetchChoiceData();
+  }, []);
   const data = [
     {
       id: '1',
@@ -34,40 +51,78 @@ const Choice = ({ navigation }) => {
     },
     // Add more data as needed
   ];
-  const handleNavigation = (screenName) => {
+
+  if (choice) {
+    // Mapping choice data to match the existing data structure
+    const choiceData = [
+      {
+        id: '4',
+        name: 'BAD Gear Shop',
+        image: {uri: choice.shopnow_img},
+        description: 'Shop Now',
+        navigateTo: 'NewArrival1',
+      },
+      {
+        id: '5',
+        name: 'Pulling & Show Schedule',
+        image: {uri: choice.event_img},
+        description: 'View Events',
+        navigateTo: '',
+      },
+      {
+        id: '6',
+        name: 'Watch Videos',
+        image: {uri: choice.videos_img},
+        description: 'Watch Videos',
+        navigateTo: '',
+      },
+    ];
+
+    // Replace existing data with choiceData
+    data.splice(0, 3, ...choiceData);
+  }
+
+  const handleNavigation = screenName => {
     navigation.navigate(screenName);
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flex: Platform.OS === 'ios' ? 0.75 : 0.7 }}>
+      {loading ? (
+<View style={{flex:1,justifyContent:'center',alignItems:"center"}}>
+<ActivityIndicator size={"large"} color={"#F10207"} />
+</View>
+) : (
+      <View style={{flex: Platform.OS === 'ios' ? 0.75 : 0.7}}>
         <Swiper
           showsPagination={true}
           dot={<View style={styles.dot} />}
           activeDot={<View style={[styles.dot, styles.activeDot]} />}
-          paginationStyle={{ bottom: screenHeight * 0.01 }} // Adjust pagination position
+          paginationStyle={{bottom: screenHeight * 0.01}} // Adjust pagination position
         >
-          {data.map((item) => (
+          {data.map(item => (
             <View key={item.id} style={styles.slide}>
               <Text style={styles.name}>{item.name}</Text>
               <Image source={item.image} style={styles.image} />
-           <TouchableOpacity onPress={() => handleNavigation(item.navigateTo)}>
-           <View style={styles.descriptionContainer}>
-                <View style={styles.arrowContainer}>
-                  <Image
-                    source={require('../assets/arrow.png')}
-                    style={styles.arrow}
-                  />
+              <TouchableOpacity
+                onPress={() => handleNavigation(item.navigateTo)}>
+                <View style={styles.descriptionContainer}>
+                  <View style={styles.arrowContainer}>
+                    <Image
+                      source={require('../assets/arrow.png')}
+                      style={styles.arrow}
+                    />
+                  </View>
+                  <Text style={styles.description}>{item.description}</Text>
                 </View>
-                <Text style={styles.description}>
-                  {item.description}
-                </Text>
-              </View>
-           </TouchableOpacity>
+              </TouchableOpacity>
             </View>
           ))}
         </Swiper>
       </View>
-      <View style={styles.skipContainer}>
+    
+      )}
+
+<View style={styles.skipContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('Subscription')}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
