@@ -183,7 +183,7 @@
 //   // Custom unserialize function
 //   const unserialize = (data) => {
 //     let offset = 0;
-  
+
 //     const readLength = (str) => {
 //       let length = '';
 //       while (str[offset] !== ':') {
@@ -192,7 +192,7 @@
 //       offset++;
 //       return parseInt(length, 10);
 //     };
-  
+
 //     const readString = (str) => {
 //       const length = readLength(str);
 //       offset++;
@@ -200,7 +200,7 @@
 //       offset += length + 2; // +2 to skip the closing quote and semicolon
 //       return result;
 //     };
-  
+
 //     const readArray = (str) => {
 //       const length = readLength(str);
 //       offset++;
@@ -213,7 +213,7 @@
 //       offset++;
 //       return result;
 //     };
-  
+
 //     const unserialize = (str) => {
 //       const type = str[offset++];
 //       switch (type) {
@@ -244,10 +244,9 @@
 //           throw new Error(`Unknown / unsupported data type(s): ${type}`);
 //       }
 //     };
-  
+
 //     return unserialize(data);
 //   };
-  
 
 //   const fetchOrder = () => {
 //     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
@@ -279,7 +278,7 @@
 //   useEffect(() => {
 //     fetchOrder();
 //   }, []);
-  
+
 //   const products = [
 //     {
 //       id: '1',
@@ -469,8 +468,7 @@
 //   );
 // };
 
-
-import React, { useState, useContext, useEffect } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   Text,
@@ -481,21 +479,22 @@ import {
   ScrollView,
   FlatList,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
-import { AuthContext } from '../Components/AuthProvider';
+import {AuthContext} from '../Components/AuthProvider';
 import axios from 'react-native-axios';
 
 const OrderDetails = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { userToken } = useContext(AuthContext);
+  const {userToken} = useContext(AuthContext);
 
   // Custom unserialize function
-  const unserialize = (data) => {
+  const unserialize = data => {
     let offset = 0;
 
-    const readLength = (str) => {
+    const readLength = str => {
       let length = '';
       while (str[offset] !== ':') {
         length += str[offset++];
@@ -504,7 +503,7 @@ const OrderDetails = () => {
       return parseInt(length, 10);
     };
 
-    const readString = (str) => {
+    const readString = str => {
       const length = readLength(str);
       offset++;
       const result = str.substr(offset, length);
@@ -512,7 +511,7 @@ const OrderDetails = () => {
       return result;
     };
 
-    const readArray = (str) => {
+    const readArray = str => {
       const length = readLength(str);
       offset++;
       const result = {};
@@ -525,7 +524,10 @@ const OrderDetails = () => {
       return result;
     };
 
-    const unserialize = (str) => {
+    const unserialize = str => {
+      if (offset >= str.length) {
+        throw new Error('Unexpected end of data');
+      }
       const type = str[offset++];
       switch (type) {
         case 's':
@@ -556,32 +558,47 @@ const OrderDetails = () => {
       }
     };
 
-    return unserialize(data);
+    try {
+      return unserialize(data);
+    } catch (error) {
+      console.log('Unserialize Error:', error);
+      return {};
+    }
   };
 
   const fetchOrder = () => {
     const tokenToUse = userToken?.token || userToken;
+
     const config = {
       method: 'get',
       url: 'https://bad-gear.com/wp-json/orders/v1/all_orders',
       headers: {
-        Authorization: `${tokenToUse}`,
+        Authorization: `${tokenToUse}`, // Ensure proper format
       },
     };
 
     axios
       .request(config)
       .then(response => {
-        const orders = response?.data?.data.map(order => ({
-          ...order,
-          form_data: unserialize(order.form_data),
-        }));
-
+        console.log('Raw Response Data:', response.data);
+        const orders = response?.data?.data.map(order => {
+          try {
+            return {
+              ...order,
+              form_data: unserialize(order.form_data),
+            };
+          } catch (error) {
+            console.log('Error unserializing form_data:', error);
+            return order; // Return the order without unserialized form_data
+          }
+        });
+        console.log('Parsed Orders:', orders);
         setOrders(orders);
-        setLoading(false);
       })
       .catch(error => {
-        console.log(error);
+        console.log('Error fetching orders:', error);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -590,11 +607,17 @@ const OrderDetails = () => {
     fetchOrder();
   }, []);
 
+  useEffect(() => {
+    fetchOrder();
+  }, []);
+
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <View style={{justifyContent:"center",alignItems:"center",flex:1}}>
+      <ActivityIndicator size={"large"} color={"#F10C18"}/>
+    </View>;
   }
 
-  const renderProductItem = ({ item }) => (
+  const renderProductItem = ({item}) => (
     <View style={styles.productContainer}>
       <View style={styles.productInfo}>
         <View style={styles.productImageContainer}>
@@ -622,29 +645,52 @@ const OrderDetails = () => {
         <TitleHeader title="Order Details" />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}>
         {orders.length > 0 && orders[0] && (
           <>
             <View style={styles.firstTable}>
-              <Text style={styles.orderDetailsText}>Order #{orders[0]?.order_id} details</Text>
+              <Text style={styles.orderDetailsText}>
+                Order #{orders[0]?.order_id} details
+              </Text>
               <Text style={styles.paymentInfoText}>
-                Payment via Credit card (************4343). Paid on {orders[0]?.date}.
+                Payment via Credit card (************4343). Paid on{' '}
+                {orders[0]?.date}.
               </Text>
               <View style={styles.addressContainer}>
                 <View style={styles.addressBlock}>
                   <Text style={styles.addressTitle}>Billing</Text>
                   <Text style={styles.addressText}>
-                    {orders[0]?.form_data?.billing_address_1} {orders[0]?.form_data?.billing_address_2}
-                    {orders[0]?.form_data?.billing_city}, {orders[0]?.form_data?.billing_state} {orders[0]?.form_data?.billing_zip}
+                    {orders[0]?.form_data?.billing_address_1}{' '}
+                    {orders[0]?.form_data?.billing_address_2}
+                    {orders[0]?.form_data?.billing_city},{' '}
+                    {orders[0]?.form_data?.billing_state}{' '}
+                    {orders[0]?.form_data?.billing_zip}
                   </Text>
-                  <Text style={[styles.addressTitle, { marginTop: 10 }]}>Email address</Text>
-                  <TouchableOpacity onPress={() => Linking.openURL(`mailto:${orders[0]?.form_data?.billing_email}`)} style={styles.emailPhoneTouchable}>
+                  <Text style={[styles.addressTitle, {marginTop: 10}]}>
+                    Email address
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(
+                        `mailto:${orders[0]?.form_data?.billing_email}`,
+                      )
+                    }
+                    style={styles.emailPhoneTouchable}>
                     <Text style={[styles.addressText, styles.clickableText]}>
                       {orders[0]?.form_data?.billing_email}
                     </Text>
                   </TouchableOpacity>
-                  <Text style={[styles.addressTitle, { marginTop: 10 }]}>Phone</Text>
-                  <TouchableOpacity onPress={() => Linking.openURL(`tel:${orders[0]?.form_data?.billing_phone}`)}>
+                  <Text style={[styles.addressTitle, {marginTop: 10}]}>
+                    Phone
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(
+                        `tel:${orders[0]?.form_data?.billing_phone}`,
+                      )
+                    }>
                     <Text style={[styles.addressText, styles.clickableText]}>
                       {orders[0]?.form_data?.billing_phone}
                     </Text>
@@ -653,11 +699,21 @@ const OrderDetails = () => {
                 <View style={styles.addressBlock}>
                   <Text style={styles.addressTitle}>Shipping</Text>
                   <Text style={styles.addressText}>
-                    {orders[0]?.form_data?.shipping_address_1} {orders[0]?.form_data?.shipping_address_2}
-                    {orders[0]?.form_data?.shipping_city}, {orders[0]?.form_data?.shipping_state} {orders[0]?.form_data?.shipping_zip}
+                    {orders[0]?.form_data?.shipping_address_1}{' '}
+                    {orders[0]?.form_data?.shipping_address_2}
+                    {orders[0]?.form_data?.shipping_city},{' '}
+                    {orders[0]?.form_data?.shipping_state}{' '}
+                    {orders[0]?.form_data?.shipping_zip}
                   </Text>
-                  <Text style={[styles.addressTitle, { marginTop: 10 }]}>Phone</Text>
-                  <TouchableOpacity onPress={() => Linking.openURL(`tel:${orders[0]?.form_data?.shipping_phone}`)}>
+                  <Text style={[styles.addressTitle, {marginTop: 10}]}>
+                    Phone
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(
+                        `tel:${orders[0]?.form_data?.shipping_phone}`,
+                      )
+                    }>
                     <Text style={[styles.addressText, styles.clickableText]}>
                       {orders[0]?.form_data?.shipping_phone}
                     </Text>
@@ -676,42 +732,25 @@ const OrderDetails = () => {
                   <Text style={styles.tableHeaderText}>Qty</Text>
                 </View>
               </View>
+
               <FlatList
-                data={orders[0]?.form_data?.product_name || []}
-                renderItem={({ item, index }) => (
-                  <View style={styles.productContainer}>
-                    <View style={styles.productInfo}>
-                      <View style={styles.productImageContainer}>
-                        <Image source={require('../assets/cat3.png')} style={styles.productImage} />
-                      </View>
-                      <View style={styles.productDetails}>
-                        <Text style={styles.productName}>{item}</Text>
-                        <Text style={styles.productVariation}>
-                          Variation ID: {orders[0]?.form_data?.product_id[index]}
-                        </Text>
-                        <Text style={styles.productSize}>Size: {orders[0]?.form_data?.size[index]}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.productPriceQty}>
-                      <Text style={styles.productCost}>${orders[0]?.form_data?.product_price[index]}</Text>
-                      <Text style={styles.productQuantity}>× {orders[0]?.form_data?.quantity[index]}</Text>
-                    </View>
-                    <View style={styles.productSeparator} />
-                  </View>
-                )}
-                keyExtractor={(item, index) => index.toString()}
+                data={orders}
+                renderItem={renderProductItem}
+                keyExtractor={item => item.id}
                 style={styles.productList}
                 contentContainerStyle={styles.productListContainer}
               />
             </View>
 
-            <View style={styles.thirdTable}>
+            {/* <View style={styles.thirdTable}>
               <View style={styles.thirdTableRow}>
                 <View style={styles.thirdTableItem}>
                   <Text style={styles.thirdTableText}>Order total:</Text>
                 </View>
                 <View style={styles.thirdTableItem}>
-                  <Text style={styles.thirdTableText}>${orders[0]?.total_amount}</Text>
+                  <Text style={styles.thirdTableText}>
+                    ${orders[0]?.total_amount}
+                  </Text>
                 </View>
               </View>
 
@@ -722,29 +761,86 @@ const OrderDetails = () => {
                   <Text style={styles.thirdTableText}>Paid:</Text>
                 </View>
                 <View style={styles.thirdTableItem}>
-                  <Text style={styles.thirdTableText}>${orders[0]?.total_amount}</Text>
+                  <Text style={styles.thirdTableText}>
+                    ${orders[0]?.total_amount}
+                  </Text>
                 </View>
               </View>
 
               <View style={styles.thirdTableRow}>
                 <View style={styles.thirdTableItem}>
-                  <Text style={styles.thirdTableText}>Paid on {orders[0]?.date} via Credit card</Text>
+                  <Text style={styles.thirdTableText}>
+                    Paid on {orders[0]?.date} via Credit card
+                  </Text>
                 </View>
               </View>
+            </View> */}
+
+<View style={[styles.thirdTable]}>
+          <View style={[styles.thirdTableRow,{}]}>
+            <View style={[styles.thirdTableItem,{width:"25%"}]}>
+              <Text style={styles.thirdTableText}>Free shipping items:</Text>
             </View>
+            <View style={[styles.thirdTableItem,{width:"55%"}]}>
+              <Text style={styles.thirdTableText}>
+                El Nino Pro Stock T-Shirt - XL × 1, Masterson Farms Tractor T-Shirt - XL × 1
+              </Text>
+            </View>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}>$0.00</Text>
+            </View>
+          </View>
+
+          <View style={styles.thirdTableRow}>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}>Items Subtotal:</Text>
+            </View>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}>$55.00</Text>
+            </View>
+          </View>
+
+          <View style={styles.thirdTableRow}>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}>Shipping:</Text>
+            </View>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}>$0.00</Text>
+            </View>
+          </View>
+
+          <View style={styles.thirdTableRow}>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}>Order total:</Text>
+            </View>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}> ${orders[0]?.total_amount}</Text>
+            </View>
+          </View>
+
+          <View style={styles.thirdTableSeparator} />
+
+          <View style={styles.thirdTableRow}>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}>Paid:</Text>
+            </View>
+            <View style={styles.thirdTableItem}>
+              <Text style={styles.thirdTableText}> ${orders[0]?.total_amount}</Text>
+            </View>
+          </View>
+
+          <View style={styles.thirdTableRow}>
+            <View style={[styles.thirdTableItem,{width:"100%"}]}>
+              <Text style={styles.thirdTableText}>Paid on {orders[0]?.date} via Credit card</Text>
+            </View>
+          </View>
+        </View>
           </>
         )}
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-
-
-
-
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -800,7 +896,6 @@ const styles = StyleSheet.create({
   },
   clickableText: {
     textDecorationLine: 'underline',
-
   },
   emailPhoneTouchable: {
     width: '95%',
@@ -917,7 +1012,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
-   
   },
   thirdTableItem: {
     width: '20%',
@@ -936,4 +1030,3 @@ const styles = StyleSheet.create({
 });
 
 export default OrderDetails;
-

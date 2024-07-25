@@ -746,7 +746,7 @@ const Order = ({ navigation }) => {
               <Text style={[styles.cell, styles.headerText]}>Total</Text>
               <Text style={[styles.cell, styles.headerText]}>Origin</Text>
             </View>
-            <FlatList
+            <FlatList showsVerticalScrollIndicator={false}
               data={orders}
               renderItem={renderItem}
               keyExtractor={item => item.id}

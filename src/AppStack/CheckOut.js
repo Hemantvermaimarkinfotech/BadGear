@@ -40,7 +40,6 @@ const Checkout = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [submitloading, setsubmitLoading] = useState(false);
   const [billingAddress, setBillingAddress] = useState(null); // State for storing billing address
-  console.log("billingAddress",billingAddress)
   const [shippingAddress, setShippingAddress] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [pageloading, setPageloading] = useState(false);
@@ -262,233 +261,95 @@ const Checkout = ({navigation, route}) => {
   //   }
   // };
 
-  // const handleOrderSubmission = async () => {
-  //   const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
-  
-  //   // Check for required fields and handle validation
-  //   const requiredFields = [
-  //     productIdsString,
-  //     totalQuantity.toString(),
-  //     productprice,
-  //     paymentDetails?.cardName,
-  //     billingAddress?.data?.billing_email,
-  //     productNamesString,
-  //     paymentDetails?.cardNumber,
-  //     paymentDetails?.expiryDate,
-  //     paymentDetails?.cvv,
-  //     billingAddress?.data?.billing_first_name,
-  //     billingAddress?.data?.billing_last_name,
-  //     billingAddress?.data?.billing_email,
-  //     billingAddress?.data?.billing_phone,
-  //     billingAddress?.data?.billing_company,
-  //     billingAddress?.data?.billing_address, // Use billing_address_1
-  //     billingAddress?.data?.billing_city,
-  //     billingAddress?.data?.billing_state,
-  //     billingAddress?.data?.billing_postcode, // Use billing_postcode
-  //     billingAddress?.data?.billing_country,
-  //     calculateTotal().toString(),
-  //   ];
-  
-  //   const isFormValid = requiredFields.every(field => field && field.trim() !== '');
-  
-  //   if (!isFormValid) {
-  //     console.log('Please fill all required fields.');
-  //     setLoading(false); // Ensure loading is stopped if form is invalid
-  //     return; // Stop execution if form is invalid
-  //   }
-  
-  //   setLoading(true);
-  //   console.log('tokenuse', tokenToUse);
-  //   let data = new FormData();
-  
-  //   // Append fields to FormData
-  //   data.append('product_ids', productIdsString || '');
-  //   data.append('quantities', totalQuantity.toString() || '');
-  //   data.append('product_price', productprice || ''); // Ensure productprice is a comma-separated string
-  //   data.append('card_holder_name', paymentDetails?.cardName || '');
-  //   data.append('customer_email', billingAddress?.data?.billing_email || '');
-  //   data.append('item_name', productNamesString || '');
-  //   data.append('card_number', paymentDetails?.cardNumber || '');
-  //   data.append('card_exp_date', paymentDetails?.expiryDate || '');
-  //   data.append('card_cvc', paymentDetails?.cvv || '');
-  //   data.append('billing_first_name', billingAddress?.data?.billing_first_name || '');
-  //   data.append('billing_last_name', billingAddress?.data?.billing_last_name || '');
-  //   data.append('billing_email', billingAddress?.data?.billing_email || '');
-  //   data.append('billing_phone', billingAddress?.data?.billing_phone || '');
-  //   data.append('billing_company', billingAddress?.data?.billing_company || '');
-  //   data.append('billing_address_1', billingAddress?.data?.billing_address || ''); // Use billing_address_1
-  //   data.append('billing_address_2', billingAddress?.data?.billing_address || ''); // Use billing_address_2
-  //   data.append('billing_city', billingAddress?.data?.billing_city || '');
-  //   data.append('billing_state', billingAddress?.data?.billing_state || '');
-  //   data.append('billing_zip', billingAddress?.data?.billing_postcode || ''); // Use billing_postcode
-  //   data.append('billing_country', billingAddress?.data?.billing_country || '');
-  //   data.append('total_amount', calculateTotal().toString() || '');
-  
-  //   console.log('Total Quantity:', totalQuantity);
-  //   console.log('dataaaaa', data);
-  
-  //   let config = {
-  //     method: 'post',
-  //     url: 'https://bad-gear.com/wp-json/payment_process/v1/payment',
-  //     headers: {
-  //       Authorization: `${tokenToUse}`, // Ensure proper format
-  //     },
-  //     data: data,
-  //   };
-  
-  //   try {
-  //     const response = await axios(config);
-  //     console.log('API Response:', response.data);
-  //     setShowModal(true);
-  //   } catch (error) {
-  //     console.log('API Error:', error);
-  //     // Handle error cases, e.g., show error message
-  //   } finally {
-  //     setLoading(false); // Ensure loading state is set to false in all cases
-  //   }
-  // };
-
   const handleOrderSubmission = async () => {
-//     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
-
-//     // Check for required fields and handle validation
-//     // const requiredFields = [
-//     //     productIdsString,
-//     //     totalQuantity.toString(),
-//     //     productprice,
-//     //     paymentDetails?.cardName,
-//     //     billingAddress?.data?.billing_email,
-//     //     productNamesString,
-//     //     paymentDetails?.cardNumber,
-//     //     paymentDetails?.expiryDate,
-//     //     paymentDetails?.cvv,
-//     //     billingAddress?.data?.billing_first_name,
-//     //     billingAddress?.data?.billing_last_name,
-//     //     billingAddress?.data?.billing_email,
-//     //     billingAddress?.data?.billing_phone,
-//     //     billingAddress?.data?.billing_company,
-//     //     billingAddress?.data?.billing_address, // Use billing_address_1
-//     //     billingAddress?.data?.billing_city,
-//     //     billingAddress?.data?.billing_state,
-//     //     billingAddress?.data?.billing_postcode, // Use billing_postcode
-//     //     billingAddress?.data?.billing_country,
-//     //     calculateTotal().toString(),
-//     // ];
-
-//     // const isFormValid = requiredFields.every(field => field && field.trim() !== '');
-
-//     // if (!isFormValid) {
-//     //     console.log('Please fill all required fields.');
-//     //     setLoading(false); // Ensure loading is stopped if form is invalid
-//     //     return; // Stop execution if form is invalid
-//     // }
-
-//     setLoading(true);
-//     console.log('tokenuse', tokenToUse);
-
-//     let data = new FormData();
-    
-//     // Append fields to FormData
-//     data.append('product_ids', productIdsString || '');
-//     data.append('quantities', totalQuantity.toString() || '');
-//     data.append('product_price', productprice || '');
-//     // data.append('card_holder_name', paymentDetails?.cardName || '');
-//     data.append('card_holder_name', 'Kamal Bamola');
-//     data.append('customer_email', billingAddress?.data?.billing_email || '');
-//     data.append('item_name', productNamesString || '');
-//     // data.append('card_number', paymentDetails?.cardNumber || '');
-//     // data.append('card_exp_date', paymentDetails?.expiryDate || '');
-//     // data.append('card_cvc', paymentDetails?.cvv || '');
-//     data.append('card_exp_date', '11-2045');
-// data.append('card_cvc', '213');
-// data.append('card_number', '3435647454534346');
-//     data.append('billing_first_name', billingAddress?.data?.billing_first_name || '');
-//     data.append('billing_last_name', billingAddress?.data?.billing_last_name || '');
-//     data.append('billing_email', billingAddress?.data?.billing_email || '');
-//     data.append('billing_phone', billingAddress?.data?.billing_phone || '');
-//     data.append('billing_company', billingAddress?.data?.billing_company || '');
-//     data.append('billing_address_1', billingAddress?.data?.billing_address || '');
-//     data.append('billing_address_2', billingAddress?.data?.billing_address || '');
-//     data.append('billing_city', billingAddress?.data?.billing_city || '');
-//     data.append('billing_state', billingAddress?.data?.billing_state || '');
-//     data.append('billing_zip', billingAddress?.data?.billing_postcode || '');
-//     data.append('billing_country', billingAddress?.data?.billing_country || '');
-//     data.append('total_amount', calculateTotal().toString() || '');
-
-//     console.log('Total Quantity:', totalQuantity);
-//     console.log('data', data);
-
-//     let config = {
-//         method: 'post',
-//         maxBodyLength: Infinity,
-//         url: 'https://bad-gear.com/wp-json/payment_process/v1/payment',
-//         headers: {
-//             'Authorization': `Bearer ${tokenToUse}`,
-//             ...data.getHeaders(),
-//         },
-//         data: data,
-//     };
-
-//     try {
-//         const response = await axios(config);
-//         console.log('API Response:', response.data);
-//         setShowModal(true);
-//     } catch (error) {
-//         console.log('API Error:', error);
-//         // Handle error cases, e.g., show error message
-//         setLoading(false);
-//     } finally {
-//         setLoading(false); // Ensure loading state is set to false in all cases
-//     }
-
-let data = new FormData();
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+  
+    // Check for required fields and handle validation
+    const requiredFields = [
+      productIdsString,
+      totalQuantity.toString(),
+      productprice,
+      paymentDetails?.cardName,
+      billingAddress?.data?.billing_email,
+      productNamesString,
+      paymentDetails?.cardNumber,
+      paymentDetails?.expiryDate,
+      paymentDetails?.cvv,
+      billingAddress?.data?.billing_first_name,
+      billingAddress?.data?.billing_last_name,
+      billingAddress?.data?.billing_email,
+      billingAddress?.data?.billing_phone,
+      billingAddress?.data?.billing_company,
+      billingAddress?.data?.billing_address, // Use billing_address_1
+      billingAddress?.data?.billing_city,
+      billingAddress?.data?.billing_state,
+      billingAddress?.data?.billing_postcode, // Use billing_postcode
+      billingAddress?.data?.billing_country,
+      calculateTotal().toString(),
+    ];
+  
+    const isFormValid = requiredFields.every(field => field && field.trim() !== '');
+  
+    if (!isFormValid) {
+      console.log('Please fill all required fields.');
+      setLoading(false); // Ensure loading is stopped if form is invalid
+      return; // Stop execution if form is invalid
+    }
+  
+    setLoading(true);
+    console.log('tokenuse', tokenToUse);
+    let data = new FormData();
+  
+    // Append fields to FormData
     data.append('product_ids', productIdsString || '');
     data.append('quantities', totalQuantity.toString() || '');
-    data.append('product_price', productprice || '');
-    // data.append('card_holder_name', paymentDetails?.cardName || '');
-    data.append('card_holder_name', 'Kamal Bamola');
+    data.append('product_price', productprice || ''); // Ensure productprice is a comma-separated string
+    data.append('card_holder_name', paymentDetails?.cardName || '');
     data.append('customer_email', billingAddress?.data?.billing_email || '');
     data.append('item_name', productNamesString || '');
-    // data.append('card_number', paymentDetails?.cardNumber || '');
-    // data.append('card_exp_date', paymentDetails?.expiryDate || '');
-    // data.append('card_cvc', paymentDetails?.cvv || '');
-    data.append('card_exp_date', '11-2045');
-data.append('card_cvc', '213');
-data.append('card_number', '3435647454534346');
+    data.append('card_number', paymentDetails?.cardNumber || '');
+    data.append('card_exp_date', paymentDetails?.expiryDate || '');
+    data.append('card_cvc', paymentDetails?.cvv || '');
     data.append('billing_first_name', billingAddress?.data?.billing_first_name || '');
     data.append('billing_last_name', billingAddress?.data?.billing_last_name || '');
     data.append('billing_email', billingAddress?.data?.billing_email || '');
     data.append('billing_phone', billingAddress?.data?.billing_phone || '');
     data.append('billing_company', billingAddress?.data?.billing_company || '');
-    data.append('billing_address_1', billingAddress?.data?.billing_address || '');
-    data.append('billing_address_2', billingAddress?.data?.billing_address || '');
+    data.append('billing_address_1', billingAddress?.data?.billing_address || ''); // Use billing_address_1
+    data.append('billing_address_2', billingAddress?.data?.billing_address || ''); // Use billing_address_2
     data.append('billing_city', billingAddress?.data?.billing_city || '');
     data.append('billing_state', billingAddress?.data?.billing_state || '');
-    data.append('billing_zip', billingAddress?.data?.billing_postcode || '');
+    data.append('billing_zip', billingAddress?.data?.billing_postcode || ''); // Use billing_postcode
     data.append('billing_country', billingAddress?.data?.billing_country || '');
     data.append('total_amount', calculateTotal().toString() || '');
+  
+    console.log('Total Quantity:', totalQuantity);
+    console.log('dataaaaa', data);
+  
+    let config = {
+      method: 'post',
+      url: 'https://bad-gear.com/wp-json/payment_process/v1/payment',
+      headers: {
+        Authorization: `${tokenToUse}`,
+        'Content-Type': 'multipart/form-data',  // Set the Content-Type header
+      },
+    
+      data: data,
+    };
+  
+    try {
+      const response = await axios(config);
+      console.log('API Response:', response.data);
+      setShowModal(true);
+    } catch (error) {
+      console.log('API Error:', error);
+      // Handle error cases, e.g., show error message
+    } finally {
+      setLoading(false); // Ensure loading state is set to false in all cases
+    }
+  };
 
-let config = {
-  method: 'post',
-  maxBodyLength: Infinity,
-  url: 'https://bad-gear.com/wp-json/payment_process/v1/payment',
-  headers: { 
-    'Authorization': 'Sunil|1723008460|CBDi4PWtV8kEKOFuTAnx2AfLuOu48OSGwctDfojouHS|db00a7f66defc11f298f262b24307d1cfedd1b57f7dd6143b4dd622b299f4373', 
 
-  },
-  data : data
-};
-
-axios.request(config)
-.then((response) => {
-  console.log(JSON.stringify(response.data));
-  console.log("submitted")
-})
-.catch((error) => {
-  console.log(error);
-});
-
-};
 
   
   
@@ -761,6 +622,8 @@ axios.request(config)
           </TouchableOpacity>
         </View>
       )}
+
+
 
       <Modal
         visible={showModal}
