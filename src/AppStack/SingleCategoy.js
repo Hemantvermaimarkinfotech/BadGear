@@ -89,7 +89,7 @@ const SingleCategory = ({navigation,route}) => {
           console.log("Error fetching data:", response.data.success_msg);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.log('Error fetching data:', error);
       } finally {
         setLoading(false); 
       }

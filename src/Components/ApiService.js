@@ -14,16 +14,70 @@ const CatDATA = [
   // category data
 ];
 
-export const getNewArrivals = async (userToken, page = 1) => {
-  const itemsPerPage = 6;
-  const startIndex = (page - 1) * itemsPerPage;
+// export const getNewArrivals = async (userToken, page = 1) => {
+//   const itemsPerPage = 6;
+//   const startIndex = (page - 1) * itemsPerPage;
+//   try {
+//     const response = await axios.get(
+//       `${BASE_URL}new-arrivals/v1/newarrivals_home`,
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           Authorization: `Bearer ${userToken?.accessToken}`,
+//         },
+//         params: {
+//           offset: startIndex,
+//           per_page: itemsPerPage,
+//         },
+//       },
+//     );
+  
+//     return response.data.data; // Return the data
+    
+//   } catch (error) {
+//     console.log('Error fetching new arrivals:', error);
+//     throw error;
+//   }
+// };
+
+
+
+
+
+
+
+
+export const getNewArrivals = async (page = 1, itemsPerPage = 10) => {
   try {
     const response = await axios.get(
       `${BASE_URL}new-arrivals/v1/newarrivals_home`,
       {
+        params: {
+          page,
+          per_page: itemsPerPage,
+        },
+      },
+    );
+
+    return response.data.data; // Return the data
+    
+  } catch (error) {
+    console.log('Error fetching new arrivals:', error);
+    throw error;
+  }
+};
+
+
+
+export const getBestSelling = async (userToken, page = 1) => {
+  const itemsPerPage = 6;
+  const startIndex = (page - 1) * itemsPerPage;
+  try {
+    const response = await axios.get(
+      `${BASE_URL}bestselling/v1/best_selling_products`,
+      {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken?.accessToken}`,
         },
         params: {
           offset: startIndex,
@@ -39,7 +93,6 @@ export const getNewArrivals = async (userToken, page = 1) => {
     throw error;
   }
 };
-
 
 export const getCategory = async (userToken) => {
   try {

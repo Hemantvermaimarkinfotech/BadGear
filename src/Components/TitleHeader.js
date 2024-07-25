@@ -48,6 +48,7 @@ const TitleHeader = ({title,cartLenth}) => {
         height: 60,
         opacity: 1,
         justifyContent: 'center',
+      
       }}>
       <View style={styles.mainheader}>
         <View
@@ -70,7 +71,7 @@ const TitleHeader = ({title,cartLenth}) => {
         <View
           style={{
             flexDirection: 'row',
-            width: '30%',
+            width: '35%',
             justifyContent: 'center',
             alignItems: 'center',
           }}>
@@ -88,10 +89,9 @@ const TitleHeader = ({title,cartLenth}) => {
               source={require('../assets/Cart.png')}
               style={styles.headericon}
             />
-          <View style={{height:18,width:18,backgroundColor:"#F10C18",borderRadius:8,position:"absolute",top:-8,right:10,justifyContent:"center",alignItems:"center"}}>
-              {/* <Text style={{color:"#fff",fontSize:12}}>{userData?.cart_count}</Text> */}
+          {/* <View style={{height:18,width:18,backgroundColor:"#F10C18",borderRadius:8,position:"absolute",top:-8,right:10,justifyContent:"center",alignItems:"center"}}>
               <Text style={{color:"#fff",fontSize:12}}>0</Text>
-            </View>
+            </View> */}
           </TouchableOpacity>
         </View>
       </View>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
     tintColor: '#000',
-    marginHorizontal: 15,
+    marginHorizontal: 18,
     resizeMode: 'contain',
   },
 });

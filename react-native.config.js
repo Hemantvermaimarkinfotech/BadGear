@@ -3,7 +3,7 @@ module.exports = {
     ios: {},
     android: {},
   },
-  assets: ['./src/assets/fonts/Gilroy'],
+  assets: ['./src/assets/Fonts/'],
   dependencies: {
     'react-native-vector-icons': {
       platforms: {

@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     width:"90%",
     alignSelf:"center",
-    fontWeight:"600",
+    // fontWeight:"600",
     fontFamily:"Gilroy-Medium"
 
     

@@ -29,13 +29,13 @@ const imageWidth = screenWidth / 2.2;
 const aspectRatio = 16 / 25;
 
 const ProductDetailsPage = ({route, navigation}) => {
-  
   const {productId, productName, productDescription, productImg, productPrice} =
     route.params;
-  const [productDetails, setProductDetails] = useState();
-  const [selectedSize, setSelectedSize] = useState('M');
+
+  const [productDetails, setProductDetails] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const {userToken,setUserToken} = useContext(AuthContext);
+  const {userToken, setUserToken} = useContext(AuthContext);
 
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,7 +47,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [visibleReviews, setVisibleReviews] = useState(3);
   const [toastVisible, setToastVisible] = useState(false);
   const [userData, setUserData] = useState(null); // State for userData
-  console.log("useData",userData)
+  console.log('useData', userData);
   const [review, setReview] = useState();
 
   const isFocused = useIsFocused();
@@ -67,17 +67,16 @@ const ProductDetailsPage = ({route, navigation}) => {
         if (userData) {
           setUserData(userData); // Set userData state
         } else {
-    
           console.log('No user data found.');
         }
       } catch (error) {
         console.log('Error fetching data:', error);
       }
     };
-  
-    fetchUserData(); 
+
+    fetchUserData();
   }, []);
-  const capitalizeFirstLetter = (str) => {
+  const capitalizeFirstLetter = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
@@ -138,28 +137,24 @@ const ProductDetailsPage = ({route, navigation}) => {
     {label: 'Item 2', value: 'item2'},
     {label: 'Item 3', value: 'item3'},
   ];
-  // Inside your fetchProductDetails function
-  // const fetchProductDetails = async productId => {
-  //   try {
-  //     const response = await fetch(
-  //       `https://bad-gear.com/wp-json/product-detail-api/v1/product_detail?product_id=${productId}`,
-  //     );
+  const [currentPrice, setCurrentPrice] = useState(undefined);
 
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch product details');
-  //     }
+  // Update the state when productDetails changes
+  useEffect(() => {
+    if (productDetails?.price !== undefined) {
+      setCurrentPrice(productDetails.price);
+    }
+  }, [productDetails]);
 
-  //     const data = await response.json();
-  //     setProductDetails(data.data[0]);
-  //     const relatedProducts = data.data[0].related_products;
-  //     setRelatedProducts(relatedProducts);
-  //   } catch (error) {
-  //     console.log('Error fetching product details:', error);
-  //     setProductDetails(null);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching is done
-  //   }
-  // };
+  console.log('productDetailsprice', productDetails?.price);
+  console.log('current price', currentPrice);
+  // const [currentPrice, setCurrentPrice] = useState(productDetails?.price || 0);
+
+  // Function to handle quantity change
+  const handleQuantityChange = selectedQuantity => {
+    setSelectedQuantity(selectedQuantity);
+    setCurrentPrice(productDetails?.price * selectedQuantity || 0);
+  };
 
   const fetchProductDetails = async productId => {
     setLoading(true);
@@ -188,30 +183,59 @@ const ProductDetailsPage = ({route, navigation}) => {
   }, []);
 
   const addToCart = async productId => {
-    if (isDummyToken()) {
+    // Check if selectedSize is available in productDetails
+    if (
+      !productDetails ||
+      !productDetails.attributes ||
+      !productDetails.attributes.includes(selectedSize)
+    ) {
       Alert.alert(
-        'Please Login',
-        'You need to login to add products to Cart',
+        'Size Not Available',
+        'Selected size is not available for this product.',
         [
           {
-            text: 'Cancel',
-            style: 'cancel',
+            text: 'OK',
+            onPress: () => console.log('OK Pressed'),
           },
-          {
-            text: 'Login',
-            onPress: () => {
-              setUserToken(null);
-              AsyncStorage.removeItem('userData');
-              navigation.reset({
-                index: 4, // Index of the Login screen
-                routes: [{ name: 'Login' }],
-                
-              });
-              
-            },
-          },
-        ]
+        ],
+        {cancelable: false},
       );
+      return;
+    }
+
+    if (!selectedSize) {
+      Alert.alert(
+        'Size Not Selected',
+        'Please select a size before adding to cart.',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('OK Pressed'),
+          },
+        ],
+        {cancelable: false},
+      );
+      return;
+    }
+
+    if (isDummyToken()) {
+      Alert.alert('Please Login', 'You need to login to add products to Cart', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Login',
+          onPress: () => {
+            setUserToken(null);
+            AsyncStorage.removeItem('userData');
+            navigation.reset({
+              index: 4, // Index of the Login screen
+              routes: [{name: 'Login'}],
+            });
+          },
+        },
+      ]);
       return;
     }
 
@@ -222,8 +246,8 @@ const ProductDetailsPage = ({route, navigation}) => {
     formData.append('product_id', productId);
     formData.append('size', selectedSize);
     formData.append('quantity', selectedQuantity);
-    formData.append('price', productDetails?.price);
-
+    formData.append('price', currentPrice);
+    console.log('adddtocartttttt', formData);
     const tokenToUse =
       userToken && userToken.token ? userToken.token : userToken;
     setLoadingCart(true);
@@ -234,41 +258,46 @@ const ProductDetailsPage = ({route, navigation}) => {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data', // Set the Content-Type header for FormData
-            Authorization: `${tokenToUse}`, // Set Authorization header using userToken.token
+            'Content-Type': 'multipart/form-data',
+            Authorization: `${tokenToUse}`,
           },
         },
       );
 
-      // const userData = await AsyncStorage.getItem('userData');
-      // if (userData) {
-      //   const userDataObject = JSON.parse(userData);
-      //   const updatedUserData = { ...userDataObject, cart_count: userDataObject.cart_count + 1 };
-      //   await AsyncStorage.setItem('userData', JSON.stringify(updatedUserData));
-      // }
-
-      setToastVisible(true);
-      setTimeout(() => {
-        setToastVisible(false);
-      }, 3000);
-      
-    } catch (error) {
-      if (error.response) {
-        console.log('Error adding to cart:', error.response.status);
-        if (error.response.status === 403) {
-          console.log('Authorization error:', error.response.data);
-          alert('Please check your credentials.');
+      // Check if response indicates success or failure
+      if (response.status === 200) {
+        setToastVisible(true);
+        setTimeout(() => {
+          setToastVisible(false);
+        }, 3000);
+      } else {
+        // Handle error cases based on the response
+        if (response.status === 404) {
+          // Example: Size not available
+          Alert.alert(
+            'Not Added to Cart',
+            'Selected size is not available.',
+            [
+              {
+                text: 'OK',
+                onPress: () => console.log('OK Pressed'),
+              },
+            ],
+            {cancelable: false},
+          );
         } else {
-          console.log('Server Error:', error.response.data);
+          // Handle other error scenarios
+          console.log('Error adding to cart:', response.status);
           alert('Failed to add item to cart. Please try again later.');
         }
-      } 
+      }
+    } catch (error) {
+      console.log('Error adding to cart:', error);
+      alert('Failed to add item to cart. Please try again later.');
     } finally {
       setLoadingCart(false);
     }
   };
-
-
 
   const AddWishlist = async productId => {
     if (isDummyToken()) {
@@ -287,13 +316,11 @@ const ProductDetailsPage = ({route, navigation}) => {
               AsyncStorage.removeItem('userData');
               navigation.reset({
                 index: 4, // Index of the Login screen
-                routes: [{ name: 'Login' }],
-                
+                routes: [{name: 'Login'}],
               });
-              
             },
           },
-        ]
+        ],
       );
       return;
     }
@@ -341,10 +368,7 @@ const ProductDetailsPage = ({route, navigation}) => {
     }
   }, [isFocused]);
 
-  const renderRelatedProductItem = ({
-    item,
-    navigation,
-  }) => (
+  const renderRelatedProductItem = ({item, navigation}) => (
     <TouchableOpacity
       activeOpacity={0.92}
       style={[{width: imageWidth, marginTop: 10}]}
@@ -434,7 +458,7 @@ const ProductDetailsPage = ({route, navigation}) => {
             <Text style={styles.reviewTitle}>{item?.review}</Text>
             <View style={styles.reviewMeta}>
               <Text style={styles.reviewAuthor}>David</Text>
-           
+
               <Text style={styles.reviewDate}>{item?.date}</Text>
             </View>
           </View>
@@ -484,7 +508,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                 marginLeft: 20,
                 fontFamily: 'Gilroy-SemiBold',
               }}>
-              ${productDetails?.price}
+              ${currentPrice}
             </Text>
             <Text
               style={{
@@ -498,49 +522,57 @@ const ProductDetailsPage = ({route, navigation}) => {
             </Text>
           </View>
 
-         {/* Product Size */}
-<View style={{marginTop: 20}}>
-  <Text
-    style={{
-      color: '#000000',
-      fontSize: 18,
-      fontWeight: '700',
-      marginLeft: 20,
-      fontFamily: 'Gilroy-SemiBold',
-    }}>
-    Size:
-  </Text>
-  {productDetails?.attributes ? (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.productSize}>
-      {productDetails.attributes.split(' | ').map((size, index) => (
-        <TouchableOpacity
-          style={[
-            styles.sizebox,
-            selectedSize === size && styles.selectedSizebox,
-          ]}
-          key={index}
-          onPress={() =>
-            setSelectedSize(selectedSize === size ? null : size)
-          }>
-          <Text
-            style={[
-              styles.sizetext,
-              selectedSize === size && styles.selectedSizetext,
-            ]}>
-            {size}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  ) : (
-    <Text style={{marginLeft: 20, marginTop: 10,fontFamily:"Gilroy-Medium",fontSize:14,color:"red"}}>No sizes available</Text>
-  )}
-</View>
-{/* Product Size end */}
-
+          {/* Product Size */}
+          <View style={{marginTop: 20}}>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontWeight: '700',
+                marginLeft: 20,
+                fontFamily: 'Gilroy-SemiBold',
+              }}>
+              Size:
+            </Text>
+            {productDetails?.attributes ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.productSize}>
+                {productDetails.attributes.split(' | ').map((size, index) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.sizebox,
+                      selectedSize === size && styles.selectedSizebox,
+                    ]}
+                    key={index}
+                    onPress={() =>
+                      setSelectedSize(selectedSize === size ? null : size)
+                    }>
+                    <Text
+                      style={[
+                        styles.sizetext,
+                        selectedSize === size && styles.selectedSizetext,
+                      ]}>
+                      {size}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            ) : (
+              <Text
+                style={{
+                  marginLeft: 20,
+                  marginTop: 10,
+                  fontFamily: 'Gilroy-Medium',
+                  fontSize: 14,
+                  color: 'red',
+                }}>
+                No sizes available
+              </Text>
+            )}
+          </View>
+          {/* Product Size end */}
 
           {/* Product Qty */}
           <View style={{marginTop: 20}}>
@@ -556,13 +588,14 @@ const ProductDetailsPage = ({route, navigation}) => {
             <View style={styles.qty}>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => setSelectedQuantity(selectedQuantity - 1)}>
+                onPress={() => handleQuantityChange(selectedQuantity - 1)}
+                disabled={selectedQuantity <= 1}>
                 <Text style={styles.quantityButtonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.quantityText}>{selectedQuantity}</Text>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => setSelectedQuantity(selectedQuantity + 1)}>
+                onPress={() => handleQuantityChange(selectedQuantity + 1)}>
                 <Text style={styles.quantityButtonText}>+</Text>
               </TouchableOpacity>
             </View>
@@ -733,15 +766,11 @@ const ProductDetailsPage = ({route, navigation}) => {
               </TouchableOpacity>
             </View>
             <View>
-             
-
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={relatedProducts}
-                renderItem={(item) =>
-                  renderRelatedProductItem(item, navigation)
-                }
+                renderItem={item => renderRelatedProductItem(item, navigation)}
                 keyExtractor={item => item.id}
               />
             </View>
@@ -927,7 +956,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Gilroy-SemiBold',
   },
   productDescription: {
-    paddingBottom:20,
+    paddingBottom: 20,
     width: '90%',
     alignSelf: 'center',
     backgroundColor: '#FFFFFF',
@@ -1131,14 +1160,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Montserrat, SemiBold',
   },
-  // emptyView: {
-  //   borderBottomWidth: 0.2,
-  //   borderColor: lightGrey,
-  //   marginBottom: scale(16),
-  // },
-  // viewAll: {
-  //   fontSize: scale(15),
-  //   color: black,
-  //   textDecorationLine: 'underline',
-  // },
 });
