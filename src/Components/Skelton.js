@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
 
@@ -11,7 +13,7 @@ const Skeleton = ({
   children,
   marginBottom = 0,
   marginTop = 0,
-  marginLeft = 0, // Added marginLeft prop
+  marginLeft = 0,
 }) => {
   const [fadeAnim] = useState(new Animated.Value(0));
 

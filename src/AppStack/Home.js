@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, {useEffect, useContext, useState, useCallback} from 'react';
 import {
   View,
@@ -49,7 +51,6 @@ const Home = ({item}) => {
   const [banner, setBanner] = useState(null);
   const [categories, setCategories] = useState([]);
   const {userToken, setUserToken} = useContext(AuthContext);
-  console.log('usertokennnnnnnnnnnnn', userToken);
   const [userData, setUserData] = useState(null);
   const [Arrivals, setArrivals] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
@@ -792,7 +793,7 @@ const Home = ({item}) => {
                             marginLeft: 18,
                             fontFamily: 'Gilroy-SemiBold',
                           }}>
-                          {item?.price}
+                          ${item?.price}
                         </Text>
                       )}
                     </View>

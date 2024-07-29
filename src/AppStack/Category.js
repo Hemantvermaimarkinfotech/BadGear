@@ -1,3 +1,4 @@
+// #This code is written by Hemant Verma
 import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
@@ -16,11 +17,18 @@ import {AuthContext} from '../Components/AuthProvider';
 import he from  "he"
 
 
-//   This is renderCategoryitme
+
 const rendercategoryItem = ({ item,navigation }) => {
   return (
     <TouchableOpacity style={{ width: "50%", marginTop: 20 }}
-    
+    onPress={() =>
+      navigation.navigate('ProductDetails', {
+        productId: item.cat_id,
+        productName: item.cat_name,
+        productDescription: item.description,
+        productImg: item.cat_image,
+      })
+    }
     >
       <View style={styles.Catitem}>
       {item.cat_image && item.cat_image.trim() !== '' ? (
@@ -61,17 +69,16 @@ const Category = ({navigation}) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    // Fetch categories when component mounts
     const fetchCategories = async () => {
       try {
-        setLoading(true); // Set loading to true when fetching starts
+        setLoading(true); 
         const fetchedCategories = await getCategory(userToken);
         setCategories(fetchedCategories);
       } catch (error) {
         console.log('Error fetching categories:', error);
       }
       finally {
-        setLoading(false); // Set loading to false when fetching finishes
+        setLoading(false); 
       }
     };
 

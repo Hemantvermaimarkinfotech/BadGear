@@ -1,3 +1,4 @@
+// #This code is written by Hemant Verma
 
 import React from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
@@ -201,12 +202,12 @@ const BottomTabNav = () => (
   <Tab.Navigator
     initialRouteName="Home"
     screenOptions={{
-      tabBarActiveTintColor: '#F10C18', // Active tab color
-      tabBarInactiveTintColor: '#000000', // Inactive tab color
+      tabBarActiveTintColor: '#F10C18', 
+      tabBarInactiveTintColor: '#000000',
       tabBarStyle: {
-        backgroundColor: 'white', // Background color of the tab bar
-        height: 90, // Height of the tab bar
-        elevation: 5, // Elevation (shadow on Android)
+        backgroundColor: 'white', 
+        height: 90, 
+        elevation: 5, 
       },
       tabBarLabelStyle: {
         fontSize: 15,
@@ -232,9 +233,9 @@ const BottomTabNav = () => (
             <Text
               style={{
                 fontSize: 15,
-                fontWeight: '500',
                 marginTop: 4,
                 color: '#000000',
+                fontFamily:"Gilroy-SemiBold"
               }}>
               Home
             </Text>
@@ -242,14 +243,14 @@ const BottomTabNav = () => (
         ),
         tabBarLabel: () => null,
         headerStyle: {
-          height: 120, // Set the desired height value
+          height: 120,
           shadowColor: '#fff',
         },
         headerShown: false,
       }}
     />
 
-    <Tab.Screen
+    {/* <Tab.Screen
       name="Search"
       component={Search}
       options={{
@@ -282,8 +283,42 @@ const BottomTabNav = () => (
         },
         headerShown: false,
       }}
+    /> */}
+ <Tab.Screen
+      name="Category"
+      component={Category}
+      options={{
+        tabBarIcon: ({focused}) => (
+          <View style={{alignItems: 'center', justifyContent: 'center',}}>
+            <Image
+              source={require('../assets/categoryimg.png')}
+              style={{
+                height: 27,
+                width: 24,
+                resizeMode: 'contain',
+                tintColor: focused ? '#F10C18' : '#000000',
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: '500',
+                // marginTop: 5,
+                color: '#000000',
+                fontFamily:"Gilroy-SemiBold"
+              }}>
+              Categories
+            </Text>
+          </View>
+        ),
+        tabBarLabel: () => null,
+        headerStyle: {
+          height: 120, 
+          shadowColor: '#fff',
+        },
+        headerShown: false,
+      }}
     />
-
     <Tab.Screen
       name="Notification"
       component={NewArrival}
@@ -301,9 +336,9 @@ const BottomTabNav = () => (
             <Text
               style={{
                 fontSize: 15,
-                fontWeight: '500',
                 marginTop: 5,
                 color: '#000000',
+                fontFamily:"Gilroy-SemiBold"
               }}>
               New Arrivals
             </Text>
@@ -311,7 +346,7 @@ const BottomTabNav = () => (
         ),
         tabBarLabel: () => null,
         headerStyle: {
-          height: 120, // Set the desired height value
+          height: 120, 
           shadowColor: '#fff',
         },
         headerShown: false,
@@ -335,9 +370,9 @@ const BottomTabNav = () => (
             <Text
               style={{
                 fontSize: 15,
-                fontWeight: '500',
                 marginTop: 5,
                 color: '#000000',
+                fontFamily:"Gilroy-SemiBold"
               }}>
                 Settings
               </Text>

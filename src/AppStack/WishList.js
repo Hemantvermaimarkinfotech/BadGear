@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
@@ -23,7 +25,7 @@ const WishList = () => {
 
   const [wishlist, setWishList] = useState();
 
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false); 
   const {userToken} = useContext(AuthContext);
 
   const fetchData = () => {
@@ -42,7 +44,7 @@ const WishList = () => {
       .request(config)
       .then(response => {
         console.log('WishList Data found Successfully', response.data.data);
-        setWishList(response.data.data); // Assuming setWishList expects an array of objects
+        setWishList(response.data.data); 
       })
       .catch(error => {
         console.log(error);
@@ -94,9 +96,9 @@ const WishList = () => {
       <View style={styles.detailsContainer}>
         <Text style={styles.itemText}>{item?.name}</Text>
 
-        <Text style={styles.itemRate}>$ {item.price}</Text>
+        {/* <Text style={styles.itemRate}>$ {item.price}</Text> */}
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate("Cart")}>
           <Text style={styles.moveToCart}>Move to Cart</Text>
         </TouchableOpacity>
       </View>

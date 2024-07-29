@@ -1,14 +1,15 @@
+// #This code is written by Hemant Verma
+
 import React,{useEffect} from 'react';
 import { SafeAreaView, View, Image, StyleSheet } from 'react-native';
 
 const Splash = ({navigation}) => {
    useEffect(() => {
     const navigateAfterDelay = setTimeout(() => {
-      // Navigate to the Welcome screen
       navigation.navigate('Welcome');
-    }, 2000); // 2000 milliseconds delay
+    }, 2000); 
 
-    // Clean up the setTimeout when the component unmounts
+
     return () => clearTimeout(navigateAfterDelay);
   }, []);
   return (
@@ -46,8 +47,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: '60%', // Adjust as per your requirement
-    aspectRatio: 0.8, // Width:Height ratio of your logo image
+    width: '60%', 
+    aspectRatio: 0.8, 
   },
 });
 

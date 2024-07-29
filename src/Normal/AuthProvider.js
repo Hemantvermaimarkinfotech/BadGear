@@ -1,3 +1,4 @@
+// #This code is written by Hemant Verma
 import React, { useState, createContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -17,7 +18,6 @@ const AuthProvider = ({ children }) => {
      
       }
     } catch (error) {
-      // Error retrieving data
     }
   };
 

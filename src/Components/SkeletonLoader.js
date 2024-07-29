@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React from 'react';;
 const SkeletonLoader = ({ isLoading, children }) => {
   return (
@@ -9,7 +11,6 @@ const SkeletonLoader = ({ isLoading, children }) => {
       layout={[
         { key: 'skeleton1', width: '100%', height: 50, marginBottom: 10 },
         { key: 'skeleton2', width: '100%', height: 50, marginBottom: 10 },
-        // Add more skeleton layouts as needed
       ]}
     >
       {children}

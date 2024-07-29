@@ -210,7 +210,7 @@
 
 // export default Choice;
 
-
+// #This code is written by Hemant Verma
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, ActivityIndicator, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -300,7 +300,7 @@ const Choice = ({ navigation }) => {
 
   const handleNavigation = (screenName) => {
     if (screenName === '') {
-      setVideoSource(Watchvideo); // Set your video source here
+      setVideoSource(Watchvideo); 
       setModalVisible(true);
     } else {
       navigation.navigate(screenName);
@@ -319,7 +319,7 @@ const Choice = ({ navigation }) => {
             showsPagination={true}
             dot={<View style={styles.dot} />}
             activeDot={<View style={[styles.dot, styles.activeDot]} />}
-            paginationStyle={{ bottom: screenHeight * 0.01 }} // Adjust pagination position
+            paginationStyle={{ bottom: screenHeight * 0.01 }} 
           >
             {data.map(item => (
               <View key={item.id} style={styles.slide}>
@@ -350,7 +350,7 @@ const Choice = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Modal for video playback */}
+      
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={() => setModalVisible(false)}
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: screenHeight * 0.02,
-    marginBottom: screenHeight * 0.1, // Added marginBottom to ensure space for dots
+    marginBottom: screenHeight * 0.1, 
   },
   arrowContainer: {
     height: screenWidth * 0.09,

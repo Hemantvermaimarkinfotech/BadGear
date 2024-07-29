@@ -1,3 +1,4 @@
+// #This code is written by Hemant Verma
 import React, { useContext, useState } from 'react';
 import {
   View,
@@ -36,7 +37,6 @@ const SignUp = () => {
 
   
   const handleSignUp = async () => {
-    // Validate input fields
     if (!name.trim() || !email.trim() || !password.trim()) {
       Alert.alert('Alert', 'Please fill in all fields');
       return;
@@ -56,7 +56,6 @@ const SignUp = () => {
     formData.append('password', password);
   
     try {
-      // Send the signup request to the server
       const response = await axios.post(
         'https://bad-gear.com/wp-json/signup-api/v1/user_signup',
         formData,
@@ -70,8 +69,7 @@ const SignUp = () => {
   
       await AsyncStorage.setItem('userData', JSON.stringify(response.data));
   
-      // Set user token and ID
-      // setUserToken(response.data.token);
+
       setUserId(response.data?.user_id);
   
       // Navigate to Login screen only after successful signup
@@ -90,7 +88,7 @@ const SignUp = () => {
         Alert.alert('Unexpected Error', 'An unexpected error occurred. Please try again later.');
       }
     } finally {
-      setLoading(false); // Ensure loading state is set to false in case of any outcome
+      setLoading(false); 
     }
   };
   

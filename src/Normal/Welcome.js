@@ -1,3 +1,4 @@
+// #This code is written by Hemant Verma
 import React, { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,30 +9,26 @@ const dynamicFontSize = screenHeight * 0.029;
 
 const Welcome = ({ navigation }) => {
   const [isPaused, setIsPaused] = useState(false);
-  const [showVideo, setShowVideo] = useState(false); // State variable to manage video visibility
-  const videoRef = useRef(null);
+  const [showVideo, setShowVideo] = useState(false); 
 
   const playVideo = () => {
-    setShowVideo(true); // Show the video UI when the user presses the play button
+    setShowVideo(true); 
   };
 
   const onEnd = () => {
-    // Video ended, navigate to the next screen
     navigation.navigate('Choice');
   };
 
   const handleSkip = () => {
-    // Pause the video if it's currently playing
     if (!isPaused && videoRef.current && videoRef.current.pause) {
       videoRef.current.pause();
     }
-    // Navigate to the next screen
     navigation.navigate('Choice');
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {!showVideo ? ( // Render UI without video if showVideo is false
+      {!showVideo ? ( 
         <ImageBackground source={require('../assets/tracter3x.png')} style={styles.backgroundImage}>
           <View style={styles.overlay}>
             <View style={styles.header}>
@@ -43,7 +40,6 @@ const Welcome = ({ navigation }) => {
               </Text>
             </View>
             <TouchableOpacity onPress={playVideo} style={styles.videoContainer}>
-              {/* Show play button */}
               <Image
                 source={require('../assets/playbutton.png')}
                 style={styles.playButton}
@@ -68,8 +64,8 @@ const Welcome = ({ navigation }) => {
             resizeMode="stretch"
             paused={isPaused}
             onEnd={onEnd}
-            onError={(error) => console.log('Video Error: ', error)} // Add error handling
-            controls={false} // Disables video controls
+            onError={(error) => console.log('Video Error: ', error)} 
+            controls={false} 
           />
           {/* Skip button */}
           <TouchableOpacity onPress={handleSkip} style={[styles.skipButton,{justifyContent:"center",alignItems:"center",alignSelf:"center"}]}>
@@ -104,13 +100,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 1)', // Adding white background with some transparency
+    backgroundColor: 'rgba(255, 255, 255, 1)', 
     paddingVertical: 20,
     paddingHorizontal: 15,
   },
   welcomeText: {
     fontSize: dynamicFontSize,
-    color: '#000000', // Changing text color to black for better readability
+    color: '#000000', 
     lineHeight: dynamicFontSize * 1.7,
     textAlign: 'center',
     fontFamily: "Gilroy-SemiBold",
@@ -119,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative', // Add relative positioning
+    position: 'relative',
   },
   playButton: {
     position: 'absolute',
@@ -139,11 +135,11 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    bottom: screenHeight * 0.03, // Adjust the vertical position according to screen height
+    bottom: screenHeight * 0.03, 
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingVertical: screenHeight * 0.01, // Adjust padding according to screen height
-    paddingHorizontal: screenWidth * 0.04, // Adjust padding according to screen width
-    borderRadius: screenWidth * 0.03, // Adjust border radius according to screen width
+    paddingVertical: screenHeight * 0.01,
+    paddingHorizontal: screenWidth * 0.04,
+    borderRadius: screenWidth * 0.03, 
  
   },
   skipText: {

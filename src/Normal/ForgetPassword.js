@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, { useState,useContext } from 'react';
 import {
   View,
@@ -51,7 +53,7 @@ const ForgotPassword = ({navigation}) => {
       console.log(error);
     })
     .finally(() => {
-      setLoading(false); // Set loading to false after request completes
+      setLoading(false); 
     });
 };
 

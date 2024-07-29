@@ -794,6 +794,8 @@ const styles = StyleSheet.create({
     
   },
   textform:{
-    color: '#000000',fontSize:15 ,justifyContent:"center"
+    color: '#000000',
+    fontSize:15,
+    justifyContent:"center"
   }
 });

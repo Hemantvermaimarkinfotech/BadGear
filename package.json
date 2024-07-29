@@ -20,6 +20,7 @@
     "he": "^1.2.0",
     "install": "^0.13.0",
     "npm": "^10.5.2",
+    "php-serialize": "^5.0.1",
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-axios": "^0.17.1",
@@ -46,6 +47,7 @@
     "react-native-toast-notifications": "^3.4.0",
     "react-native-vector-icons": "^10.1.0",
     "react-native-video": "^5.2.1",
+    "react-native-virtualized-view": "^1.0.0",
     "uninstall": "^0.0.0"
   },
   "devDependencies": {

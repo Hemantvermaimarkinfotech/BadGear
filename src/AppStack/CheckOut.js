@@ -27,8 +27,8 @@ import {getProductDetails} from '../Components/ApiService';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
-let modalHeight = screenHeight - 90; // Adjust as needed based on your layout
-let modalWidth = screenWidth - 40; // Adjust as needed based on your layout
+let modalHeight = screenHeight - 90; 
+let modalWidth = screenWidth - 40; 
 
 // Adjust modal height for medium and large devices
 if (screenWidth > 360) {
@@ -39,9 +39,10 @@ const Checkout = ({navigation, route}) => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitloading, setsubmitLoading] = useState(false);
-  const [billingAddress, setBillingAddress] = useState(null); // State for storing billing address
+  const [billingAddress, setBillingAddress] = useState(null); 
   const [shippingAddress, setShippingAddress] = useState(null);
   const [cartItems, setCartItems] = useState([]);
+  console.log("checkoutcartitmes",cartItems)
   const [pageloading, setPageloading] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
 
@@ -106,11 +107,12 @@ const Checkout = ({navigation, route}) => {
       } catch (error) {
         console.log('Error fetching addresses:', error);
       } finally {
-        setPageloading(false); // Set loading to false after data fetching completes
+        setPageloading(false);
       }
     }
     getAddressData();
   }, []);
+
 
   const order = [
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
@@ -133,9 +135,8 @@ const Checkout = ({navigation, route}) => {
   };
 
   const continueShopping = () => {
-    // Close the modal and navigate to home screen
     setShowModal(false);
-    navigation.navigate('BottomTab'); // Navigate to your home screen route
+    navigation.navigate('BottomTab'); 
   };
 
   const getCart = () => {
@@ -261,10 +262,12 @@ const Checkout = ({navigation, route}) => {
   //   }
   // };
 
+
+
   const handleOrderSubmission = async () => {
     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
   
-    // Check for required fields and handle validation
+    // Form validation
     const requiredFields = [
       productIdsString,
       totalQuantity.toString(),
@@ -280,10 +283,10 @@ const Checkout = ({navigation, route}) => {
       billingAddress?.data?.billing_email,
       billingAddress?.data?.billing_phone,
       billingAddress?.data?.billing_company,
-      billingAddress?.data?.billing_address, // Use billing_address_1
+      billingAddress?.data?.billing_address, 
       billingAddress?.data?.billing_city,
       billingAddress?.data?.billing_state,
-      billingAddress?.data?.billing_postcode, // Use billing_postcode
+      billingAddress?.data?.billing_postcode, 
       billingAddress?.data?.billing_country,
       calculateTotal().toString(),
     ];
@@ -292,18 +295,18 @@ const Checkout = ({navigation, route}) => {
   
     if (!isFormValid) {
       console.log('Please fill all required fields.');
-      setLoading(false); // Ensure loading is stopped if form is invalid
-      return; // Stop execution if form is invalid
+      setLoading(false); 
+      return; 
     }
   
     setLoading(true);
-    console.log('tokenuse', tokenToUse);
+  
     let data = new FormData();
   
     // Append fields to FormData
     data.append('product_ids', productIdsString || '');
     data.append('quantities', totalQuantity.toString() || '');
-    data.append('product_price', productprice || ''); // Ensure productprice is a comma-separated string
+    data.append('product_price', productprice || '');
     data.append('card_holder_name', paymentDetails?.cardName || '');
     data.append('customer_email', billingAddress?.data?.billing_email || '');
     data.append('item_name', productNamesString || '');
@@ -315,42 +318,43 @@ const Checkout = ({navigation, route}) => {
     data.append('billing_email', billingAddress?.data?.billing_email || '');
     data.append('billing_phone', billingAddress?.data?.billing_phone || '');
     data.append('billing_company', billingAddress?.data?.billing_company || '');
-    data.append('billing_address_1', billingAddress?.data?.billing_address || ''); // Use billing_address_1
-    data.append('billing_address_2', billingAddress?.data?.billing_address || ''); // Use billing_address_2
+    data.append('billing_address_1', billingAddress?.data?.billing_address || '');
+    data.append('billing_address_2', billingAddress?.data?.billing_address || '');
     data.append('billing_city', billingAddress?.data?.billing_city || '');
     data.append('billing_state', billingAddress?.data?.billing_state || '');
-    data.append('billing_zip', billingAddress?.data?.billing_postcode || ''); // Use billing_postcode
+    data.append('billing_zip', billingAddress?.data?.billing_postcode || '');
     data.append('billing_country', billingAddress?.data?.billing_country || '');
     data.append('total_amount', calculateTotal().toString() || '');
   
-    console.log('Total Quantity:', totalQuantity);
-    console.log('dataaaaa', data);
+    console.log('FormData:', data);
   
-    let config = {
-      method: 'post',
-      url: 'https://bad-gear.com/wp-json/payment_process/v1/payment',
-      headers: {
-        Authorization: `${tokenToUse}`,
-        'Content-Type': 'multipart/form-data',  // Set the Content-Type header
-      },
-    
-      data: data,
-    };
-  
+    // Fetch request
     try {
-      const response = await axios(config);
-      console.log('API Response:', response.data);
+      const response = await fetch('https://bad-gear.com/wp-json/payment_process/v1/payment', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${tokenToUse}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: data,
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+  
+      const responseData = await response?.data;
+      console.log('API Response:', responseData);
       setShowModal(true);
     } catch (error) {
-      console.log('API Error:', error);
-      // Handle error cases, e.g., show error message
+      console.error('API Error:', error.message);
     } finally {
-      setLoading(false); // Ensure loading state is set to false in all cases
+      setLoading(false);
     }
   };
-
-
-
+  
+  
+  
   
   
   const toggleModal = () => {

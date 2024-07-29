@@ -1,3 +1,4 @@
+// #This code is written by Hemant Verma
 import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, Image, StyleSheet,SafeAreaView,TouchableOpacity,Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -78,7 +79,7 @@ const updateProfile = async () => {
         <TextInput 
               style={styles.textInput} 
               placeholder="Enter your full name"
-              placeholderTextColor="#999999" // Change placeholder color
+              placeholderTextColor="#999999" 
               value={name}
               onChangeText={(text)=>setName()}
             />
@@ -89,7 +90,7 @@ const updateProfile = async () => {
         <TextInput 
               style={styles.textInput} 
               placeholder="Example@gmail.com"
-              placeholderTextColor="#999999" // Change placeholder color
+              placeholderTextColor="#999999" 
               value={email}
               onChangeText={(text)=>setEmail()}
             />

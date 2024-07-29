@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
@@ -15,7 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {AuthContext} from '../Components/AuthProvider';
 import axios from 'react-native-axios';
-import {useIsFocused} from '@react-navigation/native'; // Import useIsFocused hook
+import {useIsFocused} from '@react-navigation/native'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // Dummy JSON data
 
@@ -29,7 +31,7 @@ const DeliveryAddress = ({navigation}) => {
   const [selectedShipping, setSelectedShipping] = useState(false);
 
   const [loading, setLoading] = useState(true);
-  const isFocused = useIsFocused(); // useIsFocused hook to track screen focus
+  const isFocused = useIsFocused(); 
   const [selectedAddress, setselectedAddress] = useState('billingaddress');
 
   const handleBillingPress = addressId => {
@@ -37,7 +39,7 @@ const DeliveryAddress = ({navigation}) => {
   };
 
   const handleShippingPress = () => {
-    setSelectedShipping(!selectedShipping); // Toggle selectedShipping state
+    setSelectedShipping(!selectedShipping);
   };
 
   const billingaddress = `${billling?.billing_address},${billling?.billing_city},${billling?.billing_company},${billling?.billing_country},${billling?.billing_last_name},${billling?.billing_first_name}, 

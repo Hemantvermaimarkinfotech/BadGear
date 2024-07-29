@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
@@ -27,22 +29,19 @@ const Cart = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [value, setValue] = useState(null);
   const [country, setCountry] = useState('1');
-  const [selectedCartItem, setSelectedCartItem] = useState(null); // State to hold selected cart item's data
-  const {userToken} = useContext(AuthContext);
+  const [selectedCartItem, setSelectedCartItem] = useState(null); 
+  const { userToken } = useContext(AuthContext);
   const [cartLength, setCartLength] = useState(0);
-  console.log("cartlenthh",cartLength)
 
+  const data = [
+    { label: 'X', value: 'X' },
+    { label: 'M', value: 'M' },
+    { label: 'L', value: 'L' },
+    { label: 'XL', value: 'XL' },
+  ];
   const goBack = () => {
     navigation.goBack();
   };
-
-  const data = [
-    {label: 'X', value: '1'},
-    {label: 'M', value: '2'},
-    {label: 'L', value: '3'},
-    {label: 'XL', value: '4'},
-  ];
-
 
   const updateQuantity = async (item, quantityChange) => {
     const updatedCartItems = cartItems.map(cartItem => {
@@ -53,11 +52,7 @@ const Cart = () => {
       return cartItem;
     });
     setCartItems(updatedCartItems);
-  
-    // Update cart length
     setCartLength(updatedCartItems.length);
-  
-    // Update AsyncStorage with the new cartItems
     try {
       await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     } catch (error) {
@@ -67,97 +62,90 @@ const Cart = () => {
   
 
 
-  const renderCartItem = ({item}) => (
-    <View>
-      <View style={styles.cartItem}>
-        <View style={styles.imageContainer}>
-          {item?.product_img ? (
-            <Image source={{uri: item.product_img}} style={styles.image} />
-          ) : (
-            <Text style={{color: '#000000'}}>No Image Available</Text>
-          )}
-        </View>
-        <View style={styles.detailsContainer}>
-          <Text style={styles.itemText}>Kenworth Red Skull Hoodie</Text>
-          {/* Updated to show dynamic price */}
-          <Text style={styles.itemRate}>
-            ${(item.price * item.quantity).toFixed(2)}
-          </Text>
-          <View style={styles.qtyContainer}>
-            <View style={styles.qtySection}>
-              <TouchableOpacity
-                style={styles.qtybtn}
-                onPress={() => updateQuantity(item, -1)}>
-                <Text style={styles.btntext}>-</Text>
-              </TouchableOpacity>
-            
-             <Text style={styles.quantityText}>{item.quantity}</Text>
-              <TouchableOpacity
-                style={styles.qtybtn}
-                onPress={() =>{ updateQuantity(item, 1)
-                 } }>
-                <Text style={styles.btntext}>+</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={[styles.sizeSection]}>
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: '#000000',
-                  fontFamily: 'Gilroy-SemiBold',
-                }}>
-                Size:
-              </Text>
-              <SelectCountry
-                style={[styles.dropdown, {}]}
-                selectedTextStyle={styles.selectedTextStyle}
-                placeholderStyle={styles.placeholderStyle}
-                imageStyle={styles.imageStyle}
-                iconStyle={styles.iconStyle}
-                maxHeight={200}
-                value={country}
-                data={data}
-                valueField="value"
-                labelField="label"
-                imageField="image"
-                placeholder="size"
-                searchPlaceholder="Search..."
-                onChange={e => {
-                  setCountry(e.value);
-                }}
-                showVerticalScrollIndicator={false}
-              />
-            </View>
+
+const renderCartItem = ({ item }) => (
+  <View>
+    <View style={styles.cartItem}>
+      <View style={styles.imageContainer}>
+        {item?.product_img ? (
+          <Image source={{ uri: item.product_img }} style={styles.image} />
+        ) : (
+          <Text style={{ color: '#000000' }}>No Image Available</Text>
+        )}
+      </View>
+      <View style={styles.detailsContainer}>
+        <Text style={styles.itemText}>{item.product_name}</Text>
+        <Text style={styles.itemRate}>
+          ${(item.price * item.quantity).toFixed(2)}
+        </Text>
+        <View style={styles.qtyContainer}>
+          <View style={styles.qtySection}>
+            <TouchableOpacity
+              style={styles.qtybtn}
+              onPress={() => updateQuantity(item, -1)}>
+              <Text style={styles.btntext}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.quantityText}>{item.quantity}</Text>
+            <TouchableOpacity
+              style={styles.qtybtn}
+              onPress={() => updateQuantity(item, 1)}>
+              <Text style={styles.btntext}>+</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.sizeSection}>
+            <Text style={styles.sizeLabel}>Size:</Text>
+            <SelectCountry
+              style={styles.dropdown}
+              selectedTextStyle={styles.selectedTextStyle}
+              placeholderStyle={styles.placeholderStyle}
+              imageStyle={styles.imageStyle}
+              iconStyle={styles.iconStyle}
+              maxHeight={200}
+              value={item.size} 
+              data={data}
+              valueField="value"
+              labelField="label"
+              imageField="image"
+              placeholder="Select Size"
+              searchPlaceholder="Search..."
+              onChange={e => {
+                const newCartItems = cartItems.map(cartItem =>
+                  cartItem.product_id === item.product_id
+                    ? { ...cartItem, size: e.value }
+                    : cartItem
+                );
+                setCartItems(newCartItems);
+              }}
+              showVerticalScrollIndicator={false}
+            />
           </View>
         </View>
-       
-
-<TouchableOpacity
-      style={styles.closeButton}
-      onPress={() => {
-        Alert.alert(
-          'Delete Item',
-          'Are you sure you want to delete this item?',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log(item.product_id);
-                DeleteCart(item.product_id);
-              },
-            },
-          ],
-          { cancelable: true },
-        );
-      }}>
-      <Text style={styles.closeButtonText}>X</Text>
-      {loading && <ActivityIndicator />} 
-    </TouchableOpacity>
       </View>
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => {
+          Alert.alert(
+            'Delete Item',
+            'Are you sure you want to delete this item?',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'OK',
+                onPress: () => {
+                  console.log(item.product_id);
+                  DeleteCart(item.product_id);
+                },
+              },
+            ],
+            { cancelable: true }
+          );
+        }}>
+        <Text style={styles.closeButtonText}>X</Text>
+        {loading && <ActivityIndicator />}
+      </TouchableOpacity>
     </View>
-  );
-
+  </View>
+);
 
   const DeleteCart = async (productId) => {
     setLoading(true)
@@ -190,15 +178,14 @@ const Cart = () => {
     } catch (error) {
       console.log('Error deleting Cart Item:', error);
     } finally {
-      setLoading(false); // Update loading state here
+      setLoading(false); 
     }
   };
   
 
   const getCartItems = async () => {
-     
-    setLoading(true); // Set loading to true when fetching cart items
-  
+    setLoading(true);
+
     const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     let config = {
       method: 'get',
@@ -207,34 +194,25 @@ const Cart = () => {
         Authorization: `${tokenToUse}`,
       },
     };
-  
+
     try {
       const response = await axios.request(config);
       console.log(JSON.stringify(response.data));
-  
+
       if (response.data.status === 'success') {
         const itemsWithQuantity = response.data.data.map((item) => ({
           ...item,
-          quantity: 1, // Default quantity when fetching items
         }));
         setCartItems(itemsWithQuantity);
-  
-        // Calculate total amount
+
         const totalAmount = itemsWithQuantity.reduce(
           (total, item) => total + item.price * item.quantity,
           0
         ).toFixed(2);
-  
-        // Store cart items and total amount in AsyncStorage
-        await AsyncStorage.setItem(
-          'cartItems',
-          JSON.stringify(itemsWithQuantity)
-        );
+
+        await AsyncStorage.setItem('cartItems', JSON.stringify(itemsWithQuantity));
         await AsyncStorage.setItem('totalAmount', totalAmount);
-        await AsyncStorage.setItem(
-          'cartItemsprice',
-          JSON.stringify(itemsWithQuantity)
-        );
+        await AsyncStorage.setItem('cartItemsprice', JSON.stringify(itemsWithQuantity));
         setCartLength(itemsWithQuantity.length);
       } else {
         console.log('Error: Unexpected response format:', response);
@@ -242,15 +220,14 @@ const Cart = () => {
     } catch (error) {
       console.log('Error fetching Cart Items:', error);
     } finally {
-      setLoading(false); // Always set loading to false when fetch operation completes
+      setLoading(false);
     }
   };
-  
-  
 
   useEffect(() => {
     getCartItems();
   }, []);
+  
 
 
 
@@ -262,12 +239,12 @@ const getTotalAmount = () => {
   }
 
   const total = cartItems.reduce((total, item) => {
-    const itemPrice = parseFloat(item.price) || 0; // Parse price to float
-    const itemQuantity = parseInt(item.quantity, 10) || 0; // Parse quantity to integer
+    const itemPrice = parseFloat(item.price) || 0; 
+    const itemQuantity = parseInt(item.quantity, 10) || 0; 
     return total + (itemPrice * itemQuantity);
   }, 0);
 
-  return total.toFixed(2); // Format total to 2 decimal places
+  return total.toFixed(2); 
 };
 
 
@@ -298,6 +275,7 @@ const getTotalAmount = () => {
                 </Text>
                 <Text style={styles.totalAmountText}>
                   ${getTotalAmount()}
+                  
                 </Text>
               </View>
 

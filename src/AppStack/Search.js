@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, Text, Image, FlatList, Dimensions ,ActivityIndicator} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -26,11 +28,11 @@ const Search = () => {
     console.log("hello");
     setLoading(true);
     fetch(`https://bad-gear.com/wp-json/search-api/v1/search?search=${searchQuery}`)
-      .then(response => response.text()) // Change to .text() to see the raw response
+      .then(response => response.text()) 
       .then(text => {
         try {
-          const data = JSON.parse(text); // Try parsing the response as JSON
-          console.log('Parsed data:', data); // Log the parsed data
+          const data = JSON.parse(text); 
+          console.log('Parsed data:', data); 
           if (data.status === 'success') {
             setSearchResults(data.data);
           } else {
@@ -38,7 +40,7 @@ const Search = () => {
           }
         } catch (error) {
           console.log('Error parsing JSON:', error);
-          console.log('Raw response:', text); // Log the raw response for debugging
+          console.log('Raw response:', text); 
         }
       })
       .catch(error => {
@@ -62,7 +64,7 @@ const Search = () => {
       })
     }>
       <View style={styles.Catitem}>
-        {loading ? ( // Check if loading
+        {loading ? ( 
           <ShimmerPlaceholder
             style={styles.Catimage}
             duration={1000} 
@@ -217,7 +219,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-    paddingBottom: 60, // Adjust according to button height
+    paddingBottom: 60, 
   },
   Catitem: {
     margin: 10,

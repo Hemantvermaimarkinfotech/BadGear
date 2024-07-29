@@ -1,5 +1,5 @@
 // apiService.js
-
+// #This code is written by Hemant Verma
 import axios from "react-native-axios";
 
 const BASE_URL = "https://bad-gear.com/wp-json/";
@@ -86,7 +86,7 @@ export const getBestSelling = async (userToken, page = 1) => {
       },
     );
   
-    return response.data.data; // Return the data
+    return response.data.data; 
     
   } catch (error) {
     console.log('Error fetching new arrivals:', error);
@@ -101,13 +101,12 @@ export const getCategory = async (userToken) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken?.accessToken}`, // Include token in header
+          Authorization: `Bearer ${userToken?.accessToken}`, 
         },
       }
     );
     const categoryData = response.data.data.map((item) => {
      
-      // Check if item.cat_image is empty
       if (!item.cat_image.trim()) {
         const dummyData = CatDATA.find((cat) => cat.id === item.cat_id.toString());
         if (dummyData) {
@@ -120,7 +119,7 @@ export const getCategory = async (userToken) => {
       return item;
     });
 
-    return categoryData; // Return the modified category data
+    return categoryData; 
   } catch (error) {
     console.log(error?.response, 'error');
     throw error;
@@ -155,9 +154,9 @@ export const getWishList = async () => {
         },
       },
     );
-    const responseData = response.data; // Extract the data from the response
+    const responseData = response.data; 
     // console.log('WishList data:', responseData); // Log the data to the console
-    return responseData; // Return the data
+    return responseData; 
   } catch (error) {
     console.log('Error fetching WishList:', error);
     throw error;
@@ -176,7 +175,7 @@ export const getProductDetails = async (productId) => {
         },
       },
     );
-    return response.data; // Return the data
+    return response.data; 
   
   } catch (error) {
     console.log('Error fetching product details:', error);
@@ -203,7 +202,7 @@ export const AddCart = async (productId, size, quantity, price) => {
       }
     );
     console.log("add to cart", response.data?.successmsg);
-    return response.data?.successmsg; // Return the success message
+    return response.data?.successmsg; 
   } catch (error) {
     console.log('Error adding product to cart:', error);
     throw error;

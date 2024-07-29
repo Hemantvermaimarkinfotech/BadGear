@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
@@ -6,7 +8,6 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  ScrollView,
   FlatList,
   ActivityIndicator,
   Dimensions,
@@ -23,6 +24,7 @@ import {AirbnbRating} from 'react-native-ratings';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useToast, ToastProvider} from 'react-native-toast-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ScrollView } from 'react-native-virtualized-view';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
@@ -46,7 +48,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [visibleReviews, setVisibleReviews] = useState(3);
   const [toastVisible, setToastVisible] = useState(false);
-  const [userData, setUserData] = useState(null); // State for userData
+  const [userData, setUserData] = useState(null); 
   console.log('useData', userData);
   const [review, setReview] = useState();
 
@@ -55,10 +57,10 @@ const ProductDetailsPage = ({route, navigation}) => {
   const sumOfRatings =
     review?.data.reduce((accumulator, currentValue) => {
       return accumulator + parseInt(currentValue.rating);
-    }, 0) || 0; // Ensure a default value of 0 if review.data is undefined or empty
+    }, 0) || 0; 
 
-  const averageRating = sumOfRatings / (review?.data.length || 1); // Use || 1 to prevent division by zero
-  const roundedAverage = averageRating.toFixed(2); // Round to 2 decimal
+  const averageRating = sumOfRatings / (review?.data.length || 1); 
+  const roundedAverage = averageRating.toFixed(2); 
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -139,7 +141,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   ];
   const [currentPrice, setCurrentPrice] = useState(undefined);
 
-  // Update the state when productDetails changes
+
   useEffect(() => {
     if (productDetails?.price !== undefined) {
       setCurrentPrice(productDetails.price);
@@ -150,7 +152,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   console.log('current price', currentPrice);
   // const [currentPrice, setCurrentPrice] = useState(productDetails?.price || 0);
 
-  // Function to handle quantity change
+
   const handleQuantityChange = selectedQuantity => {
     setSelectedQuantity(selectedQuantity);
     setCurrentPrice(productDetails?.price * selectedQuantity || 0);
@@ -183,7 +185,6 @@ const ProductDetailsPage = ({route, navigation}) => {
   }, []);
 
   const addToCart = async productId => {
-    // Check if selectedSize is available in productDetails
     if (
       !productDetails ||
       !productDetails.attributes ||
@@ -230,7 +231,7 @@ const ProductDetailsPage = ({route, navigation}) => {
             setUserToken(null);
             AsyncStorage.removeItem('userData');
             navigation.reset({
-              index: 4, // Index of the Login screen
+              index: 4, 
               routes: [{name: 'Login'}],
             });
           },
@@ -239,9 +240,6 @@ const ProductDetailsPage = ({route, navigation}) => {
       return;
     }
 
-    console.log('productId:', productId);
-
-    // Create a FormData object to send as the request body
     let formData = new FormData();
     formData.append('product_id', productId);
     formData.append('size', selectedSize);
@@ -252,7 +250,6 @@ const ProductDetailsPage = ({route, navigation}) => {
       userToken && userToken.token ? userToken.token : userToken;
     setLoadingCart(true);
     try {
-      // Make POST request to the API endpoint
       const response = await axios.post(
         'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
         formData,
@@ -523,7 +520,7 @@ const ProductDetailsPage = ({route, navigation}) => {
           </View>
 
           {/* Product Size */}
-          <View style={{marginTop: 20}}>
+          {/* <View style={{marginTop: 20}}>
             <Text
               style={{
                 color: '#000000',
@@ -571,7 +568,57 @@ const ProductDetailsPage = ({route, navigation}) => {
                 No sizes available
               </Text>
             )}
-          </View>
+          </View> */}
+            <View style={{ marginTop: 20 }}>
+      <Text
+        style={{
+          color: '#000000',
+          fontSize: 18,
+          fontWeight: '700',
+          marginLeft: 20,
+          fontFamily: 'Gilroy-SemiBold',
+        }}>
+        Size:
+      </Text>
+<View style={{paddingHorizontal:15}}>
+{productDetails?.attributes ? (
+        <FlatList
+          data={productDetails.attributes.split(' | ')}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.productSize}
+          renderItem={({ item: size }) => (
+            <TouchableOpacity
+              style={[
+                styles.sizebox,
+                selectedSize === size && styles.selectedSizebox,
+              ]}
+              onPress={() => setSelectedSize(selectedSize === size ? null : size)}>
+              <Text
+                style={[
+                  styles.sizetext,
+                  selectedSize === size && styles.selectedSizetext,
+                ]}>
+                {size}
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
+      ) : (
+        <Text
+          style={{
+            marginLeft: 5,
+            marginTop: 10,
+            fontFamily: 'Gilroy-Medium',
+            fontSize: 15,
+            color: 'red',
+          }}>
+          No sizes available
+        </Text>
+      )}
+</View>
+    </View>
           {/* Product Size end */}
 
           {/* Product Qty */}
@@ -761,7 +808,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                     textDecorationLine: 'underline',
                     fontFamily: 'Gilroy-SemiBold',
                   }}>
-                  View All
+                
                 </Text>
               </TouchableOpacity>
             </View>
@@ -844,7 +891,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                   renderItem={renderItem}
                   keyExtractor={(item, index) => index.toString()}
                 />
-                {!showAllReviews && ( // Render the 'Show All' button only if showAll is false
+                {!showAllReviews && ( 
                   <Button
                     title="Show All"
                     color={'#F10C18'}
@@ -1045,11 +1092,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   selectedSizebox: {
-    backgroundColor: '#F10C18', // Background color for selected size
-    borderColor: '#F10C18', // Border color for selected size
+    backgroundColor: '#F10C18',
+    borderColor: '#F10C18',
   },
   selectedSizetext: {
-    color: '#FFFFFF', // Text color for selected size
+    color: '#FFFFFF', 
   },
   Arrivelitem: {
     marginLeft: 10,

@@ -1,4 +1,4 @@
-
+// #This code is written by Hemant Verma
 import React, { useState, createContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -31,7 +31,7 @@ const AuthProvider = ({ children }) => {
       if (storedCartItems) {
         const parsedCartItems = JSON.parse(storedCartItems);
         setCartItems(parsedCartItems);
-        setCartLength(parsedCartItems.length); // Update cartLength based on cartItems length
+        setCartLength(parsedCartItems.length); 
       }
     } catch (error) {
       console.log('Error fetching cart items from AsyncStorage:', error);
@@ -55,8 +55,8 @@ const AuthProvider = ({ children }) => {
   };
  // Function to handle skip action
  const skipLogin = () => {
-  setUserToken('dummy-token'); // Set a dummy token to indicate skip
-  setUserId('dummy-id'); // Set a dummy ID to indicate skip
+  setUserToken('dummy-token');
+  setUserId('dummy-id'); 
 };
   return (
     <AuthContext.Provider
@@ -65,7 +65,7 @@ const AuthProvider = ({ children }) => {
         userToken,
         setUserToken,
         cartItems,
-        setCartItems: updateCartItems, // Expose updateCartItems as setCartItems
+        setCartItems: updateCartItems, 
         cartLength,
         setCartLength,
         setUserId,

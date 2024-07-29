@@ -1,3 +1,5 @@
+// #This code is written by Hemant Verma
+
 import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
@@ -38,7 +40,6 @@ const Setting = () => {
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          // shared with activity type of result.activityType
         } else {
           // shared
         }
@@ -54,7 +55,6 @@ const Setting = () => {
   
   const getProfile = async () => {
     setLoading(true);
-    // const tokenToUse = isDummyToken() ? 'dummy-token' : userToken?.token; // Adjust how you fetch the token based on your logic
     const tokenToUse = isDummyToken() ? 'dummy-token' : (userToken && userToken.token ? userToken.token : userToken);
 
     try {
@@ -73,9 +73,8 @@ const Setting = () => {
       setProfileData(responseData);
     } catch (error) {
       console.log('Error fetching Profile:', error);
-      // Handle error appropriately
     } finally {
-      setLoading(false); // Set loading state to false regardless of success or error
+      setLoading(false); 
     }
   };
   
@@ -84,7 +83,7 @@ const Setting = () => {
     if (!isDummyToken()) {
       getProfile();
     }
-  }, []); // Empty dependency array means this effect runs only once on mount
+  }, []); 
   
   const Logout = () => {
     setUserToken(null);
@@ -573,17 +572,37 @@ const Setting = () => {
                   opacity: 0.6,
                 }}
               />
+                 {/* <TouchableOpacity
+                style={styles.subservicebox}
+                onPress={() => navigation.navigate('HelpCenter')}
+              >
+                <Image
+                  source={require('../assets/headset.png')}
+                  style={{ height: 25, width: 25, tintColor: '#F10C18' }}
+                />
+                <Text
+                  style={{
+                    color: '#000000',
+                    fontSize: 16,
+                    fontFamily: 'Gilroy',
+                    fontWeight: 600,
+                    marginTop: 5,
+                  }}
+                >
+                  Help Center
+                </Text>
+              </TouchableOpacity> */}
   
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.row}
-                onPress={() => navigation.navigate('Notification')}
+                onPress={() => navigation.navigate('HelpCenter')}
               >
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                   <View
                     style={{ justifyContent: 'center', alignItems: 'center' }}
                   >
                     <Image
-                      source={require('../assets/bell.png')}
+                      source={require('../assets/headset.png')}
                       style={{ height: 25, width: 25, tintColor: '#000000' }}
                     />
                   </View>
@@ -603,29 +622,9 @@ const Setting = () => {
                         fontWeight: 600,
                       }}
                     >
-                      Notification
+                     Help center
                     </Text>
-                    <View
-                      style={{
-                        justifyContent: 'center',
-                        backgroundColor: '#F10C18',
-                        alignItems: 'center',
-                        marginLeft: 10,
-                        height: 25,
-                        width: 25,
-                        borderRadius: 12,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: '#FFFFFF',
-                          fontFamily: 'Gilroy-Medium',
-                          fontSize: 12,
-                        }}
-                      >
-                        5
-                      </Text>
-                    </View>
+               
                   </TouchableOpacity>
                 </View>
                 <Image
@@ -633,8 +632,9 @@ const Setting = () => {
                   style={{ height: 22, width: 22, tintColor: '#000000' }}
                 />
               </TouchableOpacity>
+               */}
   
-              <View
+              {/* <View
                 style={{
                   height: 1,
                   width: '100%',
@@ -642,7 +642,7 @@ const Setting = () => {
                   backgroundColor: '#CCC',
                   opacity: 0.6,
                 }}
-              />
+              /> */}
             </ScrollView>
           </View>
         </ScrollView>
