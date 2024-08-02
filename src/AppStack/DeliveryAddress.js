@@ -42,7 +42,7 @@ const DeliveryAddress = ({navigation}) => {
     setSelectedShipping(!selectedShipping);
   };
 
-  const billingaddress = `${billling?.billing_address},${billling?.billing_city},${billling?.billing_company},${billling?.billing_country},${billling?.billing_last_name},${billling?.billing_first_name}, 
+  const billingaddress = `${billling?.billing_address},${billling?.billing_city},${billling?.billing_company},${billling?.billing_country},${billling?.billing_first_name},${billling?.billing_last_name},, 
   ${billling?.billing_phone},${billling?.billing_email},${billling?.billing_postcode},${billling?.billing_state}`;
 
   console.log('billignaddress', billingaddress);
@@ -122,147 +122,80 @@ const DeliveryAddress = ({navigation}) => {
        <View>
        
     
-       <View>
-         <View style={{width: '95%', alignSelf: 'center'}}>
-           {billingaddress ? (
-             <TouchableOpacity
-               style={styles.row}
-               onPress={handleBillingPress}>
-               <View style={{flexDirection: 'row', width: '90%'}}>
-                 <View style={[styles.iconContainer]}>
-                   <Image
-                     source={require('../assets/home.png')}
-                     style={{height: 30, width: 30, tintColor: '#ffffff'}}
-                   />
-                 </View>
-                 <View style={{justifyContent: 'center', marginLeft: 10}}>
-                   <Text style={{color: '#000000', fontSize: 15}}>
-                     Billing Address
-                   </Text>
-                   <Text
-                     style={{
-                       color: '#000000',
-                       fontSize: 12,
-                       fontFamily: 'Gilroy-Regular',
-                       marginVertical: 5,
-                       lineHeight: 15,
-                     }}>
-                     {billingaddress}
-                   </Text>
-                 </View>
-               </View>
-               <View style={{marginLeft: 10, width: '10%'}}>
-                 {selectedBilling && (
-                   //  <MaterialIcons
-                   //    name="radio-button-checked"
-                   //    size={24}
-                   //    color={'red'}
-                   //    onPress={() => setselectedAddress('selectedBilling')}
-                   //  />
-                   <TouchableOpacity
-                     onPress={() => setselectedAddress('selectedBilling')}>
-                     <Image
-                       source={require('../assets/round.png')}
-                       style={{height: 20, width: 20, tintColor: '#F10C18'}}
-                     />
-                   </TouchableOpacity>
-                 )}
-               </View>
-             </TouchableOpacity>
-           ) : (
-             <Text
-               style={{
-                 color: '#808080',
-                 fontSize: 12,
-                 fontFamily: 'Gilroy-Regular',
-                 marginVertical: 5,
-                 lineHeight: 15,
-                 textAlign: 'center',
-               }}>
-               No billing address found
-             </Text>
-           )}
-           <View
-             style={{
-               height: 1,
-               width: '100%',
-               marginTop: 15,
-               backgroundColor: '#707070',
-               opacity: 0.3,
-             }}
-           />
-         </View>
+       <View style={styles.addressContainer}>
+        {billingaddress ? (
+          <TouchableOpacity
+            style={styles.addressRow}
+            onPress={handleBillingPress}
+          >
+            <View style={styles.addressContent}>
+              <View style={styles.iconContainer}>
+                <Image
+                  source={require('../assets/home.png')}
+                  style={styles.icon}
+                />
+              </View>
+              <View style={styles.textContainer}>
+                <Text style={styles.addressTitle}>Billing Address</Text>
+                <Text style={styles.addressText}>{billingaddress}</Text>
+              </View>
+            </View>
+            <View style={styles.radioContainer}>
+              {selectedBilling && (
+                <TouchableOpacity
+                  onPress={() => setselectedAddress('selectedBilling')}
+                >
+                  <Image
+                    source={require('../assets/round.png')}
+                    style={styles.radioIcon}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <Text style={styles.noAddressText}>No billing address found</Text>
+        )}
+        <View style={styles.separator} />
+      </View>
 
-         <View style={{width: '95%', alignSelf: 'center'}}>
-           <TouchableOpacity
-             style={styles.row}
-             onPress={handleShippingPress}>
-             <View style={{flexDirection: 'row', width: '90%'}}>
-               <View style={[styles.iconContainer]}>
-                 <Image
-                   source={require('../assets/location.png')}
-                   style={{height: 30, width: 30, tintColor: '#ffffff'}}
-                 />
-               </View>
-               <View style={{justifyContent: 'center', marginLeft: 10}}>
-                 <Text style={{color: '#000000', fontSize: 15}}>
-                   Shipping Address
-                 </Text>
-                 {shippingaddress ? (
-                   <Text
-                     style={{
-                       color: '#000000',
-                       fontSize: 12,
-                       fontFamily: 'Gilroy-Regular',
-                       marginVertical: 5,
-                       lineHeight: 15,
-                     }}>
-                     {shippingaddress}
-                   </Text>
-                 ) : (
-                   <Text
-                     style={{
-                       color: '#808080',
-                       fontSize: 12,
-                       fontFamily: 'Gilroy-Regular',
-                       marginVertical: 5,
-                       lineHeight: 15,
-                     }}>
-                     No shipping address found
-                   </Text>
-                 )}
-               </View>
-             </View>
-             <View style={{marginLeft: 10, width: '10%'}}>
-               {selectedShipping && (
-                 // <MaterialIcons
-                 //   name="radio-button-checked"
-                 //   size={24}
-                 //   color={'red'}
-                 // />
-
-                 <TouchableOpacity
-                   onPress={() => setselectedAddress('selectedBilling')}>
-                   <Image
-                     source={require('../assets/round.png')}
-                     style={{height: 20, width: 20, tintColor: '#F10C18'}}
-                   />
-                 </TouchableOpacity>
-               )}
-             </View>
-           </TouchableOpacity>
-
-           <View
-             style={{
-               height: 1,
-               width: '100%',
-               marginTop: 15,
-               backgroundColor: '#707070',
-               opacity: 0.3,
-             }}
-           />
-         </View>
-       </View>
+      {/* Shipping Address Section */}
+      <View style={styles.addressContainer}>
+        <TouchableOpacity
+          style={styles.addressRow}
+          onPress={handleShippingPress}
+        >
+          <View style={styles.addressContent}>
+            <View style={styles.iconContainer}>
+              <Image
+                source={require('../assets/location.png')}
+                style={styles.icon}
+              />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.addressTitle}>Shipping Address</Text>
+              {shippingaddress ? (
+                <Text style={styles.addressText}>{shippingaddress}</Text>
+              ) : (
+                <Text style={styles.noAddressText}>No shipping address found</Text>
+              )}
+            </View>
+          </View>
+          <View style={styles.radioContainer}>
+            {selectedShipping && (
+              <TouchableOpacity
+                onPress={() => setselectedAddress('selectedShipping')}
+              >
+                <Image
+                  source={require('../assets/round.png')}
+                  style={styles.radioIcon}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </TouchableOpacity>
+        <View style={styles.separator} />
+      </View>
 
 
      {/* Add Address Button */}
@@ -375,5 +308,77 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Gilroy-Medium',
     marginLeft: 10,
+  },
+  addressContainer: {
+    width: '95%',
+    alignSelf: 'center',
+  },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 15,
+
+  },
+  addressContent: {
+    flexDirection: 'row',
+    width: '90%',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    backgroundColor: '#F10C18', // Adjust to match your design
+    borderRadius: 5,
+    padding: 5,
+    height:50,width:50,
+    justifyContent:"center",
+    alignItems:"center"
+  },
+  icon: {
+    height: 20,
+    width: 20,
+    tintColor: '#ffffff',
+  },
+  textContainer: {
+    justifyContent: 'center',
+    marginLeft: 10,
+    paddingRight:20
+  },
+  addressTitle: {
+    color: '#000000',
+    fontSize: 15,
+  },
+  addressText: {
+    color: '#000000',
+    fontSize: 12,
+    fontFamily: 'Gilroy-Regular',
+    marginVertical: 5,
+    lineHeight: 15,
+  },
+  noAddressText: {
+    color: '#808080',
+    fontSize: 12,
+    fontFamily: 'Gilroy-Regular',
+    marginVertical: 5,
+    lineHeight: 15,
+    textAlign: 'center',
+  },
+  radioContainer: {
+    marginLeft: 10,
+    width: '10%',
+    alignItems: 'center',
+  },
+  radioIcon: {
+    height: 20,
+    width: 20,
+    tintColor: '#F10C18',
+  },
+  separator: {
+    height: 1,
+    width: '100%',
+    backgroundColor: '#707070',
+    opacity: 0.3,
   },
 });

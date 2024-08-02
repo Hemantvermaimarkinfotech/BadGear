@@ -124,7 +124,7 @@ const AddReview = ({route}) => {
             />
           </View>
 
-          <View style={{marginLeft: 10}}>
+          <View style={{marginLeft: 10,justifyContent:"center"}}>
             <Text
               style={{
                 fontSize: 16,
@@ -133,16 +133,16 @@ const AddReview = ({route}) => {
               }}>
               {productDetails?.productDetails.product_name}
             </Text>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row',marginTop:5}}>
               <Text
                 style={{
                   fontSize: 16,
                   color: '#000000',
                   fontFamily: 'Gilroy-Medium',
                 }}>
-                {productDetails?.productDetails.price}
+                ${productDetails?.productDetails.price}
               </Text>
-              <View
+              {/* <View
                 style={{
                   height: 25,
                   width: 40,
@@ -165,7 +165,7 @@ const AddReview = ({route}) => {
                   source={require('../assets/star.png')}
                   style={{height: 12, width: 12, marginLeft: 5}}
                 />
-              </View>
+              </View> */}
             </View>
           </View>
         </View>

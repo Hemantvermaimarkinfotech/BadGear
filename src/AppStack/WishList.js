@@ -54,8 +54,6 @@ const WishList = () => {
       });
   };
 
-
-  
   useEffect(() => {
     fetchData();
   }, []);
@@ -72,22 +70,22 @@ const WishList = () => {
       },
     };
   
-  try {
-    const response = await axios.request(config);
-    console.log(JSON.stringify(response.data));
-
-    if (response.data.status === 'success') {
-      setWishList(prevItems =>
-        prevItems.filter(item => item.product_id !== productId),
-      );
-    } else {
-      console.log('Error: Unexpected response format:', response);
-    }
-  } catch (error) {
-    console.log('Error deleting Wishlist Item:', error);
-  }
-};
+    try {
+      const response = await axios.request(config);
+      console.log(JSON.stringify(response.data));
   
+      if (response.data.status === 'success') {
+        setWishList(prevItems =>
+          prevItems.filter(item => item.product_id !== productId),
+        );
+      } else {
+        console.log('Error: Unexpected response format:', response);
+      }
+    } catch (error) {
+      console.log('Error deleting Wishlist Item:', error);
+    }
+  };
+
   const renderItem = ({item}) => (
     <View style={styles.cartItem}>
       <View style={styles.imageContainer}>
@@ -95,10 +93,7 @@ const WishList = () => {
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.itemText}>{item?.name}</Text>
-
-        {/* <Text style={styles.itemRate}>$ {item.price}</Text> */}
-
-        <TouchableOpacity onPress={()=>navigation.navigate("Cart")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
           <Text style={styles.moveToCart}>Move to Cart</Text>
         </TouchableOpacity>
       </View>
@@ -139,26 +134,22 @@ const WishList = () => {
       </View>
 
       {loading ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={styles.loadingContainer}>
           <ActivityIndicator size={'large'} color={'#F10C18'} />
         </View>
       ) : wishlist && wishlist.length === 0 ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 20,
-              fontFamily: 'Gilroy-Medium',
-            }}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.noItemsText}>
             No items in wishlist
           </Text>
         </View>
       ) : (
         <FlatList
+        showsVerticalScrollIndicator={false}
           data={wishlist}
           renderItem={renderItem}
           keyExtractor={item => item.product_id}
-          contentContainerStyle={styles.container}
+          contentContainerStyle={styles.flatListContentContainer}
         />
       )}
     </SafeAreaView>
@@ -168,6 +159,11 @@ const WishList = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -189,22 +185,6 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 20,
     fontWeight: '700',
-  },
-  totalItemsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  totalItemsText: {
-    fontSize: 20,
-    fontFamily: 'Gilroy-Medium',
-    color: '#000000',
-  },
-  totalAmountText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#F10C18',
   },
   cartItem: {
     flexDirection: 'row',
@@ -239,12 +219,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Gilroy-Medium',
     width: 150,
   },
-  itemRate: {
-    fontSize: 20,
-    color: '#000000',
-    fontFamily: 'Gilroy-Medium',
-    marginTop: 10,
-  },
   moveToCart: {
     color: '#F10C18',
     fontSize: 14,
@@ -261,17 +235,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: '#707070',
   },
-  placeOrderButton: {
-    width: '86%',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F10C18',
-    height: 50,
-    borderRadius: 5,
-    marginTop: 20,
-    elevation: 1,
-    marginBottom: 20,
+  flatListContentContainer: {
+    paddingBottom: 50,
+  },
+  noItemsText: {
+    color: '#000000',
+    fontSize: 20,
+    fontFamily: 'Gilroy-Medium',
   },
 });
 

@@ -75,8 +75,8 @@ const Search = () => {
       </View>
       <View
         style={{
-          paddingHorizontal: 10,
-          marginTop: 1,
+        justifyContent:"center",
+        alignItems:"center"
         }}>
         <Text 
         numberOfLines={2}
@@ -231,7 +231,8 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     borderWidth: 1,
     justifyContent: 'center',
-    borderWidth: 1
+    borderWidth: 1,
+
   },
   Catimage: {
     width: 125,

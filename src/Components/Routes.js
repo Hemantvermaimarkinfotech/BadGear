@@ -11,8 +11,8 @@ const Routes = () => {
   
   const { userID, userToken } = useContext(AuthContext);
 
-  console.log("userTokeRoutes:", userToken);
-  console.log("userId:", userID);
+  // console.log("userTokeRoutes:", userToken);
+  // console.log("userId:", userID);
 
 
   

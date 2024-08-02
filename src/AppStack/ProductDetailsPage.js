@@ -24,7 +24,7 @@ import {AirbnbRating} from 'react-native-ratings';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useToast, ToastProvider} from 'react-native-toast-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ScrollView } from 'react-native-virtualized-view';
+import {ScrollView} from 'react-native-virtualized-view';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
@@ -35,7 +35,32 @@ const ProductDetailsPage = ({route, navigation}) => {
     route.params;
 
   const [productDetails, setProductDetails] = useState('');
+
+  useEffect(() => {
+    if (productDetails) {
+      if (productDetails.variation_data) {
+        productDetails.variation_data.forEach(variation => {
+          console.log('Variation Attributes:', variation.attributes); // Log variation attributes
+          console.log('Attribute Size:', variation.attributes?.attribute_size); // Log attribute size
+        });
+      } else {
+        console.log('variation_data is undefined');
+      }
+    } else {
+      console.log('productDetails is undefined');
+    }
+  }, [productDetails]);
+
+  const sizes = (productDetails?.variation_data || [])
+    .map(variation => variation.attributes?.attribute_size)
+    .filter(size => size); // Filter out any undefined or null sizes
+
+  // Remove duplicate sizes
+  const uniqueSizes = [...new Set(sizes)];
+
+  console.log('sizeeee', sizes);
   const [selectedSize, setSelectedSize] = useState('');
+  console.log("selectsize",selectedSize)
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken, setUserToken} = useContext(AuthContext);
 
@@ -48,19 +73,18 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [visibleReviews, setVisibleReviews] = useState(3);
   const [toastVisible, setToastVisible] = useState(false);
-  const [userData, setUserData] = useState(null); 
-  console.log('useData', userData);
+  const [userData, setUserData] = useState(null);
   const [review, setReview] = useState();
-
+  const [sizePriceMap, setSizePriceMap] = useState({});
   const isFocused = useIsFocused();
   const {toast} = useToast();
   const sumOfRatings =
     review?.data.reduce((accumulator, currentValue) => {
       return accumulator + parseInt(currentValue.rating);
-    }, 0) || 0; 
+    }, 0) || 0;
 
-  const averageRating = sumOfRatings / (review?.data.length || 1); 
-  const roundedAverage = averageRating.toFixed(2); 
+  const averageRating = sumOfRatings / (review?.data.length || 1);
+  const roundedAverage = averageRating.toFixed(2);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -141,17 +165,11 @@ const ProductDetailsPage = ({route, navigation}) => {
   ];
   const [currentPrice, setCurrentPrice] = useState(undefined);
 
-
   useEffect(() => {
     if (productDetails?.price !== undefined) {
       setCurrentPrice(productDetails.price);
     }
   }, [productDetails]);
-
-  console.log('productDetailsprice', productDetails?.price);
-  console.log('current price', currentPrice);
-  // const [currentPrice, setCurrentPrice] = useState(productDetails?.price || 0);
-
 
   const handleQuantityChange = selectedQuantity => {
     setSelectedQuantity(selectedQuantity);
@@ -169,6 +187,18 @@ const ProductDetailsPage = ({route, navigation}) => {
       }
       const data = await response.json();
       setProductDetails(data.data[0]);
+
+      // Create a map of sizes to prices
+      const sizePriceMap = {};
+      data.data[0].variation_data.forEach(variation => {
+        if (variation.attributes?.attribute_size) {
+          sizePriceMap[variation.attributes.attribute_size] = parseFloat(
+            variation.price,
+          );
+        }
+      });
+      setSizePriceMap(sizePriceMap);
+
       const relatedProducts = data.data[0].related_products;
       setRelatedProducts(relatedProducts);
     } catch (error) {
@@ -178,6 +208,13 @@ const ProductDetailsPage = ({route, navigation}) => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (selectedSize && sizePriceMap[selectedSize] !== undefined) {
+      setCurrentPrice(sizePriceMap[selectedSize] * selectedQuantity);
+    } else {
+      setCurrentPrice(productDetails?.price * selectedQuantity || 0);
+    }
+  }, [selectedSize, selectedQuantity, sizePriceMap, productDetails?.price]);
 
   useEffect(() => {
     fetchProductDetails(productId);
@@ -185,40 +222,31 @@ const ProductDetailsPage = ({route, navigation}) => {
   }, []);
 
   const addToCart = async productId => {
-    if (
-      !productDetails ||
-      !productDetails.attributes ||
-      !productDetails.attributes.includes(selectedSize)
-    ) {
-      Alert.alert(
-        'Size Not Available',
-        'Selected size is not available for this product.',
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('OK Pressed'),
-          },
-        ],
-        {cancelable: false},
-      );
-      return;
-    }
-
     if (!selectedSize) {
       Alert.alert(
         'Size Not Selected',
         'Please select a size before adding to cart.',
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('OK Pressed'),
-          },
-        ],
-        {cancelable: false},
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        { cancelable: false }
       );
       return;
     }
-
+  
+    // Check size availability
+    const sizeAvailable = productDetails?.variation_data?.some(
+      (variation) => variation.attributes?.attribute_size === selectedSize
+    );
+  
+    if (!sizeAvailable) {
+      Alert.alert(
+        'Size Not Available',
+        'Selected size is not available for this product.',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        { cancelable: false }
+      );
+      return;
+    }
+  
     if (isDummyToken()) {
       Alert.alert('Please Login', 'You need to login to add products to Cart', [
         {
@@ -231,8 +259,8 @@ const ProductDetailsPage = ({route, navigation}) => {
             setUserToken(null);
             AsyncStorage.removeItem('userData');
             navigation.reset({
-              index: 4, 
-              routes: [{name: 'Login'}],
+              index: 4,
+              routes: [{ name: 'Login' }],
             });
           },
         },
@@ -255,8 +283,8 @@ const ProductDetailsPage = ({route, navigation}) => {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
             Authorization: `${tokenToUse}`,
+            'Content-Type': 'multipart/form-data',
           },
         },
       );
@@ -285,18 +313,21 @@ const ProductDetailsPage = ({route, navigation}) => {
         } else {
           // Handle other error scenarios
           console.log('Error adding to cart:', response.status);
-          alert('Failed to add item to cart. Please try again later.');
+          alert('Failed to added Cart');
         }
       }
     } catch (error) {
       console.log('Error adding to cart:', error);
-      alert('Failed to add item to cart. Please try again later.');
+      alert('Already added to Cart.');
     } finally {
       setLoadingCart(false);
     }
   };
-
+ 
+  
   const AddWishlist = async productId => {
+    const tokenToUse =
+    userToken && userToken.token ? userToken.token : userToken;
     if (isDummyToken()) {
       Alert.alert(
         'Please Login',
@@ -326,7 +357,9 @@ const ProductDetailsPage = ({route, navigation}) => {
     let config = {
       method: 'post',
       url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
-      headers: {},
+      headers: {
+        Authorization: `${tokenToUse}`,
+      },
     };
 
     axios
@@ -569,7 +602,7 @@ const ProductDetailsPage = ({route, navigation}) => {
               </Text>
             )}
           </View> */}
-            <View style={{ marginTop: 20 }}>
+          {/* <View style={{ marginTop: 20 }}>
       <Text
         style={{
           color: '#000000',
@@ -618,7 +651,60 @@ const ProductDetailsPage = ({route, navigation}) => {
         </Text>
       )}
 </View>
-    </View>
+    </View> */}
+
+<View style={{ marginTop: 20 }}>
+  <Text
+    style={{
+      color: '#000000',
+      fontSize: 18,
+      fontWeight: '700',
+      marginLeft: 20,
+      fontFamily: 'Gilroy-SemiBold',
+    }}>
+    Size:
+  </Text>
+  <View style={{ paddingHorizontal: 10 }}>
+    {uniqueSizes.length > 0 ? (
+      <FlatList
+        data={uniqueSizes}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={[styles.productSize, { paddingRight: 0 }]}
+        renderItem={({ item: size }) => (
+          <TouchableOpacity
+            style={[
+              styles.sizebox,
+              selectedSize === size && styles.selectedSizebox,
+            ]}
+            onPress={() => {
+              setSelectedSize(size);
+              handleQuantityChange(selectedQuantity); // Update price when size changes
+            }}
+          >
+            <Text
+              style={[
+                styles.sizetext,
+                selectedSize === size && styles.selectedSizetext,
+              ]}
+            >
+              {size}
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+    ) : (
+     <View style={{marginHorizontal:15}}>
+       <Text style={{ color: '#F10C18', fontSize: 14, fontFamily:"Gilroy-Medium", marginTop: 10 }}>
+        No sizes available for this product
+      </Text>
+     </View>
+    )}
+  </View>
+</View>
+
+
           {/* Product Size end */}
 
           {/* Product Qty */}
@@ -807,9 +893,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                     fontSize: 15,
                     textDecorationLine: 'underline',
                     fontFamily: 'Gilroy-SemiBold',
-                  }}>
-                
-                </Text>
+                  }}></Text>
               </TouchableOpacity>
             </View>
             <View>
@@ -891,7 +975,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                   renderItem={renderItem}
                   keyExtractor={(item, index) => index.toString()}
                 />
-                {!showAllReviews && ( 
+                {!showAllReviews && (
                   <Button
                     title="Show All"
                     color={'#F10C18'}
@@ -978,8 +1062,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   productSize: {
-    flexDirection: 'row',
-    width: '95%',
+    // flexDirection: 'row',
+    // width: '95%',
     alignSelf: 'center',
     marginTop: 5,
   },
@@ -995,6 +1079,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     marginHorizontal: 4,
+
   },
   sizetext: {
     fontWeight: '700',
@@ -1096,7 +1181,7 @@ const styles = StyleSheet.create({
     borderColor: '#F10C18',
   },
   selectedSizetext: {
-    color: '#FFFFFF', 
+    color: '#FFFFFF',
   },
   Arrivelitem: {
     marginLeft: 10,

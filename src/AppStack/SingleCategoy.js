@@ -71,16 +71,47 @@ const SingleCategory = ({navigation,route}) => {
     console.log("productidd",productid)
 
   const {userToken} = useContext(AuthContext);
+  console.log("userToken",userToken)
   const [categories, setCategories] = useState([]);
   console.log("categories",categories)
   const [loading, setLoading] = useState(false);
 
 
+  // useEffect(() => {
+  //   const fetchCategoryDetails = async () => {
+  //     setLoading(true); 
+  //     try {
+  //       const response = await axios.get(`https://bad-gear.com/wp-json/categoryDetail/v1/category_detail?cat_id=${productid}`);
+  //       console.log("Response Data:", response.data);
+
+  //       if (response.data.status === 'success') {
+  //         setCategories(response.data.data);
+  //       } else {
+  //         console.log("Error fetching data:", response.data.success_msg);
+  //       }
+  //     } catch (error) {
+  //       console.log('Error fetching data:', error);
+  //     } finally {
+  //       setLoading(false); 
+  //     }
+  //   };
+
+  //   fetchCategoryDetails();
+  // }, [productid]);
   useEffect(() => {
     const fetchCategoryDetails = async () => {
       setLoading(true); 
       try {
-        const response = await axios.get(`https://bad-gear.com/wp-json/categoryDetail/v1/category_detail?cat_id=${productid}`);
+        const tokenToUse = userToken && userToken.token ? userToken.token : userToken; // Ensure proper token
+        const response = await axios.get(
+          `https://bad-gear.com/wp-json/categoryDetail/v1/category_detail?cat_id=${productid}`,
+          {
+            headers: {
+              Authorization: `${tokenToUse}`, // Include token in header
+            },
+          }
+        );
+        
         console.log("Response Data:", response.data);
 
         if (response.data.status === 'success') {
@@ -96,7 +127,7 @@ const SingleCategory = ({navigation,route}) => {
     };
 
     fetchCategoryDetails();
-  }, [productid]);
+  }, [productid, userToken]); // Include userToken in dependency array
 
   return (
     <SafeAreaView style={styles.container}>

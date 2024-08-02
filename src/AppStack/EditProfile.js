@@ -1,117 +1,105 @@
-// #This code is written by Hemant Verma
-import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, Image, StyleSheet,SafeAreaView,TouchableOpacity,Alert} from 'react-native';
+// This code is written by Hemant Verma
+import React, {useContext, useState} from 'react';
+import {View, Text, SafeAreaView, TouchableOpacity, Alert, TextInput, ScrollView,StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import TitleHeader from '../Components/TitleHeader';
-import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { AuthContext } from '../Components/AuthProvider';
 import Loader from '../Components/Loader';
-import axios from "react-native-axios"
+import axios from 'react-native-axios';
 
-const EditProfile = ({route,navigation}) => {
+const EditProfile = ({route, navigation}) => {
   const {profileData} = route.params;
-  console.log("profileDataaaaa",profileData)
-  const [name,setName]=useState(profileData ? profileData[0]?.userName.charAt(0).toUpperCase() + profileData[0]?.userName.slice(1):"")
-  const [email,setEmail]=useState(profileData ? profileData[0]?.userEmail:"")
-  const [loading,setLoading]=useState(false)
+  console.log('profileDataaaaa', profileData);
 
-const {userToken}=useContext(AuthContext)
-console.log("userTokeeeee",userToken)
+  const [name, setName] = useState(
+    profileData ? profileData[0]?.userName.charAt(0).toUpperCase() + profileData[0]?.userName.slice(1) : ''
+  );
+  const [email, setEmail] = useState(profileData ? profileData[0]?.userEmail : '');
+  const [loading, setLoading] = useState(false);
+  console.log(name)
+  console.log(email)
 
+  const {userToken} = useContext(AuthContext);
+  console.log('userTokeeeee', userToken);
 
+  const updateProfile = async () => {
+    const token = userToken && userToken.token ? userToken.token : userToken;
+    setLoading(true);
 
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
 
-const updateProfile = async () => {
-  console.log("userToken.tokennnnnn",userToken.token)
-  setLoading(true);
+      const response = await axios.post(
+        'https://bad-gear.com/wp-json/edit-userProfile-api/v1/edit_userProfile',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `${token}`,
+          },
+        }
+      );
 
-  try {
-    if (!userToken.token) {
-      console.log('User token is not available');
-      return;
-    }
+      const responseData = response.data;
 
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-
-    const response = await axios.post(
-      'https://bad-gear.com/wp-json/edit-userProfile-api/v1/edit_userProfile',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: userToken.token,
-        },
+      if (responseData.successmsg) {
+        Alert.alert('Success', responseData.successmsg);
+        console.log('Success', responseData.successmsg);
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', responseData.message || 'Failed to update profile.');
       }
-    );
-
-    const responseData = response.data;
-
-    if (responseData.successmsg) {
-      Alert.alert('Success', responseData.successmsg);
-      console.log("Sucess",responseData.successmsg)
-      navigation.goBack();
-    } else {
-      Alert.alert('Error', responseData.message);
-      // Handle error appropriately
+    } catch (error) {
+      console.log('Error updating Profile:', error);
+      Alert.alert('Error', 'Failed to update profile. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.log('Error updating Profile:', error);
-    Alert.alert('Error', 'Failed to update profile. Please try again.');
-    // Handle error appropriately
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-
-
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TitleHeader title={"Edit Profile"}/>
-     <ScrollView>
+      <TitleHeader title={'Edit Profile'} />
+      <ScrollView>
         <View style={styles.textView}>
-        <Text style={styles.text}>Full Name</Text>
-        <View style={styles.textInputView}>
-        <TextInput 
-              style={styles.textInput} 
+          <Text style={styles.text}>Full Name</Text>
+          <View style={styles.textInputView}>
+            <TextInput
+              style={styles.textInput}
               placeholder="Enter your full name"
-              placeholderTextColor="#999999" 
+              placeholderTextColor="#999999"
               value={name}
-              onChangeText={(text)=>setName()}
+              onChangeText={(text) => setName(text)} // Fixed onChangeText handler
             />
-        </View>
+          </View>
 
-        <Text style={[styles.text,{marginTop:15}]}>Email</Text>
-        <View style={styles.textInputView}>
-        <TextInput 
-              style={styles.textInput} 
+          <Text style={[styles.text, {marginTop: 15}]}>Email</Text>
+          <View style={styles.textInputView}>
+            <TextInput
+              style={styles.textInput}
               placeholder="Example@gmail.com"
-              placeholderTextColor="#999999" 
+              placeholderTextColor="#999999"
               value={email}
-              onChangeText={(text)=>setEmail()}
+              onChangeText={(text) => setEmail(text)} // Fixed onChangeText handler
             />
+          </View>
         </View>
+      </ScrollView>
 
-
-     
-        </View>
-     </ScrollView>
-
-     <View style={{ height: 1, width: "100%", marginTop: 10, backgroundColor: "#707070", opacity: 0.3, position: "absolute", bottom: 90 }} />
-            <View style={{ height: 80, justifyContent: "center", position: "absolute", bottom: 10, width: "100%" }}>
-             {loading ? 
-             (   <TouchableOpacity style={styles.button}>
-             <Loader/>
-         </TouchableOpacity>):(
-              <TouchableOpacity style={styles.button} onPress={()=>updateProfile()}>
-              <Text style={styles.buttonText}>Save</Text>
+      <View style={styles.separator} />
+      <View style={styles.buttonContainer}>
+        {loading ? (
+          <TouchableOpacity style={styles.button}>
+            <Loader />
           </TouchableOpacity>
-             )}
-            </View>
+        ) : (
+          <TouchableOpacity style={styles.button} onPress={updateProfile}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </SafeAreaView>
   );
 };

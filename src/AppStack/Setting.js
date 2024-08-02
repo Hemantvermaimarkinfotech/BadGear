@@ -18,12 +18,13 @@ import TitleHeader from '../Components/TitleHeader';
 import {AuthContext} from '../Components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'react-native-axios';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation,useFocusEffect } from '@react-navigation/native';
 const Setting = () => {
   const navigation = useNavigation();
   const {userToken, setUserToken} = useContext(AuthContext);
-  console.log("userToken",userToken?.token)
+  // console.log("userToken",userToken?.token)
   const [profileData, setProfileData] = useState();
+  console.log("profiledata",profileData)
   const [loading,setLoading]=useState(false)
 
    // Function to check if the token is a dummy token
@@ -67,23 +68,23 @@ const Setting = () => {
           },
         },
       );
-  
       const responseData = response.data.data;
       console.log('Response Data:', responseData);
       setProfileData(responseData);
     } catch (error) {
       console.log('Error fetching Profile:', error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
-  useEffect(() => {
-    console.log('hello');
-    if (!isDummyToken()) {
-      getProfile();
-    }
-  }, []); 
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!isDummyToken()) {
+        getProfile();
+      }
+    }, [])
+  );
   
   const Logout = () => {
     setUserToken(null);

@@ -22,11 +22,8 @@ const rendercategoryItem = ({ item,navigation }) => {
   return (
     <TouchableOpacity style={{ width: "50%", marginTop: 20 }}
     onPress={() =>
-      navigation.navigate('ProductDetails', {
-        productId: item.cat_id,
-        productName: item.cat_name,
-        productDescription: item.description,
-        productImg: item.cat_image,
+      navigation.navigate('SingleCategory', {
+        ProductId: item.cat_id,
       })
     }
     >

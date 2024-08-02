@@ -17,10 +17,12 @@ import {
 import {AuthContext} from '../Components/AuthProvider';
 import {
   getNewArrivals,
+  getBestSelling,
   getCategory,
   getBanner,
-  AddWishlist,
-  getBestSelling,
+  getWishList,
+  getProductDetails,
+  addCart,
 } from '../Components/ApiService';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
@@ -28,7 +30,7 @@ import he from 'he';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Skeleton from '../Components/Skelton';
 import axios from 'react-native-axios';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
@@ -50,7 +52,7 @@ const Home = ({item}) => {
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState(null);
   const [categories, setCategories] = useState([]);
-  const {userToken, setUserToken} = useContext(AuthContext);
+  const { userToken, setUserToken } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [Arrivals, setArrivals] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
@@ -58,18 +60,24 @@ const Home = ({item}) => {
   const [wishlist, setWishlist] = useState([]);
   const [refreshing, setRefreshing] = useState(false); // State for refreshing
 
-  console.log('userdataaa', userData?.user_data?.data.user_login);
+  const tokenUse = userToken && userToken.token ? userToken.token : userToken;
+
+  // console.log('userdataaa', userData?.user_data?.data.user_login);
 
   const ensureMinLength = (str, minLength) => {
     if (str.length >= minLength) return str;
     return str + ' '.repeat(minLength - str.length);
   };
 
-  const capitalizeFirstLetter = str => {
-    if (str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+  
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) {
+      return text;
     }
-    return '';
+    return text.slice(0, maxLength) + '...';
   };
 
   // Function to check if the token is a dummy token
@@ -78,7 +86,7 @@ const Home = ({item}) => {
   };
 
   // Function to handle navigation with token check
-  const handleNavigation = page => {
+  const handleNavigation = (page) => {
     if (isDummyToken()) {
       Alert.alert('Access Denied', 'You are not login.');
     } else {
@@ -86,101 +94,127 @@ const Home = ({item}) => {
     }
   };
 
-  const BestSellingDATA = [
-    {
-      id: '1',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival1.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '2',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival2.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '3',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival1.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '4',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival2.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '5',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival1.png'),
-      rate: '$39.95 - $44.95',
-    },
-    {
-      id: '6',
-      text: 'Kenworth Teal Flag Hoodie',
-      image: require('../assets/Arrival2.png'),
-      rate: '$39.95 - $44.95',
-    },
-  ];
-
+  // Function to fetch all data
   const fetchData = async () => {
-    setLoading(true);
-    setRefreshing(true);
     try {
-      const userData = await AsyncStorage.getItem('userData');
-      setUserData(userData);
+      setLoading(true);
+      setRefreshing(true);
 
-      // Fetch banner
-      const bannerResponse = await getBanner(userToken);
-      if (bannerResponse.status === 'success') {
-        const {data} = bannerResponse;
-        setBanner(data);
-      } else {
-        console.log('Error fetching banner:');
-      }
-
-      // Fetch categories
-      const categoriesResponse = await getCategory(userToken);
-      setCategories(categoriesResponse);
-
-      // Fetch new arrivals
-      const newArrivalsResponse = await getNewArrivals(userToken);
-
-      // Decode HTML entities in arrival data
-      const decodedArrivalsResponse = newArrivalsResponse.map(arrival => ({
-        ...arrival,
-        title: arrival.title ? he.decode(arrival.title) : '',
-      }));
-
-      setArrivals(decodedArrivalsResponse);
-
-      // Fetch BestSelling
-      const BestSellingResponse = await getBestSelling(userToken);
-      setBestSelling(BestSellingResponse);
+      await fetchUserData();
+      await fetchBanner();
+      await fetchCategories();
+      await fetchNewArrivals();
+      await fetchBestSelling();
     } catch (error) {
-      console.log('Error fetching data:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [userToken]);
+  const fetchUserData = async () => {
+    try {
+      const userData = await AsyncStorage.getItem('userData');
+      setUserData(userData);
+    } catch (error) {
+      console.log('Error fetching user data:', error);
+    }
+  };
+
+  const fetchBanner = async () => {
+    try {
+      const bannerResponse = await getBanner();
+      if (bannerResponse.status === 'success') {
+        const { data } = bannerResponse;
+        setBanner(data);
+      } else {
+        console.log('Error fetching banner:');
+      }
+    } catch (error) {
+      console.log('Error fetching banner:', error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const categoriesResponse = await getCategory(tokenUse);
+      setCategories(categoriesResponse);
+    } catch (error) {
+      console.log('Error fetching categories:', error);
+    }
+  };
+
+  const fetchNewArrivals = async () => {
+    try {
+      const newArrivalsResponse = await getNewArrivals(1, 10, tokenUse);
+      const decodedArrivalsResponse = newArrivalsResponse.map(arrival => ({
+        ...arrival,
+        title: arrival.title ? he.decode(arrival.title) : '',
+        wishlist_status: arrival.wishlist_status === 'true',
+      }));
+      // console.log('newarrivalsresponsedata', decodedArrivalsResponse);
+      setArrivals(decodedArrivalsResponse);
+    } catch (error) {
+      console.log('Error fetching new arrivals:', error);
+    }
+  };
+
+  const fetchBestSelling = async () => {
+    try {
+      const bestSellingResponse = await getBestSelling(1, tokenUse);
+      const decodedBestSellingResponse = bestSellingResponse.map(item => ({
+        ...item,
+        title: item.title ? he.decode(item.title) : '', // Assuming 'title' needs decoding
+        wishlist_status: item.wishlist_status === 'true', // Adjust this if necessary
+      }));
+      console.log('bestSellingResponseData', decodedBestSellingResponse);
+      setBestSelling(decodedBestSellingResponse);
+    } catch (error) {
+      console.log('Error fetching best selling:', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [userToken]), // Dependencies array includes userToken
+  );
 
   const onRefresh = useCallback(() => {
     fetchData();
-  }, [userToken]);
+  }, [userToken]); // Dependencies array includes userToken
+
 
   // const addToWishlist = async productId => {
   //   if (isDummyToken()) {
-  //     Alert.alert('Access Denied', 'You are using a dummy token.');
+  //     Alert.alert(
+  //       'Please Login',
+  //       'You need to login to add products to wishlist.',
+  //       [
+  //         {
+  //           text: 'Cancel',
+  //           style: 'cancel',
+  //         },
+  //         {
+  //           text: 'Login',
+  //           onPress: () => {
+  //             setUserToken(null);
+  //             AsyncStorage.removeItem('userData');
+  //             navigation.reset({
+  //               index: 4, // Index of the Login screen
+  //               routes: [{name: 'Login'}],
+  //             });
+  //           },
+  //         },
+  //       ],
+  //     );
   //     return;
   //   }
-  //   const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+
+  //   const tokenToUse =
+  //     userToken && userToken.token ? userToken.token : userToken;
+  //     console.log("tokenuse",tokenToUse)
 
   //   let config = {
   //     method: 'post',
@@ -192,7 +226,7 @@ const Home = ({item}) => {
 
   //   try {
   //     const response = await axios.request(config);
-  //     console.log(JSON.stringify(response.data));
+  //     // console.log(JSON.stringify(response.data));
 
   //     if (response.data.status === 'success') {
   //       console.log('Successfully added and removed from wishlist');
@@ -233,7 +267,24 @@ const Home = ({item}) => {
     const tokenToUse =
       userToken && userToken.token ? userToken.token : userToken;
 
-    let config = {
+    // Optimistically update the wishlist status
+    setArrivals(prevArrivals =>
+      prevArrivals.map(arrival =>
+        arrival.product_id === productId
+          ? {...arrival, wishlist_status: !arrival.wishlist_status}
+          : arrival,
+      ),
+    );
+
+    setBestSelling(prevBestSelling =>
+      prevBestSelling.map(item =>
+        item.product_id === productId
+          ? {...item, wishlist_status: !item.wishlist_status}
+          : item,
+      ),
+    );
+
+    const config = {
       method: 'post',
       url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
       headers: {
@@ -243,124 +294,42 @@ const Home = ({item}) => {
 
     try {
       const response = await axios.request(config);
-      console.log(JSON.stringify(response.data));
-
       if (response.data.status === 'success') {
-        console.log('Successfully added and removed from wishlist');
+        // Optionally refetch new arrivals and best-selling items to ensure data is up-to-date
+        fetchNewArrivals();
+        fetchBestSelling();
       } else {
         console.log('Error: Unexpected response format:', response);
       }
     } catch (error) {
-      console.log('Error deleting Wishlist Item:', error);
+      console.log('Error updating wishlist:', error);
+      // Optionally refetch new arrivals and best-selling items to ensure data is up-to-date if needed
+      fetchNewArrivals();
+      fetchBestSelling();
     }
   };
 
-  const renderBestSellingItem = ({item, navigation}) => (
-    <View activeOpacity={0.92} style={[{width: imageWidth, marginTop: 10}]}>
-      <View style={styles.Arrivelitem}>
-        <Image source={item.image} style={styles.Arrivalimage} />
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingHorizontal: 15,
-          marginTop: 10,
-          marginLeft: 20,
-        }}>
-        <Text
-          numberOfLines={2}
-          style={{
-            color: '#000000',
-            fontSize: 15,
-            width: 100,
-            textAlign: 'center',
-            fontWeight: 600,
-            fontFamily: 'Gilroy-SemiBold',
-          }}
-          key={`${item.id}_text`}>
-          {item.text}
-        </Text>
-        <TouchableOpacity
-          onPress={() => {
-            addToWishlist(item.id);
-          }}
-          style={{
-            height: 30,
-            width: 30,
-            backgroundColor: '#fff',
-            borderRadius: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          key={`${item.id}_heart`}>
-          <Image
-            source={require('../assets/heart.png')}
-            style={{tintColor: '#000000'}}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={{justifyContent: 'center', marginTop: 10}}>
-        <Text
-          style={{
-            color: '#000000',
-            fontSize: 17,
-            fontWeight: 500,
-            marginLeft: 18,
-            fontFamily: 'Gilroy-SemiBold',
-          }}
-          key={`${item.id}_rate`}>
-          {item.rate}
-        </Text>
-      </View>
-    </View>
-  );
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 22,
-              fontFamily: 'Gilroy-SemiBold',
-            }}>
-            Welcome{' '}
-            {userData &&
-              capitalizeFirstLetter(
-                JSON.parse(userData).user_data?.data?.user_login,
-              )}
-          </Text>
+        <Text
+  style={{
+    color: '#000000',
+    fontSize: 22,
+    fontFamily: 'Gilroy-SemiBold',
+  }}>
+  Welcome{' '}
+  {userData &&
+    truncateText(
+      capitalizeFirstLetter(
+        JSON.parse(userData).user_data?.data?.user_login
+      ),
+      10 // Replace 10 with the maximum length you want
+    )}
+</Text>
         </View>
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            width: '30%',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <TouchableOpacity onPress={() => navigation.navigate('WishList')}>
-            <Image
-              source={require('../assets/heart2.png')}
-              style={styles.headericon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Search')}>
-            <Image
-              source={require('../assets/search.png')}
-              style={{height: 25, width: 25, tintColor: '#000000'}}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-            <Image
-              source={require('../assets/Cart.png')}
-              style={styles.headericon}
-            />
-          </TouchableOpacity>
-        </View> */}
+
         <View
           style={{
             flexDirection: 'row',
@@ -374,7 +343,7 @@ const Home = ({item}) => {
               style={styles.headericon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleNavigation('Search')}>
+          <TouchableOpacity onPress={() => navigation.navigate("Search")}>
             <Image
               source={require('../assets/search.png')}
               style={{height: 25, width: 25, tintColor: '#000000'}}
@@ -554,15 +523,16 @@ const Home = ({item}) => {
                   <TouchableOpacity
                     activeOpacity={0.92}
                     style={{width: imageWidth}}
-                    onPress={() =>
+                    onPress={() => {
+                      console.log('Product ID:', item.product_id); // Log the product ID
                       navigation.navigate('ProductDetails', {
                         productId: item.product_id,
                         productName: item.product_name,
                         productDescription: item.description,
                         productImg: item.product_img,
                         productPrice: item.price,
-                      })
-                    }
+                      });
+                    }}
                     disabled={loading}>
                     <View style={[styles.Arrivelitem, {marginTop: 10}]}>
                       {loading ? (
@@ -618,12 +588,52 @@ const Home = ({item}) => {
                       )}
                       <TouchableOpacity
                         onPress={() => {
-                          console.log(item.product_id);
-                          addToWishlist(item.product_id);
-                        }}>
+                          if (isDummyToken()) {
+                            Alert.alert(
+                              'Please Login',
+                              'You need to login to add products to wishlist.',
+                              [
+                                {
+                                  text: 'Cancel',
+                                  style: 'cancel',
+                                },
+                                {
+                                  text: 'Login',
+                                  onPress: () => {
+                                    setUserToken(null);
+                                    AsyncStorage.removeItem('userData');
+                                    navigation.reset({
+                                      index: 4,
+                                      routes: [{name: 'Login'}],
+                                    });
+                                  },
+                                },
+                              ],
+                            );
+                          } else if (!loading) {
+                            addToWishlist(item.product_id);
+                          }
+                        }}
+                        disabled={loading}
+                        style={{}}>
                         <Image
-                          source={require('../assets/heart.png')}
-                          style={{tintColor: '#000000'}}
+                          source={
+                            isDummyToken()
+                              ? require('../assets/heart.png') // Always show placeholder when using dummy token
+                              : item.wishlist_status
+                              ? require('../assets/like.png')
+                              : require('../assets/heart.png')
+                          }
+                          style={[
+                            styles.icon,
+                            {
+                              tintColor:
+                                !isDummyToken() && item.wishlist_status
+                                  ? '#F10C18'
+                                  : '#000000',
+                              opacity: loading ? 0.5 : 1,
+                            },
+                          ]}
                         />
                       </TouchableOpacity>
                     </View>
@@ -632,8 +642,8 @@ const Home = ({item}) => {
                         <Skeleton
                           duration={1000}
                           style={{
-                            width: 60,
-                            height: 16,
+                            width: 40,
+                            height: 10,
                             borderRadius: 2,
                             marginLeft: 18,
                           }}
@@ -758,7 +768,7 @@ const Home = ({item}) => {
                           {he.decode(item.product_name)}
                         </Text>
                       )}
-                      <TouchableOpacity
+                      {/* <TouchableOpacity
                         onPress={() => {
                           console.log(item.product_id);
                           addToWishlist(item.product_id);
@@ -766,6 +776,56 @@ const Home = ({item}) => {
                         <Image
                           source={require('../assets/heart.png')}
                           style={{tintColor: '#000000'}}
+                        />
+                      </TouchableOpacity> */}
+                     <TouchableOpacity
+                        onPress={() => {
+                          if (isDummyToken()) {
+                            Alert.alert(
+                              'Please Login',
+                              'You need to login to add products to wishlist.',
+                              [
+                                {
+                                  text: 'Cancel',
+                                  style: 'cancel',
+                                },
+                                {
+                                  text: 'Login',
+                                  onPress: () => {
+                                    setUserToken(null);
+                                    AsyncStorage.removeItem('userData');
+                                    navigation.reset({
+                                      index: 4,
+                                      routes: [{name: 'Login'}],
+                                    });
+                                  },
+                                },
+                              ],
+                            );
+                          } else if (!loading) {
+                            addToWishlist(item.product_id);
+                          }
+                        }}
+                        disabled={loading}
+                        style={{}}>
+                        <Image
+                          source={
+                            isDummyToken()
+                              ? require('../assets/heart.png') // Always show placeholder when using dummy token
+                              : item.wishlist_status
+                              ? require('../assets/like.png')
+                              : require('../assets/heart.png')
+                          }
+                          style={[
+                            styles.icon,
+                            {
+                              tintColor:
+                                !isDummyToken() && item.wishlist_status
+                                  ? '#F10C18'
+                                  : '#000000',
+                              opacity: loading ? 0.5 : 1,
+                            },
+                          ]}
                         />
                       </TouchableOpacity>
                     </View>
@@ -892,5 +952,10 @@ const styles = StyleSheet.create({
   },
   shimmerPlaceholder: {
     flex: 1,
+  },
+  icon: {
+    height: 18,
+    width: 18,
+    resizeMode: 'contain',
   },
 });

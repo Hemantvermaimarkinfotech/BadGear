@@ -23,7 +23,7 @@ const TitleHeader = ({title, cartLength}) => {
   };
 
   const isDummyToken = () => {
-    return userToken === 'dummy-token';
+    return userToken === 'dummy-token' || userToken === null;
   };
 
   const handleNavigation = (page) => {
@@ -73,7 +73,7 @@ const TitleHeader = ({title, cartLength}) => {
               style={styles.headericon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleNavigation('Search')}>
+          <TouchableOpacity onPress={() => navigation.navigate("Search")}>
             <Image source={require('../assets/search.png')} style={{height: 25, width: 25, tintColor: "#000000"}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleNavigation('Cart')}>

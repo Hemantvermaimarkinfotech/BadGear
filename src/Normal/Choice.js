@@ -345,7 +345,7 @@ const Choice = ({ navigation }) => {
       )}
 
       <View style={styles.skipContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Subscription')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       </View>

@@ -27,22 +27,23 @@ import {getProductDetails} from '../Components/ApiService';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
-let modalHeight = screenHeight - 90; 
-let modalWidth = screenWidth - 40; 
+let modalHeight = screenHeight - 90;
+let modalWidth = screenWidth - 40;
 
 // Adjust modal height for medium and large devices
 if (screenWidth > 360) {
   modalHeight = screenHeight - 280;
 }
 const Checkout = ({navigation, route}) => {
+  const isFocused = useIsFocused();
   const {paymentDetails} = route.params;
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitloading, setsubmitLoading] = useState(false);
-  const [billingAddress, setBillingAddress] = useState(null); 
+  const [billingAddress, setBillingAddress] = useState(null);
   const [shippingAddress, setShippingAddress] = useState(null);
   const [cartItems, setCartItems] = useState([]);
-  console.log("checkoutcartitmes",cartItems)
+  console.log('checkoutcartitmes', cartItems);
   const [pageloading, setPageloading] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
 
@@ -64,61 +65,62 @@ const Checkout = ({navigation, route}) => {
     setModalVisible2(false);
   };
 
-  useEffect(() => {
-    // Define the async function to fetch addresses
-    async function getAddressData() {
-      const tokenToUse =
-        userToken && userToken.token ? userToken.token : userToken;
-      try {
-        setPageloading(true);
-        // First API call to get billing address
-        let billingConfig = {
-          method: 'get',
-          maxBodyLength: Infinity,
-          url: 'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress',
-          headers: {
-            Authorization: `${tokenToUse}`,
-            'Content-Type': 'application/json',
-          },
-        };
+  // useEffect(() => {
+  //   // Define the async function to fetch addresses
+  //   async function getAddressData() {
+  //     const tokenToUse =
+  //       userToken && userToken.token ? userToken.token : userToken;
+  //     try {
+  //       setPageloading(true);
+  //       // First API call to get billing address
+  //       let billingConfig = {
+  //         method: 'get',
+  //         maxBodyLength: Infinity,
+  //         url: 'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress',
+  //         headers: {
+  //           Authorization: `${tokenToUse}`,
+  //           'Content-Type': 'application/json',
+  //         },
+  //       };
 
-        const billingResponse = await axios(billingConfig);
-        console.log('Billing Address Data:', billingResponse.data);
+  //       const billingResponse = await axios(billingConfig);
+  //       console.log('Billing Address Data:', billingResponse.data);
 
-        // Update billing address state
-        setBillingAddress(billingResponse.data);
+  //       // Update billing address state
+  //       setBillingAddress(billingResponse.data);
 
-        // Second API call to get shipping address
-        let shippingConfig = {
-          method: 'get',
-          maxBodyLength: Infinity,
-          url: 'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress',
-          headers: {
-            Authorization: `${tokenToUse}`,
-            'Content-Type': 'application/json',
-          },
-        };
+  //       // Second API call to get shipping address
+  //       let shippingConfig = {
+  //         method: 'get',
+  //         maxBodyLength: Infinity,
+  //         url: 'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress',
+  //         headers: {
+  //           Authorization: `${tokenToUse}`,
+  //           'Content-Type': 'application/json',
+  //         },
+  //       };
 
-        const shippingResponse = await axios(shippingConfig);
-        console.log('Shipping Address Data:', shippingResponse.data);
+  //       const shippingResponse = await axios(shippingConfig);
+  //       console.log('Shipping Address Data:', shippingResponse.data);
 
-        // Update shipping address state
-        setShippingAddress(shippingResponse.data);
-      } catch (error) {
-        console.log('Error fetching addresses:', error);
-      } finally {
-        setPageloading(false);
-      }
-    }
-    getAddressData();
-  }, []);
-
+  //       // Update shipping address state
+  //       setShippingAddress(shippingResponse.data);
+  //     } catch (error) {
+  //       console.log('Error fetching addresses:', error);
+  //     } finally {
+  //       setPageloading(false);
+  //     }
+  //   }
+  //   getAddressData();
+  // }, []);
 
   const order = [
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
   ];
   const {userToken} = useContext(AuthContext);
+  const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+  console.log('tokenuser', tokenToUse);
   const calculateTotal = () => {
     let total = 0;
 
@@ -136,43 +138,99 @@ const Checkout = ({navigation, route}) => {
 
   const continueShopping = () => {
     setShowModal(false);
-    navigation.navigate('BottomTab'); 
+    navigation.navigate('BottomTab');
   };
 
-  const getCart = () => {
-    const tokenToUse =
-      userToken && userToken.token ? userToken.token : userToken;
+  // const getCart = () => {
+  //   const tokenToUse =
+  //     userToken && userToken.token ? userToken.token : userToken;
 
-    let config = {
-      method: 'get',
-      url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
-      headers: {
-        Authorization: `${tokenToUse}`, // Ensure the token format matches the server's expectations
-      },
-    };
+  //   let config = {
+  //     method: 'get',
+  //     url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
+  //     headers: {
+  //       Authorization: `${tokenToUse}`, // Ensure the token format matches the server's expectations
+  //     },
+  //   };
 
-    axios
-      .request(config)
-      .then(response => {
-        console.log(JSON.stringify(response.data));
-        setCartItems(response.data?.data);
-      })
-      .catch(error => {
-        console.log('Error fetching cart items:', error);
-      });
+  //   axios
+  //     .request(config)
+  //     .then(response => {
+  //       console.log(JSON.stringify(response.data));
+  //       setCartItems(response.data?.data);
+  //     })
+  //     .catch(error => {
+  //       console.log('Error fetching cart items:', error);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   console
+  //   getCart();
+  // }, []);
+  // Define fetchData function
+  const fetchData = async () => {
+    setPageloading(true);
+    // const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+
+    try {
+      // Fetch billing address
+      const billingConfig = {
+        method: 'get',
+        url: 'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress',
+        headers: {
+          Authorization: `${tokenToUse}`, // Added "Bearer " for better token format
+          'Content-Type': 'application/json',
+        },
+      };
+      const billingResponse = await axios(billingConfig);
+      console.log('Billing Address Data:', billingResponse.data);
+      setBillingAddress(billingResponse.data);
+
+      // Fetch shipping address
+      const shippingConfig = {
+        method: 'get',
+        url: 'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress',
+        headers: {
+          Authorization: `${tokenToUse}`, // Added "Bearer " for better token format
+          'Content-Type': 'application/json',
+        },
+      };
+      const shippingResponse = await axios(shippingConfig);
+      console.log('Shipping Address Data:', shippingResponse.data);
+      setShippingAddress(shippingResponse.data);
+
+      // Fetch cart items
+      const cartConfig = {
+        method: 'get',
+        url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
+        headers: {
+          Authorization: `${tokenToUse}`, // Added "Bearer " for better token format
+        },
+      };
+      const cartResponse = await axios(cartConfig);
+      console.log('Cart Items Data:', cartResponse.data);
+      setCartItems(cartResponse.data?.data);
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setPageloading(false);
+    }
   };
 
   useEffect(() => {
-    getCart();
-  }, []);
+    console.log('helllooo');
+    if (isFocused) {
+      fetchData();
+    }
+  }, [isFocused, tokenToUse]);
 
   const productIdsString = cartItems.map(item => item.product_id).join(',');
   const productNamesString = cartItems.map(item => item.product_name).join(',');
   const productprice = cartItems.map(item => item.price).join(',');
 
-
   //   const tokenToUse = userToken?.token || userToken;
-  
+
   //   // Check for required fields and handle validation
   //   const requiredFields = [
   //     productIdsString,
@@ -198,11 +256,8 @@ const Checkout = ({navigation, route}) => {
 
   //   console.log("requirfield",requiredFields)
 
-
-    
-  
   //   const isFormValid = requiredFields.every(field => field && field.trim() !== '');
-  
+
   //   if (!isFormValid) {
   //     console.log('Please fill all required fields.');
   //     setsubmitLoading(false); // Ensure loading is stopped if form is invalid
@@ -212,7 +267,7 @@ const Checkout = ({navigation, route}) => {
   //   console.log('tokenToUse:', tokenToUse);
   //   setsubmitLoading(true);
   //   let data = new FormData();
-  
+
   //   // Append fields to FormData
   //   data.append('product_ids', productIdsString || '');
   //   data.append('quantities', totalQuantity.toString() || '');
@@ -236,11 +291,9 @@ const Checkout = ({navigation, route}) => {
   //   data.append('billing_country', billingAddress?.data?.billing_country || '');
   //   data.append('total_amount', calculateTotal().toString() || '');
 
-
-  
   //   console.log('Total Quantity:', totalQuantity);
   //   console.log('dataaaaa', data);
-  
+
   //   let config = {
   //     method: 'post',
   //     url: 'https://bad-gear.com/wp-json/payment_process/v1/payment',
@@ -249,7 +302,7 @@ const Checkout = ({navigation, route}) => {
   //     },
   //     data: data,
   //   };
-  
+
   //   try {
   //     const response = await axios(config);
   //     console.log('API Response:', response.data);
@@ -262,11 +315,10 @@ const Checkout = ({navigation, route}) => {
   //   }
   // };
 
-
-
   const handleOrderSubmission = async () => {
-    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
-  
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
+
     // Form validation
     const requiredFields = [
       productIdsString,
@@ -283,26 +335,28 @@ const Checkout = ({navigation, route}) => {
       billingAddress?.data?.billing_email,
       billingAddress?.data?.billing_phone,
       billingAddress?.data?.billing_company,
-      billingAddress?.data?.billing_address, 
+      billingAddress?.data?.billing_address,
       billingAddress?.data?.billing_city,
       billingAddress?.data?.billing_state,
-      billingAddress?.data?.billing_postcode, 
+      billingAddress?.data?.billing_postcode,
       billingAddress?.data?.billing_country,
       calculateTotal().toString(),
     ];
-  
-    const isFormValid = requiredFields.every(field => field && field.trim() !== '');
-  
+
+    const isFormValid = requiredFields.every(
+      field => field && field.trim() !== '',
+    );
+
     if (!isFormValid) {
       console.log('Please fill all required fields.');
-      setLoading(false); 
-      return; 
+      setLoading(false);
+      return;
     }
-  
+
     setLoading(true);
-  
+
     let data = new FormData();
-  
+
     // Append fields to FormData
     data.append('product_ids', productIdsString || '');
     data.append('quantities', totalQuantity.toString() || '');
@@ -313,36 +367,51 @@ const Checkout = ({navigation, route}) => {
     data.append('card_number', paymentDetails?.cardNumber || '');
     data.append('card_exp_date', paymentDetails?.expiryDate || '');
     data.append('card_cvc', paymentDetails?.cvv || '');
-    data.append('billing_first_name', billingAddress?.data?.billing_first_name || '');
-    data.append('billing_last_name', billingAddress?.data?.billing_last_name || '');
+    data.append(
+      'billing_first_name',
+      billingAddress?.data?.billing_first_name || '',
+    );
+    data.append(
+      'billing_last_name',
+      billingAddress?.data?.billing_last_name || '',
+    );
     data.append('billing_email', billingAddress?.data?.billing_email || '');
     data.append('billing_phone', billingAddress?.data?.billing_phone || '');
     data.append('billing_company', billingAddress?.data?.billing_company || '');
-    data.append('billing_address_1', billingAddress?.data?.billing_address || '');
-    data.append('billing_address_2', billingAddress?.data?.billing_address || '');
+    data.append(
+      'billing_address_1',
+      billingAddress?.data?.billing_address || '',
+    );
+    data.append(
+      'billing_address_2',
+      billingAddress?.data?.billing_address || '',
+    );
     data.append('billing_city', billingAddress?.data?.billing_city || '');
     data.append('billing_state', billingAddress?.data?.billing_state || '');
     data.append('billing_zip', billingAddress?.data?.billing_postcode || '');
     data.append('billing_country', billingAddress?.data?.billing_country || '');
     data.append('total_amount', calculateTotal().toString() || '');
-  
+
     console.log('FormData:', data);
-  
+
     // Fetch request
     try {
-      const response = await fetch('https://bad-gear.com/wp-json/payment_process/v1/payment', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${tokenToUse}`,
-          'Content-Type': 'multipart/form-data',
+      const response = await fetch(
+        'https://bad-gear.com/wp-json/payment_process/v1/payment',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${tokenToUse}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          body: data,
         },
-        body: data,
-      });
-  
+      );
+
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }
-  
+
       const responseData = await response?.data;
       console.log('API Response:', responseData);
       setShowModal(true);
@@ -352,11 +421,7 @@ const Checkout = ({navigation, route}) => {
       setLoading(false);
     }
   };
-  
-  
-  
-  
-  
+
   const toggleModal = () => {
     setShowModal(!showModal);
   };
@@ -375,7 +440,7 @@ const Checkout = ({navigation, route}) => {
           showsVerticalScrollIndicator={false}>
           <View style={styles.mainView}>
             <TouchableOpacity
-              style={[styles.row, {paddingLeft: 10}]}
+              style={[styles.row, {}]}
               onPress={() => navigation.navigate('DeliveryAddress')}>
               <View style={{flexDirection: 'row'}}>
                 <View
@@ -459,7 +524,7 @@ const Checkout = ({navigation, route}) => {
                     width: 55,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    marginLeft: 10,
+                   
                   }}>
                   <Image
                     source={require('../assets/credit-card.png')}
@@ -503,7 +568,9 @@ const Checkout = ({navigation, route}) => {
             <View style={{marginTop: 20}}>
               {cartItems && cartItems.length > 0 ? (
                 cartItems.map((item, index) => {
-                  const undefinedRates = item.price;
+                  const price = parseFloat(item.price);
+                  const quantity = parseInt(item.quantity);
+                  const totalPrice = price * quantity;
                   return (
                     <View
                       key={index}
@@ -518,10 +585,7 @@ const Checkout = ({navigation, route}) => {
                         </Text>
                       </View>
                       <Text style={styles.orderText}>
-                        $
-                        {item && undefinedRates !== undefined
-                          ? item.price
-                          : '0.00'}
+                        ${totalPrice.toFixed(2)}
                       </Text>
                     </View>
                   );
@@ -538,7 +602,7 @@ const Checkout = ({navigation, route}) => {
                 marginTop: 10,
               }}>
               <Text style={styles.orderText}>Discount</Text>
-              <Text style={styles.orderText}>$ 1699</Text>
+              <Text style={styles.orderText}>$ 0.00</Text>
             </View>
 
             <View
@@ -571,14 +635,14 @@ const Checkout = ({navigation, route}) => {
               <Text
                 style={[
                   styles.orderText,
-                  {fontSize: 22, fontFamily: 'Gilroy-Bold'},
+                  {fontSize: 22, fontFamily: 'Gilroy-SemiBold'},
                 ]}>
                 My Order
               </Text>
               <Text
                 style={[
                   styles.orderText,
-                  {fontSize: 22, fontFamily: 'Gilroy-Bold'},
+                  {fontSize: 22, fontFamily: 'Gilroy-SemiBold'},
                 ]}>
                 $ {calculateTotal()}
               </Text>
@@ -626,8 +690,6 @@ const Checkout = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
       )}
-
-
 
       <Modal
         visible={showModal}
@@ -696,6 +758,7 @@ const styles = StyleSheet.create({
   },
   mainView: {
     width: '100%',
+  
   },
   row: {
     flexDirection: 'row',

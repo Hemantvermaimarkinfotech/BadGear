@@ -24,136 +24,251 @@ const Cart = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  console.log('cartitems', cartItems);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [isFocus, setIsFocus] = useState(false);
   const [value, setValue] = useState(null);
   const [country, setCountry] = useState('1');
-  const [selectedCartItem, setSelectedCartItem] = useState(null); 
-  const { userToken } = useContext(AuthContext);
+  const [selectedCartItem, setSelectedCartItem] = useState(null);
+  const {userToken} = useContext(AuthContext);
   const [cartLength, setCartLength] = useState(0);
 
   const data = [
-    { label: 'X', value: 'X' },
-    { label: 'M', value: 'M' },
-    { label: 'L', value: 'L' },
-    { label: 'XL', value: 'XL' },
+    {label: 'X', value: 'X'},
+    {label: 'M', value: 'M'},
+    {label: 'L', value: 'L'},
+    {label: 'XL', value: 'XL'},
   ];
   const goBack = () => {
     navigation.goBack();
-  };
+  }
 
-  const updateQuantity = async (item, quantityChange) => {
-    const updatedCartItems = cartItems.map(cartItem => {
-      if (cartItem.product_id === item.product_id) {
-        const newQuantity = Math.max(1, cartItem.quantity + quantityChange);
-        return { ...cartItem, quantity: newQuantity };
-      }
-      return cartItem;
-    });
-    setCartItems(updatedCartItems);
-    setCartLength(updatedCartItems.length);
-    try {
-      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
-    } catch (error) {
-      console.log('Error updating AsyncStorage:', error);
-    }
-  };
+  const [itemQuantities, setItemQuantities] = useState({});
+  const [itemPrices, setItemPrices] = useState({});
+  console.log("price",itemPrices)
+
+  console.log("quantity",itemQuantities)
+  
   
 
 
+  // const handleIncrease = (productId) => {
+  //   setItemQuantities(prevQuantities => ({
+  //     ...prevQuantities,
+  //     [productId]: (prevQuantities[productId] || 1) + 1,
+  //   }));
+  // };
+  
+  // const handleDecrease = (productId) => {
+  //   setItemQuantities(prevQuantities => ({
+  //     ...prevQuantities,
+  //     [productId]: Math.max(1, (prevQuantities[productId] || 1) - 1),
+  //   }));
+  // };
+  
+  const handleIncrease = (productId, price) => {
+    setItemQuantities(prevQuantities => {
+      const newQuantity = (prevQuantities[productId] || 1) + 1;
+      setItemPrices(prevPrices => ({
+        ...prevPrices,
+        [productId]: newQuantity * price,
+      }));
+      return {
+        ...prevQuantities,
+        [productId]: newQuantity,
+      };
+    });
+  };
+  
+  const handleDecrease = (productId, price) => {
+    setItemQuantities(prevQuantities => {
+      const newQuantity = Math.max(1, (prevQuantities[productId] || 1) - 1);
+      setItemPrices(prevPrices => ({
+        ...prevPrices,
+        [productId]: newQuantity * price,
+      }));
+      return {
+        ...prevQuantities,
+        [productId]: newQuantity,
+      };
+    });
+  };
+  
 
-const renderCartItem = ({ item }) => (
-  <View>
-    <View style={styles.cartItem}>
-      <View style={styles.imageContainer}>
-        {item?.product_img ? (
-          <Image source={{ uri: item.product_img }} style={styles.image} />
-        ) : (
-          <Text style={{ color: '#000000' }}>No Image Available</Text>
-        )}
-      </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.itemText}>{item.product_name}</Text>
-        <Text style={styles.itemRate}>
-          ${(item.price * item.quantity).toFixed(2)}
-        </Text>
-        <View style={styles.qtyContainer}>
-          <View style={styles.qtySection}>
-            <TouchableOpacity
-              style={styles.qtybtn}
-              onPress={() => updateQuantity(item, -1)}>
-              <Text style={styles.btntext}>-</Text>
-            </TouchableOpacity>
-            <Text style={styles.quantityText}>{item.quantity}</Text>
-            <TouchableOpacity
-              style={styles.qtybtn}
-              onPress={() => updateQuantity(item, 1)}>
-              <Text style={styles.btntext}>+</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.sizeSection}>
-            <Text style={styles.sizeLabel}>Size:</Text>
-            <SelectCountry
-              style={styles.dropdown}
-              selectedTextStyle={styles.selectedTextStyle}
-              placeholderStyle={styles.placeholderStyle}
-              imageStyle={styles.imageStyle}
-              iconStyle={styles.iconStyle}
-              maxHeight={200}
-              value={item.size} 
-              data={data}
-              valueField="value"
-              labelField="label"
-              imageField="image"
-              placeholder="Select Size"
-              searchPlaceholder="Search..."
-              onChange={e => {
-                const newCartItems = cartItems.map(cartItem =>
-                  cartItem.product_id === item.product_id
-                    ? { ...cartItem, size: e.value }
-                    : cartItem
-                );
-                setCartItems(newCartItems);
-              }}
-              showVerticalScrollIndicator={false}
-            />
+  updataCart = () => {
+    let data = new FormData();
+    data.append('product_id', '4037');
+    data.append('size', 'XL');
+    data.append('quantity', '4');
+    data.append('price', '500');
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
+      headers: {
+        Authorization:
+          'Sunil|1723525490|jeaUrx6KIQ15vWSNRnXl879JySvx1Szc722a2Rzqwop|304aa22a61df94b517c2f95bd559a8cfbb2b03245331bd4d3de4c4589a5dcace',
+        ...data.getHeaders(),
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then(response => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+  const renderCartItem = ({ item }) => (
+    <View>
+      <View style={styles.cartItem}>
+        <View style={styles.imageContainer}>
+          {item?.product_img ? (
+            <Image source={{ uri: item.product_img }} style={styles.image} />
+          ) : (
+            <Text style={{ color: '#000000' }}>No Image Available</Text>
+          )}
+        </View>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.itemText}>{item.product_name}</Text>
+          <Text style={styles.itemRate}>
+            ${(itemPrices[item.product_id] || item.price * (itemQuantities[item.product_id] || item.quantity)).toFixed(2)}
+          </Text>
+          <View style={styles.qtyContainer}>
+            <View style={styles.qtySection}>
+              <TouchableOpacity style={styles.qtybtn} onPress={() => handleDecrease(item.product_id, item.price)}>
+                <Text style={styles.btntext}>-</Text>
+              </TouchableOpacity>
+              <Text style={styles.quantityText}>{itemQuantities[item.product_id] || item.quantity}</Text>
+              <TouchableOpacity style={styles.qtybtn} onPress={() => handleIncrease(item.product_id, item.price)}>
+                <Text style={styles.btntext}>+</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.sizeSection}>
+              <Text style={styles.sizeLabel}>Size:</Text>
+              <Text style={styles.sizeLabel}>{item.size}</Text>
+            </View>
           </View>
         </View>
-      </View>
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => {
-          Alert.alert(
-            'Delete Item',
-            'Are you sure you want to delete this item?',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              {
-                text: 'OK',
-                onPress: () => {
-                  console.log(item.product_id);
-                  DeleteCart(item.product_id);
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => {
+            Alert.alert(
+              'Delete Item',
+              'Are you sure you want to delete this item?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    DeleteCart(item.product_id);
+                  },
                 },
-              },
-            ],
-            { cancelable: true }
-          );
-        }}>
-        <Text style={styles.closeButtonText}>X</Text>
-        {loading && <ActivityIndicator />}
-      </TouchableOpacity>
+              ],
+              { cancelable: true },
+            );
+          }}
+        >
+          <Text style={styles.closeButtonText}>X</Text>
+          {loading && <ActivityIndicator />}
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
+  
+  
 
-  const DeleteCart = async (productId) => {
-    setLoading(true)
+//     <View>
+//       <View style={styles.cartItem}>
+//         <View style={styles.imageContainer}>
+//           {item?.product_img ? (
+//             <Image source={{uri: item.product_img}} style={styles.image} />
+//           ) : (
+//             <Text style={{color: '#000000'}}>No Image Available</Text>
+//           )}
+//         </View>
+//         <View style={styles.detailsContainer}>
+//           <Text style={styles.itemText}>{item.product_name}</Text>
+//           <Text style={styles.itemRate}>
+//             ${(item.price * item.quantity).toFixed(2)}
+//           </Text>
+//           {/* <View style={styles.qtyContainer}>
+//             <View style={styles.qtySection}>
+//               <TouchableOpacity
+//                 style={styles.qtybtn}
+//                 onPress={() => updateQuantity(item-1)}>
+//                 <Text style={styles.btntext}>-</Text>
+//               </TouchableOpacity>
+//               <Text style={styles.quantityText}>{item.quantity}</Text>
+//               <TouchableOpacity
+//                 style={styles.qtybtn}
+//                 onPress={() => updateQuantity(item+1)}>
+//                 <Text style={styles.btntext}>+</Text>
+//               </TouchableOpacity>
+//             </View>
+//             <View style={styles.sizeSection}>
+//               <Text style={styles.sizeLabel}>Size:</Text>
+//               <Text style={styles.sizeLabel}>{item?.size}</Text>
+            
+//             </View>
+//           </View> */}
+
+// <View style={styles.qtyContainer}>
+//       <View style={styles.qtySection}>
+//         <TouchableOpacity style={styles.qtybtn} onPress={handleDecrease}>
+//           <Text style={styles.btntext}>-</Text>
+//         </TouchableOpacity>
+//         <Text style={styles.quantityText}>{quantity}</Text>
+//         <TouchableOpacity style={styles.qtybtn} onPress={handleIncrease}>
+//           <Text style={styles.btntext}>+</Text>
+//         </TouchableOpacity>
+//       </View>
+//       <View style={styles.sizeSection}>
+//         <Text style={styles.sizeLabel}>Size:</Text>
+//         <Text style={styles.sizeLabel}>{item.size}</Text>
+//         {/* Your SelectCountry component here */}
+//       </View>
+//     </View>
+//         </View>
+//         <TouchableOpacity
+//           style={styles.closeButton}
+//           onPress={() => {
+//             Alert.alert(
+//               'Delete Item',
+//               'Are you sure you want to delete this item?',
+//               [
+//                 {text: 'Cancel', style: 'cancel'},
+//                 {
+//                   text: 'OK',
+//                   onPress: () => {
+//                     console.log(item.product_id);
+//                     DeleteCart(item.product_id);
+//                   },
+//                 },
+//               ],
+//               {cancelable: true},
+//             );
+//           }}>
+//           <Text style={styles.closeButtonText}>X</Text>
+//           {loading && <ActivityIndicator />}
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+
+  const DeleteCart = async productId => {
+    setLoading(true);
     let data = new FormData();
     data.append('product_id', productId);
-  
-    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
-  
+
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
+
     let config = {
       method: 'post',
       url: 'https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems',
@@ -163,14 +278,14 @@ const renderCartItem = ({ item }) => (
       },
       data: data,
     };
-  
+
     try {
       const response = await axios.request(config);
       console.log(JSON.stringify(response.data));
-  
+
       if (response.data.status === 'success') {
-        setCartItems((prevItems) =>
-          prevItems.filter((item) => item.product_id !== productId)
+        setCartItems(prevItems =>
+          prevItems.filter(item => item.product_id !== productId),
         );
       } else {
         console.log('Error: Unexpected response format:', response);
@@ -178,15 +293,15 @@ const renderCartItem = ({ item }) => (
     } catch (error) {
       console.log('Error deleting Cart Item:', error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
 
   const getCartItems = async () => {
     setLoading(true);
 
-    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+    const tokenToUse =
+      userToken && userToken.token ? userToken.token : userToken;
     let config = {
       method: 'get',
       url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
@@ -200,19 +315,24 @@ const renderCartItem = ({ item }) => (
       console.log(JSON.stringify(response.data));
 
       if (response.data.status === 'success') {
-        const itemsWithQuantity = response.data.data.map((item) => ({
+        const itemsWithQuantity = response.data.data.map(item => ({
           ...item,
         }));
         setCartItems(itemsWithQuantity);
 
-        const totalAmount = itemsWithQuantity.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0
-        ).toFixed(2);
+        const totalAmount = itemsWithQuantity
+          .reduce((total, item) => total + item.price * item.quantity, 0)
+          .toFixed(2);
 
-        await AsyncStorage.setItem('cartItems', JSON.stringify(itemsWithQuantity));
+        await AsyncStorage.setItem(
+          'cartItems',
+          JSON.stringify(itemsWithQuantity),
+        );
         await AsyncStorage.setItem('totalAmount', totalAmount);
-        await AsyncStorage.setItem('cartItemsprice', JSON.stringify(itemsWithQuantity));
+        await AsyncStorage.setItem(
+          'cartItemsprice',
+          JSON.stringify(itemsWithQuantity),
+        );
         setCartLength(itemsWithQuantity.length);
       } else {
         console.log('Error: Unexpected response format:', response);
@@ -227,29 +347,23 @@ const renderCartItem = ({ item }) => (
   useEffect(() => {
     getCartItems();
   }, []);
-  
 
+  // Function to calculate total amount
+  const getTotalAmount = () => {
+    if (!cartItems || cartItems.length === 0) {
+      return '0.00';
+    }
 
+    const total = cartItems.reduce((total, item) => {
+      const itemPrice = parseFloat(item.price) || 0;
+      const itemQuantity = parseInt(item.quantity, 10) || 0;
+      return total + itemPrice * itemQuantity;
+    }, 0);
 
-
- // Function to calculate total amount
-const getTotalAmount = () => {
-  if (!cartItems || cartItems.length === 0) {
-    return '0.00';
-  }
-
-  const total = cartItems.reduce((total, item) => {
-    const itemPrice = parseFloat(item.price) || 0; 
-    const itemQuantity = parseInt(item.quantity, 10) || 0; 
-    return total + (itemPrice * itemQuantity);
-  }, 0);
-
-  return total.toFixed(2); 
-};
-
+    return total.toFixed(2);
+  };
 
   return (
-
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={goBack}>
@@ -273,17 +387,15 @@ const getTotalAmount = () => {
                 <Text style={styles.totalItemsText}>
                   {cartItems.length} Items Selected
                 </Text>
-                <Text style={styles.totalAmountText}>
-                  ${getTotalAmount()}
-                  
-                </Text>
+                <Text style={styles.totalAmountText}>${getTotalAmount()}</Text>
               </View>
 
-              <View style={{ marginBottom: 200 }}>
-                <FlatList showVerticalScrollIndicator={false}
+              <View style={{marginBottom: 200}}>
+                <FlatList
+                  showVerticalScrollIndicator={false}
                   data={cartItems}
                   renderItem={renderCartItem}
-                  keyExtractor={(item) => item.product_id.toString()}
+                  keyExtractor={item => item.product_id.toString()}
                   nestedScrollEnabled={true}
                 />
 
@@ -298,17 +410,21 @@ const getTotalAmount = () => {
                       cartItems,
                       totalAmount: getTotalAmount(),
                     });
-                  }}
-                >
+                  }}>
                   <Text style={styles.placeOrderText}>Place Order</Text>
                 </TouchableOpacity>
               </View>
             </>
           ) : (
             <View style={styles.noCartContainer}>
-              <Text style={{ color: '#000000',
-              fontSize: 20,
-              fontFamily: 'Gilroy-Medium'}}>No items in the cart</Text>
+              <Text
+                style={{
+                  color: '#000000',
+                  fontSize: 20,
+                  fontFamily: 'Gilroy-Medium',
+                }}>
+                No items in the cart
+              </Text>
             </View>
           )}
         </>
@@ -456,7 +572,7 @@ const styles = StyleSheet.create({
     borderColor: '#B2B2B2',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 5,
+    paddingHorizontal: 15,
   },
   qtybtn: {
     height: 30,
@@ -495,9 +611,12 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 15,
     fontFamily: 'Gilroy-SemiBold',
-  },noCartContainer:{
-    flex:1,justifyContent:"center",alignItems:"center"
-  }
+  },
+  noCartContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default Cart;

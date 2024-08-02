@@ -233,7 +233,7 @@ const BottomTabNav = () => (
             <Text
               style={{
                 fontSize: 15,
-                marginTop: 4,
+                marginTop: 2,
                 color: '#000000',
                 fontFamily:"Gilroy-SemiBold"
               }}>
@@ -324,19 +324,19 @@ const BottomTabNav = () => (
       component={NewArrival}
       options={{
         tabBarIcon: ({focused}) => (
-          <View style={{alignItems: 'center', justifyContent: 'center', marginTop: 5}}>
+          <View style={{alignItems: 'center', justifyContent: 'center',}}>
             <Image
-              source={require('../assets/notification.png')}
+              source={require('../assets/shopping-bag.png')}
               style={{
-                height: 19,
-                width: 17,
+                height: 26,
+                width: 26,
                 tintColor: focused ? '#F10C18' : '#000000',
               }}
             />
             <Text
               style={{
                 fontSize: 15,
-                marginTop: 5,
+               marginTop:2,
                 color: '#000000',
                 fontFamily:"Gilroy-SemiBold"
               }}>
@@ -370,7 +370,7 @@ const BottomTabNav = () => (
             <Text
               style={{
                 fontSize: 15,
-                marginTop: 5,
+                marginTop: 2,
                 color: '#000000',
                 fontFamily:"Gilroy-SemiBold"
               }}>
@@ -492,6 +492,7 @@ const AppScreenStack = () => {
         component={orderDetails}
         options={{headerShown: false}}
       />
+       
 
       
     </Stack.Navigator>

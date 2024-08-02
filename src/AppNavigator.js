@@ -18,6 +18,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import NewArrival from './AppStack/NewArrival';
 import Setting from './AppStack/Setting';
+import Search from './AppStack/Search';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -65,8 +66,16 @@ const AppNavigator = () => {
         component={Setting}
         options={{headerShown: false}}
       />
-
-
+ <Stack.Screen
+        name="ProductDetails"
+        component={ProductDetailsPage}
+        options={{headerShown: false}}
+      />
+ <Stack.Screen
+        name="Search"
+        component={Search}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
