@@ -24,6 +24,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {useIsFocused} from '@react-navigation/native';
 import CustomCreditCardInput from '../Components/CustomCreditCardInput';
 import {getProductDetails} from '../Components/ApiService';
+import {TextInput} from 'react-native-gesture-handler';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -46,6 +47,11 @@ const Checkout = ({navigation, route}) => {
   console.log('checkoutcartitmes', cartItems);
   const [pageloading, setPageloading] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+
+  const handleClearText = () => {
+    setCouponCode('');
+  };
 
   const totalQuantity = cartItems.reduce(
     (total, item) => total + parseInt(item.quantity),
@@ -416,7 +422,7 @@ const Checkout = ({navigation, route}) => {
       console.log('API Response:', responseData);
       setShowModal(true);
     } catch (error) {
-      console.error('API Error:', error.message);
+      console.log('API Error:', error.message);
     } finally {
       setLoading(false);
     }
@@ -524,7 +530,6 @@ const Checkout = ({navigation, route}) => {
                     width: 55,
                     justifyContent: 'center',
                     alignItems: 'center',
-                   
                   }}>
                   <Image
                     source={require('../assets/credit-card.png')}
@@ -564,6 +569,39 @@ const Checkout = ({navigation, route}) => {
                 opacity: 0.3,
               }}
             />
+           <View style={{ marginTop: 10 }}>
+      <Text style={styles.couponText}>
+        Have a coupon code? Enter here
+      </Text>
+      <View style={styles.couponContainer}>
+        <View style={styles.inputContainer}>
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={handleClearText}
+          >
+            <Image
+              source={require('../assets/cut.png')}
+              style={styles.cutIcon}
+            />
+          </TouchableOpacity>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              placeholder="Enter your offer code"
+              placeholderTextColor="#6a6a6a"
+              value={couponCode}
+              onChangeText={setCouponCode}
+              style={styles.textInput}
+            />
+          </View>
+        </View>
+        <TouchableOpacity style={styles.arrowContainer}>
+          <Image
+            source={require('../assets/arrow-right.png')}
+            style={styles.arrowIcon}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
 
             <View style={{marginTop: 20}}>
               {cartItems && cartItems.length > 0 ? (
@@ -758,7 +796,6 @@ const styles = StyleSheet.create({
   },
   mainView: {
     width: '100%',
-  
   },
   row: {
     flexDirection: 'row',
@@ -906,5 +943,54 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Gilroy-Regular',
     marginVertical: 5,
+  },
+  couponText: {
+    color: '#000000',
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  couponContainer: {
+    width: '95%',
+    height: 55,
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#dee2e6',
+    borderStyle: 'dashed',
+    alignSelf: 'center',
+    marginTop: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    alignSelf: 'center',
+  },
+  inputContainer: {
+    width: '80%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: '20%',
+  },
+  cutIcon: {
+    height: 20,
+    width: 20,
+    tintColor: '#F10C18',
+  },
+  textInputContainer: {
+    width: '85%',
+  },
+  textInput: {
+    fontSize: 18,
+    fontFamily: 'Gilroy',
+    color: '#000000',
+  },
+  arrowContainer: {
+    justifyContent: 'center',
+  },
+  arrowIcon: {
+    tintColor: '#F10C18',
+    height: 15,
+    width: 15,
   },
 });

@@ -8,56 +8,29 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert 
+  Alert,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
-import {Dropdown} from 'react-native-element-dropdown';
 import {AuthContext} from '../Components/AuthProvider';
-import DropDownPicker from 'react-native-dropdown-picker';
 import {AirbnbRating} from 'react-native-ratings';
 import axios from 'react-native-axios';
 import Loader from '../Components/Loader';
 
 const AddReview = ({route}) => {
   const productDetails = route.params;
-  console.log('proudctId', productDetails?.productId);
+  console.log('productId', productDetails?.productId);
   const {userToken} = useContext(AuthContext);
-  const attributes = productDetails?.productDetails.attributes;
   const [text, setText] = useState('');
   const [rating, setRating] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRating = value => {
     setRating(value);
-    setIsOpen(false);
   };
-  const reviews =
-    rating > 0
-      ? ['Add Rating', 'Terrible', 'Bad', 'OK', 'Good', 'Amazing']
-      : 'pleade add';
-  const dropdownItems = [
-    {label: '1 Star', value: 1},
-    {label: '2 Stars', value: 2},
-    {label: '3 Stars', value: 3},
-    {label: '4 Stars', value: 4},
-    {label: '5 Stars', value: 5},
-  ];
 
-  const data = [
-    {label: 'January', value: '1'},
-    {label: 'February', value: '2'},
-    {label: 'March', value: '3'},
-    {label: 'April', value: '4'},
-    {label: 'May', value: '5'},
-    {label: 'June', value: '6'},
-    {label: 'July', value: '7'},
-    {label: 'August', value: '8'},
-    {label: 'September', value: '9'},
-    {label: 'October', value: '10'},
-    {label: 'November', value: '11'},
-    {label: 'December', value: '12'},
-  ];
+  const reviews = ['Terrible', 'Bad', 'OK', 'Good', 'Amazing'];
 
   const addReview = () => {
     if (isNaN(rating) || rating < 1 || rating > 5) {
@@ -70,7 +43,7 @@ const AddReview = ({route}) => {
       return;
     }
 
-    setLoading(true)
+    setLoading(true);
     let data = new FormData();
     data.append('product_id', productDetails?.productId);
     data.append('rating', rating);
@@ -93,7 +66,7 @@ const AddReview = ({route}) => {
       .request(config)
       .then(response => {
         console.log(JSON.stringify(response.data));
-        Alert.alert('Success', 'Review added successfully.'); 
+        Alert.alert('Success', 'Review added successfully.');
       })
       .catch(error => {
         console.log(error);
@@ -105,156 +78,124 @@ const AddReview = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TitleHeader title={'AddReview'} />
-      <ScrollView style={styles.mainView} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerView}>
-          <View
-            style={{
-              height: 70,
-              width: 70,
-              borderWidth: 1,
-              borderColor: '#D8D8D8',
-              borderRadius: 5,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={{uri: productDetails?.productDetails.product_img}}
-              style={{height: 60, width: 60, borderRadius: 5}}
-            />
-          </View>
-
-          <View style={{marginLeft: 10,justifyContent:"center"}}>
-            <Text
+      <TitleHeader title={'Add Review'} />
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+      >
+        <ScrollView style={styles.mainView} showsVerticalScrollIndicator={false}>
+          <View style={styles.headerView}>
+            <View
               style={{
-                fontSize: 16,
-                color: '#000000',
-                fontFamily: 'Gilroy-SemiBold',
+                height: 70,
+                width: 70,
+                borderWidth: 1,
+                borderColor: '#D8D8D8',
+                borderRadius: 5,
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
-              {productDetails?.productDetails.product_name}
-            </Text>
-            <View style={{flexDirection: 'row',marginTop:5}}>
+              <Image
+                source={{uri: productDetails?.productDetails.product_img}}
+                style={{height: 60, width: 60, borderRadius: 5}}
+              />
+            </View>
+
+            <View style={{marginLeft: 10, justifyContent: 'center'}}>
               <Text
                 style={{
                   fontSize: 16,
                   color: '#000000',
-                  fontFamily: 'Gilroy-Medium',
+                  fontFamily: 'Gilroy-SemiBold',
                 }}>
-                ${productDetails?.productDetails.price}
+                {productDetails?.productDetails.product_name}
               </Text>
-              {/* <View
-                style={{
-                  height: 25,
-                  width: 40,
-                  flexDirection: 'row',
-                  backgroundColor: '#F4F4F4',
-                  alignItems: 'center',
-                  borderRadius: 5,
-                  paddingHorizontal: 5,
-                  marginLeft: 10,
-                }}>
+              <View style={{flexDirection: 'row', marginTop: 5}}>
                 <Text
                   style={{
-                    fontSize: 13,
+                    fontSize: 16,
                     color: '#000000',
                     fontFamily: 'Gilroy-Medium',
                   }}>
-                  4
+                  ${productDetails?.productDetails.price}
                 </Text>
-                <Image
-                  source={require('../assets/star.png')}
-                  style={{height: 12, width: 12, marginLeft: 5}}
-                />
-              </View> */}
+              </View>
             </View>
           </View>
-        </View>
 
-        <Text
-          style={{
-            fontSize: 16,
-            color: '#000000',
-            fontFamily: 'Gilroy-Medium',
-            marginTop: 20,
-          }}>
-          Rating
-        </Text>
-
-        <View style={{marginTop: 10}}>
-          <View style={styles.ratingContainer}>
-            <AirbnbRating
-              count={5} // Total number of stars to be displayed
-              reviews={reviews}
-              defaultRating={rating} // Initial rating
-              size={30} // Size of the rating stars
-              onFinishRating={handleRating} // Function to handle the rating selected
-            />
-            <Text style={styles.selectedRatingText}>
-              Selected rating: {rating} / 5
-            </Text>
-          </View>
-          {/* <DropDownPicker
-            open={isOpen}
-            value={rating}
-            items={dropdownItems}
-            setOpen={setIsOpen}
-            setValue={handleRating}
-            setItems={null}
-            placeholder="Select Rating"
-            containerStyle={styles.dropdownContainer}
-            style={styles.dropdown}
-            itemStyle={styles.dropdownItem}
-            dropDownContainerStyle={styles.dropdownList}
-          /> */}
-        </View>
-
-        <Text
-          style={{
-            fontSize: 16,
-            color: '#000000',
-            fontFamily: 'Gilroy-Medium',
-            marginTop: 20,
-          }}>
-          Message
-        </Text>
-
-        <View style={styles.Textarea}>
-          <TextInput
-            style={styles.textareaContainer}
-            multiline={true}
-            numberOfLines={10}
-            onChangeText={text => setText(text)}
-            value={text}
-            placeholder={'Write'}
-            placeholderTextColor={'#818181'}
-            underlineColorAndroid={'transparent'}
-            textAlignVertical={'top'}
-            textAlign={'left'}
-          />
-        </View>
-
-        {loading ? (
-          <View
+          <Text
             style={{
-              height: 55,
-              width: '100%',
-              alignSelf: 'center',
-              borderColor: '#F10C18',
-              borderRadius: 8,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 30,
-              marginBottom: 80,
-            }}
-            onPress={() => addReview()}>
-            <Loader />
+              fontSize: 16,
+              color: '#000000',
+              fontFamily: 'Gilroy-Medium',
+              marginTop: 20,
+            }}>
+            Rating
+          </Text>
+
+          <View style={{marginTop: 10}}>
+            <View style={styles.ratingContainer}>
+              <AirbnbRating
+                count={5} // Total number of stars to be displayed
+                reviews={reviews} // Reviews labels to be shown for each star level
+                defaultRating={rating} // Initial rating
+                size={30} // Size of the rating stars
+                onFinishRating={handleRating} // Function to handle the rating selected
+              />
+              <Text style={styles.selectedRatingText}>
+                Selected rating: {rating > 0 ? reviews[rating - 1] : ''} / 5
+              </Text>
+            </View>
           </View>
-        ) : (
-          <TouchableOpacity style={styles.button} onPress={() => addReview()}>
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
+
+          <Text
+            style={{
+              fontSize: 16,
+              color: '#000000',
+              fontFamily: 'Gilroy-Medium',
+              marginTop: 20,
+            }}>
+            Message
+          </Text>
+
+          <View style={styles.Textarea}>
+            <TextInput
+              style={styles.textareaContainer}
+              multiline={true}
+              numberOfLines={10}
+              onChangeText={text => setText(text)}
+              value={text}
+              placeholder={'Write'}
+              placeholderTextColor={'#818181'}
+              underlineColorAndroid={'transparent'}
+              textAlignVertical={'top'}
+              textAlign={'left'}
+            />
+          </View>
+
+          {loading ? (
+            <View
+              style={{
+                height: 55,
+                width: '100%',
+                alignSelf: 'center',
+                borderColor: '#F10C18',
+                borderRadius: 8,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: 30,
+                marginBottom: 80,
+              }}>
+              <Loader />
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.button} onPress={() => addReview()}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

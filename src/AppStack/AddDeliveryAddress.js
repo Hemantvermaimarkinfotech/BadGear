@@ -197,7 +197,7 @@ const AddDeliveryAddress = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <MainHeader title={'Add Delivery Address'} />
 
-      <ScrollView style={{marginBottom: 100}}>
+      <ScrollView style={{marginBottom: 100}} showsVerticalScrollIndicator={false}>
       {/* Delivery address */}
       {addressType === 1 && (
       <View style={{width: '100%', marginHorizontal: 20, marginTop: 20}}>

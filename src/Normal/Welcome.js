@@ -159,12 +159,12 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const dynamicFontSize = screenHeight * 0.029;
 
 const Welcome = ({ navigation }) => {
-  const videoRef = useRef(null); // Define videoRef using useRef hook
+  const videoRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [showVideo, setShowVideo] = useState(false); 
+  const [showVideo, setShowVideo] = useState(false);
 
   const playVideo = () => {
-    setShowVideo(true); 
+    setShowVideo(true);
   };
 
   const onEnd = () => {
@@ -180,7 +180,7 @@ const Welcome = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {!showVideo ? ( 
+      {!showVideo ? (
         <ImageBackground source={require('../assets/tracter3x.png')} style={styles.backgroundImage}>
           <View style={styles.overlay}>
             <View style={styles.header}>
@@ -191,12 +191,14 @@ const Welcome = ({ navigation }) => {
                 Welcome to the World’s Largest Retailer of Diesel and Tractor Pulling Apparel!!!
               </Text>
             </View>
-            <TouchableOpacity onPress={playVideo} style={styles.videoContainer}>
-              <Image
-                source={require('../assets/playbutton.png')}
-                style={styles.playButton}
-              />
-            </TouchableOpacity>
+            <View style={styles.playButtonContainer}>
+              <TouchableOpacity onPress={playVideo} style={styles.videoContainer}>
+                <Image
+                  source={require('../assets/playbutton.png')}
+                  style={styles.playButton}
+                />
+              </TouchableOpacity>
+            </View>
             <View style={styles.skipContainer}>
               <TouchableOpacity onPress={handleSkip}>
                 <Text style={styles.skipText}>
@@ -208,7 +210,6 @@ const Welcome = ({ navigation }) => {
         </ImageBackground>
       ) : (
         <View style={styles.videoContainer}>
-          {/* Video component starts here */}
           <Video
             source={require('../assets/video1.mp4')}
             ref={videoRef}
@@ -216,14 +217,12 @@ const Welcome = ({ navigation }) => {
             resizeMode="stretch"
             paused={isPaused}
             onEnd={onEnd}
-            onError={(error) => console.log('Video Error: ', error)} 
-            controls={false} 
+            onError={(error) => console.log('Video Error: ', error)}
+            controls={false}
           />
-          {/* Skip button */}
-          <TouchableOpacity onPress={handleSkip} style={[styles.skipButton, { justifyContent: "center", alignItems: "center", alignSelf: "center" }]}>
+          <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
-          {/* End of Video component */}
         </View>
       )}
     </SafeAreaView>
@@ -251,29 +250,31 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 1)', 
+    backgroundColor: 'rgba(255, 255, 255, 1)',
     paddingVertical: 20,
     paddingHorizontal: 15,
+    zIndex: 1, // Ensure the text is on top
   },
   welcomeText: {
     fontSize: dynamicFontSize,
-    color: '#000000', 
+    color: '#000000',
     lineHeight: dynamicFontSize * 1.7,
     textAlign: 'center',
     fontFamily: "Gilroy-SemiBold",
   },
-  videoContainer: {
+  playButtonContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
   },
   playButton: {
-    position: 'absolute',
     width: screenHeight * 0.1,
     height: screenHeight * 0.1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   fullScreenVideo: {
     width: '100%',
@@ -286,15 +287,16 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    bottom: screenHeight * 0.03, 
+    bottom: screenHeight * 0.03,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     paddingVertical: screenHeight * 0.01,
     paddingHorizontal: screenWidth * 0.04,
-    borderRadius: screenWidth * 0.03, 
+    borderRadius: screenWidth * 0.03,
   },
   skipText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: "Gilroy-Bold"
+    fontFamily: "Gilroy-Bold",
   },
 });
+

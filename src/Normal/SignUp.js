@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../Components/AuthProvider';
 import axios from 'react-native-axios';
+
 import Loader from '../Components/Loader';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -242,10 +243,10 @@ const styles = StyleSheet.create({
     
   },
   signupLink: {
-    fontWeight: '600',
     textDecorationLine: "underline",
     color: "#F10C18",
-    fontFamily: "Gilroy-Bold"
+    fontFamily: "Gilroy-Bold",
+    fontSize:16
   },
   inputContainer: {
     width: "100%"

@@ -13,9 +13,8 @@ import {
   Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {getWishList} from '../Components/ApiService';
-import {AuthContext} from '../Components/AuthProvider';
 import axios from 'react-native-axios';
+import {AuthContext} from '../Components/AuthProvider';
 
 const WishList = () => {
   const navigation = useNavigation();
@@ -23,7 +22,8 @@ const WishList = () => {
     navigation.goBack();
   };
 
-  const [wishlist, setWishList] = useState();
+  // Initialize wishlist as an empty array
+  const [wishlist, setWishList] = useState([]);
 
   const [loading, setLoading] = useState(false); 
   const {userToken} = useContext(AuthContext);
@@ -130,14 +130,16 @@ const WishList = () => {
             style={styles.headerIcon}
           />
         </TouchableOpacity>
-        <Text style={styles.headerText}>WishList</Text>
+        <Text style={styles.headerText}>Wishlist</Text>
       </View>
-
+      {/* Display the total number of items */}
+      <Text style={styles.itemCount}>Total Items: {wishlist.length}</Text>
+ 
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size={'large'} color={'#F10C18'} />
         </View>
-      ) : wishlist && wishlist.length === 0 ? (
+      ) : wishlist.length === 0 ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.noItemsText}>
             No items in wishlist
@@ -145,10 +147,10 @@ const WishList = () => {
         </View>
       ) : (
         <FlatList
-        showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           data={wishlist}
           renderItem={renderItem}
-          keyExtractor={item => item.product_id}
+          keyExtractor={item => item.product_id.toString()} // Ensure keyExtractor returns a string
           contentContainerStyle={styles.flatListContentContainer}
         />
       )}
@@ -243,6 +245,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Gilroy-Medium',
   },
+  itemCount: {
+    fontSize: 20,
+    fontFamily: 'Gilroy-SemiBold',
+    color: '#000000',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+
 });
 
 export default WishList;

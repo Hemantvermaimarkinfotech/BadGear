@@ -1,4 +1,3 @@
-
 // // #This code is written by Hemant Verma
 // import React, { useState, useContext, useEffect } from 'react';
 // import {
@@ -137,7 +136,7 @@
 //             };
 //           } catch (error) {
 //             console.log('Error unserializing form_data:', error);
-//             return order; 
+//             return order;
 //           }
 //         });
 //         console.log('Parsed Orders:', orders);
@@ -170,7 +169,7 @@
 // import TitleHeader from '../Components/TitleHeader';
 // import { AuthContext } from '../Components/AuthProvider';
 // import axios from 'react-native-axios';
-// import { unserialize } from 'php-unserialize'; 
+// import { unserialize } from 'php-unserialize';
 
 // const OrderDetails = ({ route }) => {
 //   const [orderDetails, setOrderDetails] = useState(null);
@@ -207,8 +206,6 @@
 //     fetchOrder();
 //   }, []);
 
-  
-
 //   if (loading) {
 //     return <View style={{justifyContent:"center",alignItems:"center",flex:1}}>
 //       <ActivityIndicator size={"large"} color={"#F10C18"}/>
@@ -242,7 +239,6 @@
 // </View>
 //  )
 //   };
-
 
 //   return (
 //     <SafeAreaView style={styles.container}>
@@ -347,8 +343,6 @@
 //               />
 //             </View>
 
-        
-
 // <View style={[styles.thirdTable]}>
 //           <View style={[styles.thirdTableRow,{}]}>
 //             <View style={[styles.thirdTableItem,{width:"25%"}]}>
@@ -412,7 +406,6 @@
 //         )}
 //       </ScrollView>
 
- 
 //     </SafeAreaView>
 //   );
 // };
@@ -437,7 +430,7 @@
 //     borderRadius: 5,
 //     padding: 20,
 //     marginBottom: 10,
-//     backgroundColor: '#fff',
+//     backgroundColor: '#FFFFFF',
 //   },
 //   orderDetailsText: {
 //     color: '#000',
@@ -521,7 +514,7 @@
 //     marginTop: 25,
 //     paddingBottom:20,
 //     paddingHorizontal:12
-   
+
 //   },
 //   productInfo: {
 //     width: '66%',
@@ -916,8 +909,6 @@
 //   );
 // };
 
-
-
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
@@ -985,7 +976,7 @@
 //     backgroundColor: '#fff',
 //     marginBottom: 10,
 //     paddingBottom:20,
-  
+
 //   },
 //   tableHeader: {
 //     height: 50,
@@ -1023,7 +1014,7 @@
 //     justifyContent: 'space-between',
 //     marginTop: 25,
 //     paddingHorizontal:20
-   
+
 //   },
 //   productInfo: {
 //     width: '66%',
@@ -1113,8 +1104,7 @@
 
 // export default OrderDetails;
 
-
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -1122,155 +1112,61 @@ import {
   SafeAreaView,
   ActivityIndicator,
   FlatList,
+  Image,
+  TouchableOpacity,
+  Linking
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import { AuthContext } from '../Components/AuthProvider';
 import axios from 'react-native-axios';
-import { unserialize } from 'php-unserialize';
+import {ScrollView} from 'react-native-virtualized-view';
 
 const OrderDetails = ({ route }) => {
   const [orderDetails, setOrderDetails] = useState(null);
-  console.log("orderDetails",orderDetails)
   const [loading, setLoading] = useState(false);
   const { userToken } = useContext(AuthContext);
   const { orderId } = route.params;
-  const unserialize = (data) => {
-    if (typeof data !== 'string') {
-      throw new Error('Input should be a string');
-    }
   
-    const parseValue = () => {
-      if (data[pos] === 'a') {
-        pos++; // Skip 'a'
-        if (data[pos] !== ':') throw new Error('Expected colon');
-        pos++;
-        return parseArray();
+  const [itemsSubtotal, setItemsSubtotal] = useState(0); // Add state for items subtotal
+
+  // Function to format free shipping items
+  const formatFreeShippingItems = (productNames) => {
+    return productNames.map(item => {
+      if (Array.isArray(item)) {
+        return item[0];
+      } else {
+        return Object.values(item)[0];
       }
-      if (data[pos] === 'O') {
-        pos++; // Skip 'O'
-        return parseObject();
-      }
-      if (data[pos] === 'i') {
-        pos++; // Skip 'i'
-        const end = data.indexOf(';', pos);
-        const value = parseInt(data.substring(pos, end), 10);
-        pos = end + 1;
-        return value;
-      }
-      if (data[pos] === 's') {
-        pos++; // Skip 's'
-        return parseString();
-      }
-      if (data[pos] === 'N') {
-        pos++; // Skip 'N'
-        return null;
-      }
-      if (data[pos] === 'b') {
-        pos++; // Skip 'b'
-        const value = data[pos] === '1';
-        pos += 2; // Skip the value and ';'
-        return value;
-      }
-      if (data[pos] === 'd') {
-        pos++; // Skip 'd'
-        const end = data.indexOf(';', pos);
-        const value = parseFloat(data.substring(pos, end));
-        pos = end + 1;
-        return value;
-      }
-      throw new Error('Unsupported type');
-    };
-  
-    const parseString = () => {
-      if (data[pos] !== '"') throw new Error('Expected opening quote');
-      pos++;
-      const end = data.indexOf('"', pos);
-      if (end === -1) throw new Error('Expected closing quote');
-      const str = data.substring(pos, end);
-      pos = end + 1;
-      return decodeURIComponent(escape(str));
-    };
-  
-    const parseArray = () => {
-      let array = [];
-      while (data[pos] !== '}') {
-        if (data[pos] === ';') {
-          pos++;
-          continue;
-        }
-        const key = parseValue();
-        if (data[pos] !== ':') throw new Error('Expected colon');
-        pos++;
-        array[key] = parseValue();
-        if (data[pos] === ';') pos++;
-      }
-      pos++; // Skip '}'
-      return array;
-    };
-  
-    const parseObject = () => {
-      let object = {};
-      while (data[pos] !== '}') {
-        if (data[pos] === ';') {
-          pos++;
-          continue;
-        }
-        const key = parseString();
-        if (data[pos] !== ':') throw new Error('Expected colon');
-        pos++;
-        object[key] = parseValue();
-        if (data[pos] === ';') pos++;
-      }
-      pos++; // Skip '}'
-      return object;
-    };
-  
-    let pos = 0;
-    data = data.trim();
-  
-    if (data.startsWith('a:')) {
-      pos += 2; // Skip 'a:'
-      return parseArray();
-    }
-  
-    if (data.startsWith('O:')) {
-      pos += 2; // Skip 'O:'
-      return parseObject();
-    }
-  
-    throw new Error('Unsupported serialized format');
+    }).join(', ');
   };
-  
-  
+
   const fetchOrderDetails = () => {
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
     setLoading(true);
 
-    const config = {
+    let config = {
       method: 'get',
+      maxBodyLength: Infinity,
       url: `https://bad-gear.com/wp-json/order_detail/v1/order_detail?order_id=${orderId}`,
       headers: {
-        'Authorization': `Sunil|1723525490|jeaUrx6KIQ15vWSNRnXl879JySvx1Szc722a2Rzqwop|304aa22a61df94b517c2f95bd559a8cfbb2b03245331bd4d3de4c4589a5dcace`,
+        Authorization: `${tokenToUse}`,
       },
     };
 
-    axios.request(config)
-      .then((response) => {
-        console.log("Fetched Data", JSON.stringify(response.data, null, 2));
-        const data = response.data.data[0];
-        let deserializedFormData;
+    axios
+      .request(config)
+      .then(response => {
+        const orderData = response?.data?.data[0];
+        setOrderDetails(orderData);
 
-        try {
-          deserializedFormData = unserialize(data.form_data);
-        } catch (error) {
-          console.error("Deserialization Error", error);
-          deserializedFormData = {};
-        }
+        // Calculate items subtotal
+        const subtotal = orderData.form_data.product_price.reduce((acc, price) => acc + parseFloat(price), 0);
+        setItemsSubtotal(subtotal);
 
-        setOrderDetails({ ...data, form_data: deserializedFormData });
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("Error fetching order details", error);
+      .catch(error => {
+        console.log(error);
         setLoading(false);
       });
   };
@@ -1278,20 +1174,20 @@ const OrderDetails = ({ route }) => {
   useEffect(() => {
     fetchOrderDetails();
   }, [orderId]);
+
   if (loading) {
     return (
-      <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
-        <ActivityIndicator size={"large"} color={"#F10C18"} />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#F10C18" />
       </View>
     );
   }
 
-  const renderProductItem = ({ item }) => {
-    const productName = item.product_name?.['NaN'];
-    console.log("productName",productName)
-    const quantity = item.form_data.quantity?.['NaN'];
-    const productPrice = item.form_data.product_price?.['NaN'];
-    const productImageUrl = item.form_data.product_iamge?.['NaN']?.['NaN']
+  const renderProductItem = ({ item, index }) => {
+    const productName = item?.['NaN'];
+    const quantity = orderDetails?.form_data?.quantity[index];
+    const productPrice = orderDetails?.form_data?.product_price[index];
+    const productImageUrl = 'https://via.placeholder.com/150'; // Replace with actual image URL
 
     return (
       <View style={styles.productContainer}>
@@ -1314,52 +1210,331 @@ const OrderDetails = ({ route }) => {
     );
   };
 
+  // Function to format card number
+  const formatCardNumber = (cardNumber) => {
+    if (!cardNumber) return '**** **** **** ****';
+    const lastFourDigits = cardNumber.slice(-4);
+    return `**** **** **** ${lastFourDigits}`;
+  };
+
+
   return (
     <SafeAreaView style={styles.container}>
- <TitleHeader/>
-  </SafeAreaView>
-);
+      <TitleHeader />
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {orderDetails && (
+          <>
+            <View style={styles.firstTable}>
+              <Text style={styles.orderDetailsText}>
+                Order #{orderDetails?.order_id} details
+              </Text>
+              <Text style={styles.paymentInfoText}>
+                Payment via Credit card ({formatCardNumber(orderDetails?.form_data?.card_number)}). Paid on {orderDetails?.date}.
+              </Text>
+              <View style={styles.addressContainer}>
+                <View style={styles.addressBlock}>
+                  <Text style={styles.addressTitle}>Billing</Text>
+                  <Text style={styles.addressText}>
+                    {orderDetails?.form_data?.billing_address_1} {orderDetails?.form_data?.billing_address_2}
+                    {orderDetails?.form_data?.billing_city}, {orderDetails?.form_data?.billing_state} {orderDetails?.form_data?.billing_zip}
+                  </Text>
+                  <Text style={[styles.addressTitle, { marginTop: 10 }]}>
+                    Email address
+                  </Text>
+              <Text style={{color:"#000000",fontFamily:"Gilroy",fontSize:14}}>{orderDetails?.form_data?.billing_email}</Text>
+                  <Text style={[styles.addressTitle, { marginTop: 10 }]}>
+                    Phone
+                  </Text>
+              
+                  <Text style={{color:"#000000",fontFamily:"Gilroy",fontSize:14}}>{orderDetails?.form_data?.billing_phone}</Text>
+                </View>
+                <View style={styles.addressBlock}>
+                  <Text style={styles.addressTitle}>Shipping</Text>
+                  <Text style={styles.addressText}>
+                    {orderDetails?.form_data?.shipping_address_1} {orderDetails?.form_data?.shipping_address_2}
+                    {orderDetails?.form_data?.shipping_city}, {orderDetails?.form_data?.shipping_state} {orderDetails?.form_data?.shipping_zip}
+                  </Text>
+                  <Text style={[styles.addressTitle, { marginTop: 10 }]}>
+                    Phone
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(`tel:${orderDetails?.form_data?.shipping_phone}`)
+                    }>
+                    <Text style={[styles.addressText, styles.clickableText]}>
+                      {orderDetails?.form_data?.shipping_phone}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.secondTable}>
+              <View style={styles.tableHeader}>
+                <View style={styles.tableHeaderItem}>
+                  <Text style={styles.tableHeaderText}>Item</Text>
+                </View>
+                <View style={styles.tableHeaderRow}>
+                  <Text style={styles.tableHeaderText}>Cost</Text>
+                  <Text style={styles.tableHeaderText}>Qty</Text>
+                </View>
+              </View>
+
+              <FlatList
+                data={orderDetails.form_data.product_name} // Use the product names
+                renderItem={renderProductItem}
+                keyExtractor={(item, index) => index.toString()}
+                style={styles.productList}
+                contentContainerStyle={styles.productListContainer}
+              />
+            </View>
+
+            <View style={styles.thirdTable}>
+              <View style={styles.thirdTableRow}>
+                <View style={[styles.thirdTableItem, { width: '25%' }]}>
+                  <Text style={styles.thirdTableText}>Free shipping items:</Text>
+                </View>
+                <View style={[styles.thirdTableItem, { width: '55%' }]}>
+                  <Text style={styles.thirdTableText}>
+                  {formatFreeShippingItems(orderDetails.form_data.product_name)}
+                  </Text>
+                </View>
+              
+              </View>
+
+              <View style={styles.thirdTableRow}>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>Items Subtotal:</Text>
+                </View>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>${itemsSubtotal.toFixed(2)}</Text>
+                </View>
+              </View>
+
+              <View style={styles.thirdTableRow}>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>Shipping:</Text>
+                </View>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>$0.00</Text>
+                </View>
+              </View>
+
+              <View style={styles.thirdTableRow}>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>Order total:</Text>
+                </View>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>${orderDetails?.total_amount}</Text>
+                </View>
+              </View>
+
+              <View style={styles.thirdTableSeparator} />
+
+              <View style={styles.thirdTableRow}>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>Paid:</Text>
+                </View>
+                <View style={styles.thirdTableItem}>
+                  <Text style={styles.thirdTableText}>${orderDetails?.total_amount}</Text>
+                </View>
+              </View>
+
+              <View style={styles.thirdTableRow}>
+                <View style={[styles.thirdTableItem, { width: '100%' }]}>
+                  <Text style={styles.thirdTableText}>Paid on {orderDetails?.date} via Credit card</Text>
+                </View>
+              </View>
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
 };
 
+
+
 const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  padding: 16,
-},
-loadingContainer: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-orderDetailsContainer: {
-  padding: 16,
-  backgroundColor: '#fff',
-  borderRadius: 8,
-  shadowColor: '#000',
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  shadowOffset: { width: 0, height: 2 },
-},
-label: {
-  fontWeight: 'bold',
-  marginTop: 8,
-},
-value: {
-  marginBottom: 8,
-},
-itemContainer: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  padding: 8,
-  borderBottomWidth: 1,
-  borderBottomColor: '#ddd',
-},
-itemLabel: {
-  fontWeight: 'bold',
-},
-itemValue: {
-  color: '#555',
-},
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor:"#FBFCFC"
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollViewContent: {
+    paddingBottom: 20,
+  },
+  firstTable: {
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    shadowColor: '#000000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  orderDetailsText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  paymentInfoText: {
+    fontSize: 16,
+    color: '#000000',
+    marginBottom: 16,
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  addressBlock: {
+    flex: 1,
+    marginHorizontal: 8,
+  },
+  addressTitle: {
+    color:"#000000",fontFamily:"Gilroy",fontSize:16
+  },
+  addressText: {
+    fontSize: 14,
+    color: '#000000',
+    marginTop: 4,
+  },
+  clickableText: {
+    color: '#1E90FF',
+  },
+  emailPhoneTouchable: {
+    marginTop: 4,
+  },
+  secondTable: {
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingBottom: 8,
+    marginBottom: 8,
+  },
+  tableHeaderItem: {
+    flex: 1,
+  },
+  tableHeaderRow: {
+    flexDirection: 'row',
+  },
+  tableHeaderText: {
+    fontSize: 16,
+    color:"#000000",
+    fontFamily:"Gilroy"
+    
+  },
+  productList: {
+    marginTop: 8,
+  },
+  productListContainer: {
+    paddingBottom: 20,
+  },
+  productContainer: {
+    marginBottom: 8,
+  },
+  productInfo: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  productImageContainer: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+  productDetails: {
+    flex: 1,
+  },
+  productName: {
+    fontSize: 16,
+    color: '#000000',
+    fontFamily:"Gilroy"
+  },
+  productVariation: {
+    fontSize: 14,
+    color: '#000000',
+    fontFamily:"Gilroy"
+  },
+  productSize: {
+    fontSize: 14,
+    color: '#000000',
+    fontFamily:"Gilroy"
+  },
+  productPriceQty: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  productCost: {
+    fontSize: 16,
+    color:"#000000",
+    fontFamily:"Gilroy"
+  },
+  productQuantity: {
+    fontSize: 14,
+    color: '##000000',
+    fontFamily:"Gilroy"
+  },
+  productSeparator: {
+    height: 1,
+    backgroundColor: '#ddd',
+    marginTop: 8,
+  },
+  thirdTable: {
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  thirdTableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  thirdTableItem: {
+    flex: 1,
+  },
+  thirdTableText: {
+    fontSize: 14,
+    color: '#000000',
+    fontFamily:"Gilroy"
+  },
+  thirdTableSeparator: {
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 8,
+  },
 });
 
 export default OrderDetails;

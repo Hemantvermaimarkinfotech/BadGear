@@ -1,6 +1,6 @@
-// #This code is written by Hemant Verma
 
-import React, {useContext, useEffect, useState} from 'react';
+// This code is written by Hemant Verma
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,120 +10,250 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Button,
   Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'react-native-axios';
-import {SelectCountry} from 'react-native-element-dropdown';
-import {Modal} from 'react-native';
-import {AuthContext} from '../Components/AuthProvider';
+import { AuthContext } from '../Components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Cart = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [cartItems, setCartItems] = useState([]);
-  console.log('cartitems', cartItems);
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [isFocus, setIsFocus] = useState(false);
-  const [value, setValue] = useState(null);
-  const [country, setCountry] = useState('1');
-  const [selectedCartItem, setSelectedCartItem] = useState(null);
-  const {userToken} = useContext(AuthContext);
+  const [itemQuantities, setItemQuantities] = useState({});
+  const [initialPrices, setInitialPrices] = useState({});
+  const [itemPrices, setItemPrices] = useState({});
+  console.log("itemprices", itemPrices);
+  const { userToken } = useContext(AuthContext);
   const [cartLength, setCartLength] = useState(0);
 
-  const data = [
-    {label: 'X', value: 'X'},
-    {label: 'M', value: 'M'},
-    {label: 'L', value: 'L'},
-    {label: 'XL', value: 'XL'},
-  ];
+  useEffect(() => {
+    getCartItems();
+  }, []);
+
+  useEffect(() => {
+    const quantities = {};
+    const initialPricesMap = {};
+    const prices = {};
+
+    cartItems.forEach(item => {
+      quantities[item.product_id] = parseInt(item.quantity, 10);
+      initialPricesMap[item.product_id] = parseFloat(item.price);
+      prices[item.product_id] = parseFloat(item.price) * parseInt(item.quantity, 10);
+    });
+
+    setItemQuantities(quantities);
+    setInitialPrices(initialPricesMap);
+    setItemPrices(prices);
+  }, [cartItems]);
+
+  const handleIncrease = (productId, itemPrice) => {
+    if (itemPrice === undefined) {
+      console.log(`Price is undefined for productId ${productId}`);
+      return;
+    }
+
+    setItemQuantities(prevQuantities => {
+      const currentQuantity = prevQuantities[productId] || 1;
+      const newQuantity = currentQuantity + 1;
+
+      // Calculate the new total price based on the initial price and updated quantity
+      const newPrice = initialPrices[productId] * newQuantity;
+
+      console.log("newprice", newPrice);
+
+      // Update the itemPrices state with the new price
+      setItemPrices(prevPrices => ({
+        ...prevPrices,
+        [productId]: newPrice,
+      }));
+
+      // Update the cart with the new quantity
+      updateCart(productId, newQuantity);
+
+      return {
+        ...prevQuantities,
+        [productId]: newQuantity,
+      };
+    });
+  };
+
+  const handleDecrease = (productId, itemPrice) => {
+    if (itemPrice === undefined) {
+      console.log(`Price is undefined for productId ${productId}`);
+      return;
+    }
+
+    setItemQuantities(prevQuantities => {
+      const currentQuantity = prevQuantities[productId] || 1;
+      const newQuantity = Math.max(currentQuantity - 1, 1);
+
+      // Calculate the new total price based on the initial price and updated quantity
+      const newPrice = initialPrices[productId] * newQuantity;
+
+      // Update the itemPrices state with the new price
+      setItemPrices(prevPrices => ({
+        ...prevPrices,
+        [productId]: newPrice,
+      }));
+
+      // Update the cart with the new quantity
+      updateCart(productId, newQuantity);
+
+      return {
+        ...prevQuantities,
+        [productId]: newQuantity,
+      };
+    });
+  };
+
   const goBack = () => {
     navigation.goBack();
-  }
-
-  const [itemQuantities, setItemQuantities] = useState({});
-  const [itemPrices, setItemPrices] = useState({});
-  console.log("price",itemPrices)
-
-  console.log("quantity",itemQuantities)
-  
-  
-
-
-  // const handleIncrease = (productId) => {
-  //   setItemQuantities(prevQuantities => ({
-  //     ...prevQuantities,
-  //     [productId]: (prevQuantities[productId] || 1) + 1,
-  //   }));
-  // };
-  
-  // const handleDecrease = (productId) => {
-  //   setItemQuantities(prevQuantities => ({
-  //     ...prevQuantities,
-  //     [productId]: Math.max(1, (prevQuantities[productId] || 1) - 1),
-  //   }));
-  // };
-  
-  const handleIncrease = (productId, price) => {
-    setItemQuantities(prevQuantities => {
-      const newQuantity = (prevQuantities[productId] || 1) + 1;
-      setItemPrices(prevPrices => ({
-        ...prevPrices,
-        [productId]: newQuantity * price,
-      }));
-      return {
-        ...prevQuantities,
-        [productId]: newQuantity,
-      };
-    });
   };
-  
-  const handleDecrease = (productId, price) => {
-    setItemQuantities(prevQuantities => {
-      const newQuantity = Math.max(1, (prevQuantities[productId] || 1) - 1);
-      setItemPrices(prevPrices => ({
-        ...prevPrices,
-        [productId]: newQuantity * price,
-      }));
-      return {
-        ...prevQuantities,
-        [productId]: newQuantity,
-      };
-    });
-  };
-  
 
-  updataCart = () => {
+  const updateCart = async (product_id, quantity) => {
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+    const price = initialPrices[product_id];
+    console.log("quantity & price", quantity, price);
+
+    if (quantity === undefined || price === undefined) {
+      console.log(`Product ID ${product_id} not found in itemQuantities or itemPrices.`);
+      return;
+    }
+
     let data = new FormData();
-    data.append('product_id', '4037');
-    data.append('size', 'XL');
-    data.append('quantity', '4');
-    data.append('price', '500');
+    data.append('product_id', product_id);
+    data.append('quantity', quantity);
+    data.append('price', price);
 
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
       url: 'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
       headers: {
-        Authorization:
-          'Sunil|1723525490|jeaUrx6KIQ15vWSNRnXl879JySvx1Szc722a2Rzqwop|304aa22a61df94b517c2f95bd559a8cfbb2b03245331bd4d3de4c4589a5dcace',
-        ...data.getHeaders(),
+        Authorization: `${tokenToUse}`,
+        'Content-Type': 'multipart/form-data',
       },
       data: data,
     };
 
-    axios
-      .request(config)
-      .then(response => {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    try {
+      const response = await axios.request(config);
+      console.log(JSON.stringify(response.data));
+
+      // Fetch updated cart items after successfully updating
+      getCartItems();
+    } catch (error) {
+      console.log('Error updating Cart Item:', error);
+    }
   };
+
+  const DeleteCart = async productId => {
+    setLoading(true);
+    let data = new FormData();
+    data.append('product_id', productId);
+
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+
+    let config = {
+      method: 'post',
+      url: 'https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems',
+      headers: {
+        Authorization: `${tokenToUse}`,
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data,
+    };
+
+    try {
+      const response = await axios.request(config);
+      console.log(JSON.stringify(response.data));
+
+      if (response.data.status === 'success') {
+        setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId));
+      } else {
+        console.log('Error: Unexpected response format:', response);
+      }
+    } catch (error) {
+      console.log('Error deleting Cart Item:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCartItems = async () => {
+    setLoading(true);
+
+    const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
+    let config = {
+      method: 'get',
+      url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
+      headers: {
+        Authorization: `${tokenToUse}`,
+      },
+    };
+
+    try {
+      const response = await axios.request(config);
+      // console.log(JSON.stringify(response.data));
+
+      if (response.data.status === 'success') {
+        const itemsWithQuantity = response.data.data.map(item => ({
+          ...item,
+          quantity: parseInt(item.quantity, 10), 
+          price: parseFloat(item.price), 
+        }));
+
+        setCartItems(itemsWithQuantity);
+
+        const quantities = {};
+        const initialPricesMap = {};
+        const prices = {};
+
+        itemsWithQuantity.forEach(item => {
+          quantities[item.product_id] = item.quantity;
+          initialPricesMap[item.product_id] = item.price;
+          prices[item.product_id] = item.price * item.quantity; 
+        });
+
+        setItemQuantities(quantities);
+        setInitialPrices(initialPricesMap);
+        setItemPrices(prices);
+
+        const totalAmount = itemsWithQuantity
+          .reduce((total, item) => total + item.price * item.quantity, 0)
+          .toFixed(2);
+
+        await AsyncStorage.setItem('cartItems', JSON.stringify(itemsWithQuantity));
+        await AsyncStorage.setItem('totalAmount', totalAmount);
+        setCartLength(itemsWithQuantity.length);
+      } else {
+        console.log('Error: Unexpected response format:', response);
+      }
+    } catch (error) {
+      console.log('Error fetching Cart Items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTotalAmount = () => {
+    if (!cartItems || cartItems.length === 0) {
+      return '0.00';
+    }
+
+    const total = cartItems.reduce((total, item) => {
+      const itemPrice = parseFloat(item.price) || 0;
+      const itemQuantity = parseInt(item.quantity, 10) || 0;
+      return total + itemPrice * itemQuantity;
+    }, 0);
+
+    return total.toFixed(2);
+  };
+
+
   const renderCartItem = ({ item }) => (
     <View>
       <View style={styles.cartItem}>
@@ -137,15 +267,26 @@ const Cart = () => {
         <View style={styles.detailsContainer}>
           <Text style={styles.itemText}>{item.product_name}</Text>
           <Text style={styles.itemRate}>
-            ${(itemPrices[item.product_id] || item.price * (itemQuantities[item.product_id] || item.quantity)).toFixed(2)}
+            ${(
+              itemPrices[item.product_id] ||
+              item.price * (itemQuantities[item.product_id] || item.quantity)
+            ).toFixed(2)}
           </Text>
           <View style={styles.qtyContainer}>
             <View style={styles.qtySection}>
-              <TouchableOpacity style={styles.qtybtn} onPress={() => handleDecrease(item.product_id, item.price)}>
+              <TouchableOpacity
+                style={styles.qtybtn}
+                onPress={() => handleDecrease(item.product_id, item.price)}
+              >
                 <Text style={styles.btntext}>-</Text>
               </TouchableOpacity>
-              <Text style={styles.quantityText}>{itemQuantities[item.product_id] || item.quantity}</Text>
-              <TouchableOpacity style={styles.qtybtn} onPress={() => handleIncrease(item.product_id, item.price)}>
+              <Text style={styles.quantityText}>
+                {itemQuantities[item.product_id] || item.quantity}
+              </Text>
+              <TouchableOpacity
+                style={styles.qtybtn}
+                onPress={() => handleIncrease(item.product_id, item.price)}
+              >
                 <Text style={styles.btntext}>+</Text>
               </TouchableOpacity>
             </View>
@@ -165,9 +306,7 @@ const Cart = () => {
                 { text: 'Cancel', style: 'cancel' },
                 {
                   text: 'OK',
-                  onPress: () => {
-                    DeleteCart(item.product_id);
-                  },
+                  onPress: () => DeleteCart(item.product_id),
                 },
               ],
               { cancelable: true },
@@ -181,191 +320,10 @@ const Cart = () => {
     </View>
   );
   
-  
-
-//     <View>
-//       <View style={styles.cartItem}>
-//         <View style={styles.imageContainer}>
-//           {item?.product_img ? (
-//             <Image source={{uri: item.product_img}} style={styles.image} />
-//           ) : (
-//             <Text style={{color: '#000000'}}>No Image Available</Text>
-//           )}
-//         </View>
-//         <View style={styles.detailsContainer}>
-//           <Text style={styles.itemText}>{item.product_name}</Text>
-//           <Text style={styles.itemRate}>
-//             ${(item.price * item.quantity).toFixed(2)}
-//           </Text>
-//           {/* <View style={styles.qtyContainer}>
-//             <View style={styles.qtySection}>
-//               <TouchableOpacity
-//                 style={styles.qtybtn}
-//                 onPress={() => updateQuantity(item-1)}>
-//                 <Text style={styles.btntext}>-</Text>
-//               </TouchableOpacity>
-//               <Text style={styles.quantityText}>{item.quantity}</Text>
-//               <TouchableOpacity
-//                 style={styles.qtybtn}
-//                 onPress={() => updateQuantity(item+1)}>
-//                 <Text style={styles.btntext}>+</Text>
-//               </TouchableOpacity>
-//             </View>
-//             <View style={styles.sizeSection}>
-//               <Text style={styles.sizeLabel}>Size:</Text>
-//               <Text style={styles.sizeLabel}>{item?.size}</Text>
-            
-//             </View>
-//           </View> */}
-
-// <View style={styles.qtyContainer}>
-//       <View style={styles.qtySection}>
-//         <TouchableOpacity style={styles.qtybtn} onPress={handleDecrease}>
-//           <Text style={styles.btntext}>-</Text>
-//         </TouchableOpacity>
-//         <Text style={styles.quantityText}>{quantity}</Text>
-//         <TouchableOpacity style={styles.qtybtn} onPress={handleIncrease}>
-//           <Text style={styles.btntext}>+</Text>
-//         </TouchableOpacity>
-//       </View>
-//       <View style={styles.sizeSection}>
-//         <Text style={styles.sizeLabel}>Size:</Text>
-//         <Text style={styles.sizeLabel}>{item.size}</Text>
-//         {/* Your SelectCountry component here */}
-//       </View>
-//     </View>
-//         </View>
-//         <TouchableOpacity
-//           style={styles.closeButton}
-//           onPress={() => {
-//             Alert.alert(
-//               'Delete Item',
-//               'Are you sure you want to delete this item?',
-//               [
-//                 {text: 'Cancel', style: 'cancel'},
-//                 {
-//                   text: 'OK',
-//                   onPress: () => {
-//                     console.log(item.product_id);
-//                     DeleteCart(item.product_id);
-//                   },
-//                 },
-//               ],
-//               {cancelable: true},
-//             );
-//           }}>
-//           <Text style={styles.closeButtonText}>X</Text>
-//           {loading && <ActivityIndicator />}
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   );
-
-  const DeleteCart = async productId => {
-    setLoading(true);
-    let data = new FormData();
-    data.append('product_id', productId);
-
-    const tokenToUse =
-      userToken && userToken.token ? userToken.token : userToken;
-
-    let config = {
-      method: 'post',
-      url: 'https://bad-gear.com/wp-json/delete-cart-items/v1/DeleteCartItems',
-      headers: {
-        Authorization: `${tokenToUse}`,
-        'Content-Type': 'multipart/form-data',
-      },
-      data: data,
-    };
-
-    try {
-      const response = await axios.request(config);
-      console.log(JSON.stringify(response.data));
-
-      if (response.data.status === 'success') {
-        setCartItems(prevItems =>
-          prevItems.filter(item => item.product_id !== productId),
-        );
-      } else {
-        console.log('Error: Unexpected response format:', response);
-      }
-    } catch (error) {
-      console.log('Error deleting Cart Item:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getCartItems = async () => {
-    setLoading(true);
-
-    const tokenToUse =
-      userToken && userToken.token ? userToken.token : userToken;
-    let config = {
-      method: 'get',
-      url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
-      headers: {
-        Authorization: `${tokenToUse}`,
-      },
-    };
-
-    try {
-      const response = await axios.request(config);
-      console.log(JSON.stringify(response.data));
-
-      if (response.data.status === 'success') {
-        const itemsWithQuantity = response.data.data.map(item => ({
-          ...item,
-        }));
-        setCartItems(itemsWithQuantity);
-
-        const totalAmount = itemsWithQuantity
-          .reduce((total, item) => total + item.price * item.quantity, 0)
-          .toFixed(2);
-
-        await AsyncStorage.setItem(
-          'cartItems',
-          JSON.stringify(itemsWithQuantity),
-        );
-        await AsyncStorage.setItem('totalAmount', totalAmount);
-        await AsyncStorage.setItem(
-          'cartItemsprice',
-          JSON.stringify(itemsWithQuantity),
-        );
-        setCartLength(itemsWithQuantity.length);
-      } else {
-        console.log('Error: Unexpected response format:', response);
-      }
-    } catch (error) {
-      console.log('Error fetching Cart Items:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getCartItems();
-  }, []);
-
-  // Function to calculate total amount
-  const getTotalAmount = () => {
-    if (!cartItems || cartItems.length === 0) {
-      return '0.00';
-    }
-
-    const total = cartItems.reduce((total, item) => {
-      const itemPrice = parseFloat(item.price) || 0;
-      const itemQuantity = parseInt(item.quantity, 10) || 0;
-      return total + itemPrice * itemQuantity;
-    }, 0);
-
-    return total.toFixed(2);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+       <View style={styles.header}>
         <TouchableOpacity onPress={goBack}>
           <Image
             source={require('../assets/next.png')}
@@ -620,3 +578,15 @@ const styles = StyleSheet.create({
 });
 
 export default Cart;
+
+
+
+
+
+
+
+
+
+
+
+

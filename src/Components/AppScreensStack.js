@@ -38,165 +38,7 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
-// const BottomTabNav = () => (
-//   <Tab.Navigator
-//     initialRouteName="Home"
-//     screenOptions={{
-//       tabBarActiveTintColor: '#F10C18', // Active tab color
-//       tabBarInactiveTintColor: '#000000', // Inactive tab color
-//       tabBarStyle: {
-//         backgroundColor: 'white', // Background color of the tab bar
-//         height: 90, // Height of the tab bar
-//         elevation: 5, // Elevation (shadow on Android)
-//       },
-//       tabBarLabelStyle: {
-//         fontSize: 15,
-//         fontWeight: '500',
-//         marginTop: 5,
-//       },
-//     }}>
-//     <Tab.Screen
-//       name="Home"
-//       component={Home}
-//       options={{
-//         tabBarIcon: ({focused}) => (
-//           <View style={{alignItems: 'center', justifyContent: 'center'}}>
-//             <Image
-//               source={require('../assets/house.png')}
-//               style={{
-//                 height: 20,
-//                 width: 17,
-//                 resizeMode: 'contain',
-//                 tintColor: focused ? '#F10C18' : '#000000',
-//               }}
-//             />
-//             <Text
-//               style={{
-//                 fontSize: 15,
-//                 fontWeight: 500,
-//                 marginTop: 5,
-//                 color: '#000000',
-//               }}>
-//               Home
-//             </Text>
-//           </View>
-//         ),
-//         tabBarLabel: () => null,
-//         headerStyle: {
-//           height: 120, // Set the desired height value
-//           shadowColor: '#fff',
-//         },
-//         // headerTitle: (props) => <TopHeader />
-//         // Custom header component
-//         headerShown: false,
-//       }}
-//     />
 
-//     <Tab.Screen
-//       name="Search"
-//       component={Search}
-//       options={{
-//         tabBarIcon: ({focused}) => (
-//           <View style={{alignItems: 'center', justifyContent: 'center'}}>
-//             <Image
-//               source={require('../assets/search.png')}
-//               style={{
-//                 height: 27,
-//                 width: 26,
-//                 resizeMode: 'contain',
-//                 tintColor: focused ? '#F10C18' : '#000000',
-//               }}
-//             />
-//             <Text
-//               style={{
-//                 fontSize: 15,
-//                 fontWeight: 500,
-//                 marginTop: 5,
-//                 color: '#000000',
-//               }}>
-//               Search
-//             </Text>
-//           </View>
-//         ),
-//         tabBarLabel: () => null,
-//         headerStyle: {
-//           height: 120, // Set the desired height value
-//           shadowColor: '#fff',
-//         },
-//         // headerTitle: (props) => <TopHeader />
-//         // Custom header component
-//         headerShown: false,
-//       }}
-//     />
-//     <Tab.Screen
-//       name="Notification"
-//       component={Notification}
-//       options={{
-//         tabBarIcon: ({focused}) => (
-//           <View style={{alignItems: 'center', justifyContent: 'center',  marginTop: 6}}>
-//             <Image
-//               source={require('../assets/notification.png')}
-//               style={{
-//                 height: 19,
-//                 width: 17,
-//                 tintColor: focused ? '#F10C18' : '#000000',
-//               }}
-//             />
-//             <Text
-//               style={{
-//                 fontSize: 15,
-//                 fontWeight: 500,
-//                 marginTop: 8,
-//                 color: '#000000',
-//               }}>
-//               Notification
-//             </Text>
-//           </View>
-//         ),
-//         tabBarLabel: () => null,
-//         headerStyle: {
-//           height: 120, // Set the desired height value
-//           shadowColor: '#fff',
-//         },
-//         // headerTitle: (props) => <TopHeader />
-//         // Custom header component
-//         headerShown: false,
-//       }}
-//     />
-
-//     <Tab.Screen
-//       name="Settings"
-//       component={Setting}
-//       options={{
-//         tabBarIcon: ({focused}) => {
-//           return (
-//             <View style={{alignItems: 'center', justifyContent: 'center'}}>
-//               <Image
-//                 source={require('../assets/account.png')}
-//                 style={{
-//                   height: 20,
-//                   width: 18,
-//                   tintColor: focused ? '#F10C18' : '#000000',
-//                 }}
-//               />
-//               <Text
-//                 style={{
-//                   fontSize: 15,
-//                   fontWeight: 500,
-//                   marginTop: 5,
-//                   color: '#000000',
-//                 }}>
-//                 Settings
-//               </Text>
-//             </View>
-//           );
-//         },
-//         tabBarLabel: () => null,
-//         headerShown: false,
-//       }}
-//     />
-//   </Tab.Navigator>
-// );
 
 const BottomTabNav = () => (
   <Tab.Navigator
@@ -208,6 +50,7 @@ const BottomTabNav = () => (
         backgroundColor: 'white', 
         height: 90, 
         elevation: 5, 
+   
       },
       tabBarLabelStyle: {
         fontSize: 15,
@@ -219,13 +62,13 @@ const BottomTabNav = () => (
       name="Home"
       component={Home}
       options={{
-        tabBarIcon: ({focused}) => (
-          <View style={{alignItems: 'center', justifyContent: 'center',}}>
+        tabBarIcon: ({ focused }) => (
+          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 ,width:80}}>
             <Image
               source={require('../assets/house.png')}
               style={{
-                height: 20,
-                width: 17,
+                // height: 25,
+                // width: 26,
                 resizeMode: 'contain',
                 tintColor: focused ? '#F10C18' : '#000000',
               }}
@@ -235,7 +78,7 @@ const BottomTabNav = () => (
                 fontSize: 15,
                 marginTop: 2,
                 color: '#000000',
-                fontFamily:"Gilroy-SemiBold"
+                fontFamily: 'Gilroy-SemiBold',
               }}>
               Home
             </Text>
@@ -249,63 +92,28 @@ const BottomTabNav = () => (
         headerShown: false,
       }}
     />
-
-    {/* <Tab.Screen
-      name="Search"
-      component={Search}
-      options={{
-        tabBarIcon: ({focused}) => (
-          <View style={{alignItems: 'center', justifyContent: 'center',}}>
-            <Image
-              source={require('../assets/search.png')}
-              style={{
-                height: 27,
-                width: 26,
-                resizeMode: 'contain',
-                tintColor: focused ? '#F10C18' : '#000000',
-              }}
-            />
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: '500',
-                // marginTop: 5,
-                color: '#000000',
-              }}>
-              Search
-            </Text>
-          </View>
-        ),
-        tabBarLabel: () => null,
-        headerStyle: {
-          height: 120, // Set the desired height value
-          shadowColor: '#fff',
-        },
-        headerShown: false,
-      }}
-    /> */}
- <Tab.Screen
+    
+    <Tab.Screen
       name="Category"
       component={Category}
       options={{
-        tabBarIcon: ({focused}) => (
-          <View style={{alignItems: 'center', justifyContent: 'center',}}>
+        tabBarIcon: ({ focused }) => (
+          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 ,width:80}}>
             <Image
               source={require('../assets/categoryimg.png')}
               style={{
-                height: 27,
-                width: 24,
+                // height: 26,
+                // width: 26,
                 resizeMode: 'contain',
                 tintColor: focused ? '#F10C18' : '#000000',
               }}
             />
             <Text
               style={{
-                fontSize: 15,
-                fontWeight: '500',
-                // marginTop: 5,
+                fontSize: 13,
+                marginTop: 2,
                 color: '#000000',
-                fontFamily:"Gilroy-SemiBold"
+                fontFamily: 'Gilroy-SemiBold',
               }}>
               Categories
             </Text>
@@ -319,26 +127,27 @@ const BottomTabNav = () => (
         headerShown: false,
       }}
     />
+    
     <Tab.Screen
       name="Notification"
       component={NewArrival}
       options={{
-        tabBarIcon: ({focused}) => (
-          <View style={{alignItems: 'center', justifyContent: 'center',}}>
+        tabBarIcon: ({ focused }) => (
+          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 ,width:80}}>
             <Image
               source={require('../assets/shopping-bag.png')}
               style={{
-                height: 26,
+                height: 27,
                 width: 26,
                 tintColor: focused ? '#F10C18' : '#000000',
               }}
             />
             <Text
               style={{
-                fontSize: 15,
-               marginTop:2,
+                fontSize: 13,
+                marginTop: 2,
                 color: '#000000',
-                fontFamily:"Gilroy-SemiBold"
+                fontFamily: 'Gilroy-SemiBold',
               }}>
               New Arrivals
             </Text>
@@ -352,38 +161,40 @@ const BottomTabNav = () => (
         headerShown: false,
       }}
     />
-
+    
     <Tab.Screen
       name="Settings"
       component={Setting}
       options={{
-        tabBarIcon: ({focused}) => (
-          <View style={{alignItems: 'center', justifyContent: 'center', marginTop: 5}}>
+        tabBarIcon: ({ focused }) => (
+          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 ,width:80}}>
             <Image
               source={require('../assets/account.png')}
               style={{
-                height: 20,
-                width: 18,
+                // height: 26,
+                // width: 26,
                 tintColor: focused ? '#F10C18' : '#000000',
+                resizeMode:"contain"
               }}
             />
             <Text
               style={{
-                fontSize: 15,
+                fontSize: 13,
                 marginTop: 2,
                 color: '#000000',
-                fontFamily:"Gilroy-SemiBold"
+                fontFamily: 'Gilroy-SemiBold',
               }}>
-                Settings
-              </Text>
-            </View>
-          ),
+              Setting
+            </Text>
+          </View>
+        ),
         tabBarLabel: () => null,
         headerShown: false,
       }}
     />
   </Tab.Navigator>
 );
+
 
 
 
@@ -492,6 +303,8 @@ const AppScreenStack = () => {
         component={orderDetails}
         options={{headerShown: false}}
       />
+
+      
        
 
       

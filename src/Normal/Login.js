@@ -70,7 +70,7 @@ const Login = ({ navigation }) => {
         setUserId(responseData?.user_data?.data?.ID)
         
       } else {
-        Alert.alert('Login Failed', responseData.errormsg || 'Incorrect email or password');
+        Alert.alert('Alert', responseData.errormsg || 'Incorrect email or password');
       }
   
       setLoading(false);
@@ -143,7 +143,7 @@ const Login = ({ navigation }) => {
    <View  style={{ justifyContent: "center", alignItems: "center" ,flexDirection:"row"}}>
   <Text style={styles.signupText}>
     Don't have an account? </Text>
-    <TouchableOpacity onPress={() => navigation.navigate('SignUp')}><Text style={[styles.signupLink,{  fontFamily:"Gilroy-Bold",}]}>Sign up</Text></TouchableOpacity>
+    <TouchableOpacity onPress={() => navigation.navigate('SignUp')}><Text style={[styles.signupLink,{  fontFamily:"Gilroy-Bold",color:"#F10C18",textDecorationLine: "underline",}]}>Sign up</Text></TouchableOpacity>
   
 </View>
 
@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
     alignSelf:"center"
   },
   signupLink: {
-    fontWeight: '600',
     fontSize:16,
     color:"#000000",
    

@@ -1,6 +1,6 @@
 // #This code is written by Hemant Verma
 
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import {
   View,
   Text,
@@ -12,32 +12,51 @@ import {
   Alert,
   Share,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import TitleHeader from '../Components/TitleHeader';
 import {AuthContext} from '../Components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'react-native-axios';
-import { CommonActions, useNavigation,useFocusEffect } from '@react-navigation/native';
+import {
+  CommonActions,
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
+import LoginBottomSheet from '../Components/LoginBottomSheet';
+
 const Setting = () => {
   const navigation = useNavigation();
   const {userToken, setUserToken} = useContext(AuthContext);
-  // console.log("userToken",userToken?.token)
+  console.log('userToken', userToken);
   const [profileData, setProfileData] = useState();
-  console.log("profiledata",profileData)
-  const [loading,setLoading]=useState(false)
+  console.log('profiledata', profileData);
+  const bottomSheetRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
-   // Function to check if the token is a dummy token
-   const isDummyToken = () => {
+  // Function to check if the token is a dummy token
+  const isDummyToken = () => {
     return userToken === 'dummy-token';
   };
 
-  const shareContent= async () => {
+  const openLoginSheet = () => {
+    setBottomSheetVisible(true); // Set visibility state to true
+    bottomSheetRef.current?.expand(); // Open the bottom sheet
+  };
+
+  const closeLoginSheet = () => {
+    setBottomSheetVisible(false); // Set visibility state to false
+    bottomSheetRef.current?.close(); // Close the bottom sheet
+  };
+
+  const shareContent = async () => {
     try {
       const result = await Share.share({
-       title: 'App link',
-  message: 'Please install this app and stay safe , AppLink :https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en', 
-  url: 'https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en'
+        title: 'App link',
+        message:
+          'Please install this app and stay safe , AppLink :https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en',
+        url: 'https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en',
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -52,11 +71,10 @@ const Setting = () => {
     }
   };
 
-
-  
   const getProfile = async () => {
     setLoading(true);
-    const tokenToUse = isDummyToken() ? 'dummy-token' : (userToken && userToken.token ? userToken.token : userToken);
+    const tokenToUse = isDummyToken() ? 'dummy-token' : userToken;
+    console.log('tokenuseeeeeee', tokenToUse);
 
     try {
       const response = await axios.get(
@@ -83,9 +101,9 @@ const Setting = () => {
       if (!isDummyToken()) {
         getProfile();
       }
-    }, [])
+    }, [userToken]), // Add userToken as a dependency
   );
-  
+
   const Logout = () => {
     setUserToken(null);
     AsyncStorage.removeItem('userData');
@@ -95,28 +113,9 @@ const Setting = () => {
     AsyncStorage.removeItem('totalAmount');
   };
 
-  // const LogIn = () => {
-  //   if (isDummyToken()) {
-  //     console.log("jmjmjmikm,ik")
-  //     // setUserToken(null);
-  //     // AsyncStorage.removeItem('userData');
-  //     navigation.reset({
-  //       index: 4, // Index of the Login screen
-  //       routes: [{ name: 'Login' }],
-  //     });
-  //   }
-  // };
- 
-
-
-  const LogIn = () => {
-    navigation.reset({
-      index: 5, // Index of the Login screen
-      routes: [{ name: 'Login' }],
-    });
+  const withOutLogin = () => {
+    navigation.navigate('Login');
   };
-  
-
 
   const [isEnabled, setIsEnabled] = useState(false);
   const renderProfileContent = () => {
@@ -127,7 +126,7 @@ const Setting = () => {
         </View>
       );
     }
-  
+
     if (profileData) {
       return (
         <>
@@ -137,17 +136,16 @@ const Setting = () => {
                 <View>
                   <Image
                     source={require('../assets/user-profile.jpg')}
-                    style={{ height: 70, width: 70, borderRadius: 35 }}
+                    style={{height: 70, width: 70, borderRadius: 35}}
                   />
                 </View>
-                <View style={{ marginLeft: 20 }}>
+                <View style={{marginLeft: 20}}>
                   <Text
                     style={{
                       color: '#000000',
                       fontFamily: 'Gilroy-Bold',
                       fontSize: 20,
-                    }}
-                  >
+                    }}>
                     {profileData[0]?.userName.charAt(0).toUpperCase() +
                       profileData[0]?.userName.slice(1)}
                   </Text>
@@ -156,30 +154,29 @@ const Setting = () => {
                       color: '#000000',
                       fontSize: 12,
                       fontFamily: 'Gilroy-Medium',
-                    }}
-                  >
+                    }}>
                     {profileData[0]?.userEmail}
                   </Text>
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => navigation.navigate('EditProfile', { profileData })}
-              >
+                onPress={() =>
+                  navigation.navigate('EditProfile', {profileData})
+                }>
                 <Image
                   source={require('../assets/edit.png')}
-                  style={{ height: 28, width: 25, tintColor: '#F10C18' }}
+                  style={{height: 28, width: 25, tintColor: '#F10C18'}}
                 />
               </TouchableOpacity>
             </View>
-  
+
             <View style={styles.servicebox}>
               <TouchableOpacity
                 style={styles.subservicebox}
-                onPress={() => navigation.navigate('Order')}
-              >
+                onPress={() => navigation.navigate('Order')}>
                 <Image
                   source={require('../assets/package.png')}
-                  style={{ height: 25, width: 25, tintColor: '#F10C18' }}
+                  style={{height: 25, width: 25, tintColor: '#F10C18'}}
                 />
                 <Text
                   style={{
@@ -188,19 +185,17 @@ const Setting = () => {
                     fontFamily: 'Gilroy',
                     fontWeight: 600,
                     marginTop: 5,
-                  }}
-                >
-                  Order
+                  }}>
+                  Orders
                 </Text>
               </TouchableOpacity>
-  
+
               <TouchableOpacity
                 style={styles.subservicebox}
-                onPress={() => navigation.navigate('WishList')}
-              >
+                onPress={() => navigation.navigate('WishList')}>
                 <Image
                   source={require('../assets/heart2.png')}
-                  style={{ height: 20, width: 25, tintColor: '#F10C18' }}
+                  style={{height: 20, width: 25, tintColor: '#F10C18'}}
                 />
                 <Text
                   style={{
@@ -209,19 +204,17 @@ const Setting = () => {
                     fontFamily: 'Gilroy',
                     fontWeight: 600,
                     marginTop: 5,
-                  }}
-                >
-                  WishList
+                  }}>
+                  WishLists
                 </Text>
               </TouchableOpacity>
-  
+
               <TouchableOpacity
                 style={styles.subservicebox}
-                onPress={() => navigation.navigate('HelpCenter')}
-              >
+                onPress={() => navigation.navigate('HelpCenter')}>
                 <Image
                   source={require('../assets/headset.png')}
-                  style={{ height: 25, width: 25, tintColor: '#F10C18' }}
+                  style={{height: 25, width: 25, tintColor: '#F10C18'}}
                 />
                 <Text
                   style={{
@@ -230,13 +223,12 @@ const Setting = () => {
                     fontFamily: 'Gilroy',
                     fontWeight: 600,
                     marginTop: 5,
-                  }}
-                >
+                  }}>
                   Help Center
                 </Text>
               </TouchableOpacity>
             </View>
-  
+
             <View
               style={{
                 height: 1,
@@ -246,58 +238,56 @@ const Setting = () => {
                 opacity: 0.6,
               }}
             />
-  
+
             <View
               style={{
                 marginHorizontal: 15,
                 width: '95%',
                 alignSelf: 'center',
                 marginTop: 15,
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color: '#000000',
                   fontFamily: 'Gilroy-SemiBold',
                   fontSize: 20,
-                }}
-              >
+                }}>
                 Account Setting
               </Text>
-  
+
               <ScrollView>
                 <TouchableOpacity
                   style={styles.row}
                   onPress={() =>
-                    navigation.navigate('EditProfile', { profileData })
-                  }
-                >
-                  <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    navigation.navigate('EditProfile', {profileData})
+                  }>
+                  <View
+                    style={{flexDirection: 'row', justifyContent: 'center'}}>
+                    <View
+                      style={{justifyContent: 'center', alignItems: 'center'}}>
                       <Image
                         source={require('../assets/people.png')}
-                        style={{ height: 25, width: 25, tintColor: '#000000' }}
+                        style={{height: 25, width: 25, tintColor: '#000000'}}
                       />
                     </View>
-                    <View style={{ justifyContent: 'center', marginLeft: 20 }}>
+                    <View style={{justifyContent: 'center', marginLeft: 20}}>
                       <Text
                         style={{
                           color: '#000000',
                           fontSize: 15,
                           fontFamily: 'Gilroy',
                           fontWeight: 600,
-                        }}
-                      >
+                        }}>
                         Edit Profile
                       </Text>
                     </View>
                   </View>
                   <Image
                     source={require('../assets/arrow-right.png')}
-                    style={{ height: 22, width: 22, tintColor: '#000000' }}
+                    style={{height: 22, width: 22, tintColor: '#000000'}}
                   />
                 </TouchableOpacity>
-  
+
                 <View
                   style={{
                     height: 1,
@@ -307,142 +297,36 @@ const Setting = () => {
                     opacity: 0.6,
                   }}
                 />
-{/*   
-                <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => navigation.navigate('DeliveryAddress')}
-                >
-                  <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                    <View
-                      style={{ justifyContent: 'center', alignItems: 'center' }}
-                    >
-                      <Image
-                        source={require('../assets/location.png')}
-                        style={{ height: 25, width: 25, tintColor: '#000000' }}
-                      />
-                    </View>
-                    <View style={{ justifyContent: 'center', marginLeft: 20 }}>
-                      <Text
-                        style={{
-                          color: '#000000',
-                          fontSize: 15,
-                          fontFamily: 'Gilroy',
-                          fontWeight: 600,
-                        }}
-                      >
-                        Saved Addresses
-                      </Text>
-                    </View>
-                  </View>
-                  <Image
-                    source={require('../assets/arrow-right.png')}
-                    style={{ height: 22, width: 22, tintColor: '#000000' }}
-                  />
-                </TouchableOpacity>
-  
-                <View
-                  style={{
-                    height: 1,
-                    width: '100%',
-                    marginTop: 15,
-                    backgroundColor: '#CCC',
-                  }}
-                /> */}
-  
-                {/* <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => navigation.navigate('Notification')}
-                >
-                  <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                    <View
-                      style={{ justifyContent: 'center', alignItems: 'center' }}
-                    >
-                      <Image
-                        source={require('../assets/bell.png')}
-                        style={{ height: 25, width: 25, tintColor: '#000000' }}
-                      />
-                    </View>
-                    <TouchableOpacity
-                      style={{
-                        justifyContent: 'center',
-                        marginLeft: 20,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: '#000000',
-                          fontSize: 15,
-                          fontFamily: 'Gilroy',
-                          fontWeight: 600,
-                        }}
-                      >
-                        Notification
-                      </Text>
-                      <View
-                        style={{
-                          justifyContent: 'center',
-                          backgroundColor: '#F10C18',
-                          alignItems: 'center',
-                          marginLeft: 10,
-                          height: 25,
-                          width: 25,
-                          borderRadius: 12,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: '#FFFFFF',
-                            fontFamily: 'Gilroy-Medium',
-                            fontSize: 12,
-                          }}
-                        >
-                          5
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                  <Image
-                    source={require('../assets/arrow-right.png')}
-                    style={{ height: 22, width: 22, tintColor: '#000000' }}
-                  />
-                </TouchableOpacity> */}
-  
-          
-  
                 <TouchableOpacity
                   style={[styles.row, {}]}
-                  onPress={() => Logout()}
-                >
-                  <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                  onPress={() => Logout()}>
+                  <View
+                    style={{flexDirection: 'row', justifyContent: 'center'}}>
                     <View
-                      style={{ justifyContent: 'center', alignItems: 'center' }}
-                    >
+                      style={{justifyContent: 'center', alignItems: 'center'}}>
                       <Image
                         source={require('../assets/logout.png')}
-                        style={{ height: 25, width: 25, tintColor: '#000000' }}
+                        style={{height: 25, width: 25, tintColor: '#000000'}}
                       />
                     </View>
-                    <View style={{ justifyContent: 'center', marginLeft: 20 }}>
+                    <View style={{justifyContent: 'center', marginLeft: 20}}>
                       <Text
                         style={{
                           color: '#000000',
                           fontSize: 15,
                           fontFamily: 'Gilroy',
                           fontWeight: 600,
-                        }}
-                      >
+                        }}>
                         Log Out
                       </Text>
                     </View>
                   </View>
                   <Image
                     source={require('../assets/arrow-right.png')}
-                    style={{ height: 22, width: 22, tintColor: '#000000' }}
+                    style={{height: 22, width: 22, tintColor: '#000000'}}
                   />
                 </TouchableOpacity>
-  
+
                 <View
                   style={{
                     height: 1,
@@ -468,15 +352,13 @@ const Setting = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 width: '100%',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color: '#000000',
                   fontSize: 18,
                   fontFamily: 'Gilroy-Medium',
-                }}
-              >
+                }}>
                 Log in to get exclusive offers
               </Text>
               <TouchableOpacity
@@ -488,21 +370,19 @@ const Setting = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                onPress={() => Logout()}
-              >
+                onPress={() => openLoginSheet()}>
                 <Text
                   style={{
                     color: '#fff',
                     fontSize: 15,
                     fontFamily: 'Gilroy-Medium',
-                  }}
-                >
+                  }}>
                   Login
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
-  
+
           <View
             style={{
               height: 1,
@@ -512,58 +392,53 @@ const Setting = () => {
               opacity: 0.6,
             }}
           />
-  
+
           <View
             style={{
               marginHorizontal: 15,
               width: '95%',
               alignSelf: 'center',
               marginTop: 15,
-            }}
-          >
+            }}>
             <Text
               style={{
                 color: '#000000',
                 fontFamily: 'Gilroy-SemiBold',
                 fontSize: 20,
-              }}
-            >
+              }}>
               Account Setting
             </Text>
-  
+
             <ScrollView>
               <TouchableOpacity
                 style={styles.row}
-                onPress={() => navigation.navigate('HelpCenter')}
-              >
-                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                onPress={() => navigation.navigate('HelpCenter')}>
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                   <View
-                    style={{ justifyContent: 'center', alignItems: 'center' }}
-                  >
+                    style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Image
                       source={require('../assets/headset.png')}
-                      style={{ height: 25, width: 25, tintColor: '#000000' }}
+                      style={{height: 25, width: 25, tintColor: '#000000'}}
                     />
                   </View>
-                  <View style={{ justifyContent: 'center', marginLeft: 20 }}>
+                  <View style={{justifyContent: 'center', marginLeft: 20}}>
                     <Text
                       style={{
                         color: '#000000',
                         fontSize: 15,
                         fontFamily: 'Gilroy',
                         fontWeight: 600,
-                      }}
-                    >
+                      }}>
                       Help Center
                     </Text>
                   </View>
                 </View>
                 <Image
                   source={require('../assets/arrow-right.png')}
-                  style={{ height: 22, width: 22, tintColor: '#000000' }}
+                  style={{height: 22, width: 22, tintColor: '#000000'}}
                 />
               </TouchableOpacity>
-  
+
               <View
                 style={{
                   height: 1,
@@ -573,93 +448,25 @@ const Setting = () => {
                   opacity: 0.6,
                 }}
               />
-                 {/* <TouchableOpacity
-                style={styles.subservicebox}
-                onPress={() => navigation.navigate('HelpCenter')}
-              >
-                <Image
-                  source={require('../assets/headset.png')}
-                  style={{ height: 25, width: 25, tintColor: '#F10C18' }}
-                />
-                <Text
-                  style={{
-                    color: '#000000',
-                    fontSize: 16,
-                    fontFamily: 'Gilroy',
-                    fontWeight: 600,
-                    marginTop: 5,
-                  }}
-                >
-                  Help Center
-                </Text>
-              </TouchableOpacity> */}
-  
-              {/* <TouchableOpacity
-                style={styles.row}
-                onPress={() => navigation.navigate('HelpCenter')}
-              >
-                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                  <View
-                    style={{ justifyContent: 'center', alignItems: 'center' }}
-                  >
-                    <Image
-                      source={require('../assets/headset.png')}
-                      style={{ height: 25, width: 25, tintColor: '#000000' }}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={{
-                      justifyContent: 'center',
-                      marginLeft: 20,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: '#000000',
-                        fontSize: 15,
-                        fontFamily: 'Gilroy',
-                        fontWeight: 600,
-                      }}
-                    >
-                     Help center
-                    </Text>
-               
-                  </TouchableOpacity>
-                </View>
-                <Image
-                  source={require('../assets/arrow-right.png')}
-                  style={{ height: 22, width: 22, tintColor: '#000000' }}
-                />
-              </TouchableOpacity>
-               */}
-  
-              {/* <View
-                style={{
-                  height: 1,
-                  width: '100%',
-                  marginTop: 15,
-                  backgroundColor: '#CCC',
-                  opacity: 0.6,
-                }}
-              /> */}
             </ScrollView>
           </View>
         </ScrollView>
       );
     }
   };
-  
-  
+
   return (
     <SafeAreaView style={styles.container}>
-      <TitleHeader title={'Setting'} />
+      {!bottomSheetVisible && <TitleHeader title={'Setting'} />}
       {/* <Button title="Share" onPress={shareContent} /> */}
       {/* <TouchableOpacity onPress={shareContent}>
         <Text>bitpmm</Text>
       </TouchableOpacity> */}
       {renderProfileContent()}
+      <LoginBottomSheet
+        bottomSheetRef={bottomSheetRef}
+        closeSheet={closeLoginSheet}
+      />
     </SafeAreaView>
   );
 };
@@ -705,13 +512,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
   },
-  loadingContainer:{
-    justifyContent:"center",
-    alignItems:"center",
-    flex:1
-  }
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
 });
-
-
-
-

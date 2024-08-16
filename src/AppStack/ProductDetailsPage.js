@@ -1,6 +1,6 @@
 // #This code is written by Hemant Verma
 
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useToast, ToastProvider} from 'react-native-toast-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ScrollView} from 'react-native-virtualized-view';
+import LoginBottomSheet from '../Components/LoginBottomSheet';
 
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
@@ -40,8 +41,8 @@ const ProductDetailsPage = ({route, navigation}) => {
     if (productDetails) {
       if (productDetails.variation_data) {
         productDetails.variation_data.forEach(variation => {
-          console.log('Variation Attributes:', variation.attributes); // Log variation attributes
-          console.log('Attribute Size:', variation.attributes?.attribute_size); // Log attribute size
+          console.log('Variation Attributes:', variation.attributes);
+          console.log('Attribute Size:', variation.attributes?.attribute_size);
         });
       } else {
         console.log('variation_data is undefined');
@@ -53,17 +54,26 @@ const ProductDetailsPage = ({route, navigation}) => {
 
   const sizes = (productDetails?.variation_data || [])
     .map(variation => variation.attributes?.attribute_size)
-    .filter(size => size); // Filter out any undefined or null sizes
+    .filter(size => size);
 
   // Remove duplicate sizes
   const uniqueSizes = [...new Set(sizes)];
+  const openLoginSheet = () => {
+    setBottomSheetVisible(true); 
+    bottomSheetRef.current?.expand(); // Open the bottom sheet
+  };
+
+  const closeLoginSheet = () => {
+    setBottomSheetVisible(false); 
+    bottomSheetRef.current?.close();
+  };
 
   console.log('sizeeee', sizes);
   const [selectedSize, setSelectedSize] = useState('');
-  console.log("selectsize",selectedSize)
+  console.log('selectsize', selectedSize);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const {userToken, setUserToken} = useContext(AuthContext);
-
+  const bottomSheetRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
@@ -77,6 +87,8 @@ const ProductDetailsPage = ({route, navigation}) => {
   const [review, setReview] = useState();
   const [sizePriceMap, setSizePriceMap] = useState({});
   const isFocused = useIsFocused();
+  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false); // New state variable
   const {toast} = useToast();
   const sumOfRatings =
     review?.data.reduce((accumulator, currentValue) => {
@@ -107,7 +119,7 @@ const ProductDetailsPage = ({route, navigation}) => {
   };
 
   const isDummyToken = () => {
-    return userToken === 'dummy-token';
+    return userToken === 'dummy-token' || userToken === null;
   };
 
   const renderStars = () => {
@@ -220,6 +232,7 @@ const ProductDetailsPage = ({route, navigation}) => {
     fetchProductDetails(productId);
     ``;
   }, []);
+  
 
   const addToCart = async productId => {
     if (!selectedSize) {
@@ -227,44 +240,27 @@ const ProductDetailsPage = ({route, navigation}) => {
         'Size Not Selected',
         'Please select a size before adding to cart.',
         [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-        { cancelable: false }
+        { cancelable: false },
       );
       return;
     }
-  
-    // Check size availability
+
     const sizeAvailable = productDetails?.variation_data?.some(
-      (variation) => variation.attributes?.attribute_size === selectedSize
+      variation => variation.attributes?.attribute_size === selectedSize,
     );
-  
+
     if (!sizeAvailable) {
       Alert.alert(
         'Size Not Available',
         'Selected size is not available for this product.',
         [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-        { cancelable: false }
+        { cancelable: false },
       );
       return;
     }
-  
+
     if (isDummyToken()) {
-      Alert.alert('Please Login', 'You need to login to add products to Cart', [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Login',
-          onPress: () => {
-            setUserToken(null);
-            AsyncStorage.removeItem('userData');
-            navigation.reset({
-              index: 4,
-              routes: [{ name: 'Login' }],
-            });
-          },
-        },
-      ]);
+      openLoginSheet();
       return;
     }
 
@@ -273,10 +269,11 @@ const ProductDetailsPage = ({route, navigation}) => {
     formData.append('size', selectedSize);
     formData.append('quantity', selectedQuantity);
     formData.append('price', currentPrice);
-    console.log('adddtocartttttt', formData);
+
     const tokenToUse =
       userToken && userToken.token ? userToken.token : userToken;
     setLoadingCart(true);
+
     try {
       const response = await axios.post(
         'https://bad-gear.com/wp-json/add-to-cart/v1/AddToCart',
@@ -289,16 +286,14 @@ const ProductDetailsPage = ({route, navigation}) => {
         },
       );
 
-      // Check if response indicates success or failure
       if (response.status === 200) {
         setToastVisible(true);
+        setAddedToCart(true); // Mark as added to cart
         setTimeout(() => {
           setToastVisible(false);
         }, 3000);
       } else {
-        // Handle error cases based on the response
         if (response.status === 404) {
-          // Example: Size not available
           Alert.alert(
             'Not Added to Cart',
             'Selected size is not available.',
@@ -308,12 +303,11 @@ const ProductDetailsPage = ({route, navigation}) => {
                 onPress: () => console.log('OK Pressed'),
               },
             ],
-            {cancelable: false},
+            { cancelable: false },
           );
         } else {
-          // Handle other error scenarios
           console.log('Error adding to cart:', response.status);
-          alert('Failed to added Cart');
+          alert('Failed to add to Cart');
         }
       }
     } catch (error) {
@@ -323,33 +317,13 @@ const ProductDetailsPage = ({route, navigation}) => {
       setLoadingCart(false);
     }
   };
- 
-  
+
+
   const AddWishlist = async productId => {
     const tokenToUse =
-    userToken && userToken.token ? userToken.token : userToken;
+      userToken && userToken.token ? userToken.token : userToken;
     if (isDummyToken()) {
-      Alert.alert(
-        'Please Login',
-        'You need to login to add products to wishlist.',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Login',
-            onPress: () => {
-              setUserToken(null);
-              AsyncStorage.removeItem('userData');
-              navigation.reset({
-                index: 4, // Index of the Login screen
-                routes: [{name: 'Login'}],
-              });
-            },
-          },
-        ],
-      );
+      openLoginSheet();
       return;
     }
     console.log('productiddd', productId);
@@ -414,10 +388,10 @@ const ProductDetailsPage = ({route, navigation}) => {
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          // alignItems: 'center',
           paddingHorizontal: 15,
           marginTop: 10,
-          marginLeft: 20,
+          // marginLeft: 20,
         }}>
         <Text
           numberOfLines={2}
@@ -428,11 +402,12 @@ const ProductDetailsPage = ({route, navigation}) => {
             textAlign: 'center',
             fontWeight: 600,
             fontFamily: 'Gilroy-SemiBold',
+            lineHeight: 20,
           }}
           key={`${item.id}_text`}>
           {item?.title}
         </Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.navigate('WishList')}
           style={{
             height: 30,
@@ -447,10 +422,22 @@ const ProductDetailsPage = ({route, navigation}) => {
             source={require('../assets/heart.png')}
             style={{tintColor: '#000000'}}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <View style={{}}>
+          <Text
+            style={{
+              color: '#000000',
+              fontSize: 17,
+              fontWeight: 500,
+              fontFamily: 'Gilroy-SemiBold',
+            }}
+            key={`${item.id}_rate`}>
+            $ {item?.price}
+          </Text>
+        </View>
       </View>
 
-      <View style={{justifyContent: 'center', marginTop: 10}}>
+      {/* <View style={{justifyContent: 'center', marginTop: 10}}>
         <Text
           style={{
             color: '#000000',
@@ -462,7 +449,7 @@ const ProductDetailsPage = ({route, navigation}) => {
           key={`${item.id}_rate`}>
           $ {item?.price}
         </Text>
-      </View>
+      </View> */}
     </TouchableOpacity>
   );
 
@@ -499,7 +486,8 @@ const ProductDetailsPage = ({route, navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TitleHeader title={productDetails?.product_name} />
+ 
+      {!bottomSheetVisible && <TitleHeader title={productDetails?.product_name}  />}
       {loading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator color="#F10C18" size="large" />
@@ -538,7 +526,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                 marginLeft: 20,
                 fontFamily: 'Gilroy-SemiBold',
               }}>
-              ${currentPrice}
+              ${currentPrice?.toFixed(2)}
             </Text>
             <Text
               style={{
@@ -552,8 +540,7 @@ const ProductDetailsPage = ({route, navigation}) => {
             </Text>
           </View>
 
-          {/* Product Size */}
-          {/* <View style={{marginTop: 20}}>
+          <View style={{marginTop: 20}}>
             <Text
               style={{
                 color: '#000000',
@@ -564,175 +551,89 @@ const ProductDetailsPage = ({route, navigation}) => {
               }}>
               Size:
             </Text>
-            {productDetails?.attributes ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.productSize}>
-                {productDetails.attributes.split(' | ').map((size, index) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.sizebox,
-                      selectedSize === size && styles.selectedSizebox,
-                    ]}
-                    key={index}
-                    onPress={() =>
-                      setSelectedSize(selectedSize === size ? null : size)
-                    }>
-                    <Text
+            <View style={{paddingHorizontal: 10}}>
+              {uniqueSizes.length > 0 ? (
+                <FlatList
+                  data={uniqueSizes}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={(item, index) => index.toString()}
+                  contentContainerStyle={[
+                    styles.productSize,
+                    {paddingRight: 0},
+                  ]}
+                  renderItem={({item: size}) => (
+                    <TouchableOpacity
                       style={[
-                        styles.sizetext,
-                        selectedSize === size && styles.selectedSizetext,
-                      ]}>
-                      {size}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            ) : (
-              <Text
-                style={{
-                  marginLeft: 20,
-                  marginTop: 10,
-                  fontFamily: 'Gilroy-Medium',
-                  fontSize: 14,
-                  color: 'red',
-                }}>
-                No sizes available
-              </Text>
-            )}
-          </View> */}
-          {/* <View style={{ marginTop: 20 }}>
+                        styles.sizebox,
+                        selectedSize === size && styles.selectedSizebox,
+                      ]}
+                      onPress={() => {
+                        setSelectedSize(size);
+                        handleQuantityChange(selectedQuantity);
+                      }}>
+                      <Text
+                        style={[
+                          styles.sizetext,
+                          selectedSize === size && styles.selectedSizetext,
+                        ]}>
+                        {size}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              ) : (
+                <View style={{marginHorizontal: 15}}>
+                  <Text
+                    style={{
+                      color: '#F10C18',
+                      fontSize: 14,
+                      fontFamily: 'Gilroy-Medium',
+                      marginTop: 10,
+                    }}>
+                    No sizes available for this product
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Product Size end */}
+
+
+<View style={{ marginTop: 20 }}>
       <Text
         style={{
           color: '#000000',
           fontSize: 18,
-          fontWeight: '700',
           marginLeft: 20,
           fontFamily: 'Gilroy-SemiBold',
         }}>
-        Size:
+        QTY:
       </Text>
-<View style={{paddingHorizontal:15}}>
-{productDetails?.attributes ? (
-        <FlatList
-          data={productDetails.attributes.split(' | ')}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.productSize}
-          renderItem={({ item: size }) => (
-            <TouchableOpacity
-              style={[
-                styles.sizebox,
-                selectedSize === size && styles.selectedSizebox,
-              ]}
-              onPress={() => setSelectedSize(selectedSize === size ? null : size)}>
-              <Text
-                style={[
-                  styles.sizetext,
-                  selectedSize === size && styles.selectedSizetext,
-                ]}>
-                {size}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-      ) : (
-        <Text
-          style={{
-            marginLeft: 5,
-            marginTop: 10,
-            fontFamily: 'Gilroy-Medium',
-            fontSize: 15,
-            color: 'red',
-          }}>
-          No sizes available
-        </Text>
-      )}
-</View>
-    </View> */}
+      <View style={styles.qty}>
+        <TouchableOpacity
+          style={[
+            styles.quantityButton,
+            { opacity: selectedQuantity <= 1 ? 0.5 : 1 }, // Reduce opacity when disabled
+          ]}
+          onPress={() => handleQuantityChange(selectedQuantity - 1)}
+          disabled={selectedQuantity <= 1}>
+          <Text style={styles.quantityButtonText}>-</Text>
+        </TouchableOpacity>
+        <Text style={styles.quantityText}>{selectedQuantity}</Text>
+        <TouchableOpacity
+          style={[
+            styles.quantityButton,
+            { opacity: selectedQuantity >= 10 ? 0.5 : 1 }, // Reduce opacity when at max
+          ]}
+          onPress={() => handleQuantityChange(selectedQuantity + 1)}
+          disabled={selectedQuantity >= 10}>
+          <Text style={styles.quantityButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
 
-<View style={{ marginTop: 20 }}>
-  <Text
-    style={{
-      color: '#000000',
-      fontSize: 18,
-      fontWeight: '700',
-      marginLeft: 20,
-      fontFamily: 'Gilroy-SemiBold',
-    }}>
-    Size:
-  </Text>
-  <View style={{ paddingHorizontal: 10 }}>
-    {uniqueSizes.length > 0 ? (
-      <FlatList
-        data={uniqueSizes}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={[styles.productSize, { paddingRight: 0 }]}
-        renderItem={({ item: size }) => (
-          <TouchableOpacity
-            style={[
-              styles.sizebox,
-              selectedSize === size && styles.selectedSizebox,
-            ]}
-            onPress={() => {
-              setSelectedSize(size);
-              handleQuantityChange(selectedQuantity); // Update price when size changes
-            }}
-          >
-            <Text
-              style={[
-                styles.sizetext,
-                selectedSize === size && styles.selectedSizetext,
-              ]}
-            >
-              {size}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
-    ) : (
-     <View style={{marginHorizontal:15}}>
-       <Text style={{ color: '#F10C18', fontSize: 14, fontFamily:"Gilroy-Medium", marginTop: 10 }}>
-        No sizes available for this product
-      </Text>
-     </View>
-    )}
-  </View>
-</View>
-
-
-          {/* Product Size end */}
-
-          {/* Product Qty */}
-          <View style={{marginTop: 20}}>
-            <Text
-              style={{
-                color: '#000000',
-                fontSize: 18,
-                marginLeft: 20,
-                fontFamily: 'Gilroy-SemiBold',
-              }}>
-              QTY:
-            </Text>
-            <View style={styles.qty}>
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => handleQuantityChange(selectedQuantity - 1)}
-                disabled={selectedQuantity <= 1}>
-                <Text style={styles.quantityButtonText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.quantityText}>{selectedQuantity}</Text>
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => handleQuantityChange(selectedQuantity + 1)}>
-                <Text style={styles.quantityButtonText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
           {/* Product Qty end/}
 
     {/* Wishlist & AddCart Button */}
@@ -841,11 +742,13 @@ const ProductDetailsPage = ({route, navigation}) => {
                     fontSize: 18,
                     fontFamily: 'Gilroy-SemiBold',
                     marginTop: 3,
+                    marginLeft:5
                   }}>
-                  AddToCart
+                  Add To Cart
                 </Text>
               </TouchableOpacity>
             )}
+            
           </TouchableOpacity>
           {/* Wishlist $ AddCart Button End */}
 
@@ -884,7 +787,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                   fontSize: 20,
                   fontFamily: 'Gilroy-SemiBold',
                 }}>
-                Related Product
+                Related Products
               </Text>
               <TouchableOpacity>
                 <Text
@@ -953,7 +856,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                     alignItems: 'center',
                     marginLeft: 10,
                   }}>
-                  <Text style={{color: '#000000', fontSize: 18, opacity: 0.6}}>
+                  <Text style={{color: '#000000', fontSize: 18}}>
                     Out of 5 /
                   </Text>
                   <Text style={{color: '#000000', fontSize: 15}}>
@@ -975,7 +878,7 @@ const ProductDetailsPage = ({route, navigation}) => {
                   renderItem={renderItem}
                   keyExtractor={(item, index) => index.toString()}
                 />
-                {!showAllReviews && (
+                {review?.data.length > 3 && !showAllReviews && (
                   <Button
                     title="Show All"
                     color={'#F10C18'}
@@ -1021,6 +924,10 @@ const ProductDetailsPage = ({route, navigation}) => {
           <Text style={styles.toastText}>Added Cart Succesfuly!</Text>
         </View>
       )}
+      <LoginBottomSheet
+        bottomSheetRef={bottomSheetRef}
+        closeSheet={closeLoginSheet}
+      />
     </SafeAreaView>
   );
 };
@@ -1079,7 +986,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     marginHorizontal: 4,
-
   },
   sizetext: {
     fontWeight: '700',
@@ -1132,6 +1038,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 80,
     paddingBottom: 22,
+    paddingBottom:100
   },
   button: {
     flexDirection: 'row',
@@ -1246,6 +1153,8 @@ const styles = StyleSheet.create({
   reviewContent: {
     width: '80%',
     marginLeft: 10,
+
+    height:40
   },
   reviewTitle: {
     fontSize: 14,

@@ -1,6 +1,12 @@
 // #This code is written by Hemant Verma
 
-import React, {useEffect, useContext, useState, useCallback} from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   View,
   Text,
@@ -35,44 +41,38 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 const {width: screenWidth} = Dimensions.get('window');
 const imageWidth = screenWidth / 2.2;
 const imageWidth2 = screenWidth / 2.5;
-const aspectRatio = 16 / 25; // Assuming a standard aspect ratio
+const aspectRatio = 16 / 25;
 const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
-
-const CatDATA = [
-  {id: '1', text: 'Bad Woman', image: require('../assets/cat1.png')},
-  {id: '2', text: 'Hats', image: require('../assets/cat2.png')},
-  {id: '3', text: '18 to Life', image: require('../assets/cat3.png')},
-  {id: '4', text: 'Bad Woman', image: require('../assets/cat1.png')},
-  {id: '5', text: 'Hats', image: require('../assets/cat2.png')},
-  {id: '6', text: '18 to Life', image: require('../assets/cat3.png')},
-];
+import LoginBottomSheet from '../Components/LoginBottomSheet';
 
 const Home = ({item}) => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState(null);
   const [categories, setCategories] = useState([]);
-  const { userToken, setUserToken } = useContext(AuthContext);
+  const {userToken, setUserToken} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [Arrivals, setArrivals] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
   const [username, setUsername] = useState('');
   const [wishlist, setWishlist] = useState([]);
-  const [refreshing, setRefreshing] = useState(false); // State for refreshing
+  const [refreshing, setRefreshing] = useState(false);
+  const bottomSheetRef = useRef(null); // Create a ref for the bottom sheet
 
   const tokenUse = userToken && userToken.token ? userToken.token : userToken;
 
-  // console.log('userdataaa', userData?.user_data?.data.user_login);
-
-  const ensureMinLength = (str, minLength) => {
-    if (str.length >= minLength) return str;
-    return str + ' '.repeat(minLength - str.length);
+  const openLoginSheet = () => {
+    bottomSheetRef.current?.expand(); // Open the bottom sheet
   };
 
-  const capitalizeFirstLetter = (string) => {
+  const closeLoginSheet = () => {
+    bottomSheetRef.current?.close(); // Close the bottom sheet
+  };
+
+  const capitalizeFirstLetter = string => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-  
+
   const truncateText = (text, maxLength) => {
     if (text.length <= maxLength) {
       return text;
@@ -80,15 +80,14 @@ const Home = ({item}) => {
     return text.slice(0, maxLength) + '...';
   };
 
-  // Function to check if the token is a dummy token
   const isDummyToken = () => {
     return userToken === 'dummy-token';
   };
 
-  // Function to handle navigation with token check
-  const handleNavigation = (page) => {
+  const handleNavigation = page => {
     if (isDummyToken()) {
-      Alert.alert('Access Denied', 'You are not login.');
+      // Alert.alert('Access Denied', 'You are not login.');
+      openLoginSheet();
     } else {
       navigation.navigate(page);
     }
@@ -106,7 +105,7 @@ const Home = ({item}) => {
       await fetchNewArrivals();
       await fetchBestSelling();
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.log('Error fetching data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -126,7 +125,7 @@ const Home = ({item}) => {
     try {
       const bannerResponse = await getBanner();
       if (bannerResponse.status === 'success') {
-        const { data } = bannerResponse;
+        const {data} = bannerResponse;
         setBanner(data);
       } else {
         console.log('Error fetching banner:');
@@ -165,10 +164,10 @@ const Home = ({item}) => {
       const bestSellingResponse = await getBestSelling(1, tokenUse);
       const decodedBestSellingResponse = bestSellingResponse.map(item => ({
         ...item,
-        title: item.title ? he.decode(item.title) : '', // Assuming 'title' needs decoding
-        wishlist_status: item.wishlist_status === 'true', // Adjust this if necessary
+        title: item.title ? he.decode(item.title) : '',
+        wishlist_status: item.wishlist_status === 'true',
       }));
-      console.log('bestSellingResponseData', decodedBestSellingResponse);
+      // console.log('bestSellingResponseData', decodedBestSellingResponse);
       setBestSelling(decodedBestSellingResponse);
     } catch (error) {
       console.log('Error fetching best selling:', error);
@@ -178,89 +177,16 @@ const Home = ({item}) => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, [userToken]), // Dependencies array includes userToken
+    }, [userToken]),
   );
 
   const onRefresh = useCallback(() => {
     fetchData();
-  }, [userToken]); // Dependencies array includes userToken
-
-
-  // const addToWishlist = async productId => {
-  //   if (isDummyToken()) {
-  //     Alert.alert(
-  //       'Please Login',
-  //       'You need to login to add products to wishlist.',
-  //       [
-  //         {
-  //           text: 'Cancel',
-  //           style: 'cancel',
-  //         },
-  //         {
-  //           text: 'Login',
-  //           onPress: () => {
-  //             setUserToken(null);
-  //             AsyncStorage.removeItem('userData');
-  //             navigation.reset({
-  //               index: 4, // Index of the Login screen
-  //               routes: [{name: 'Login'}],
-  //             });
-  //           },
-  //         },
-  //       ],
-  //     );
-  //     return;
-  //   }
-
-  //   const tokenToUse =
-  //     userToken && userToken.token ? userToken.token : userToken;
-  //     console.log("tokenuse",tokenToUse)
-
-  //   let config = {
-  //     method: 'post',
-  //     url: `https://bad-gear.com/wp-json/add-product-wishlist/v1/addProductWishlist?product_id=${productId}`,
-  //     headers: {
-  //       Authorization: `${tokenToUse}`,
-  //     },
-  //   };
-
-  //   try {
-  //     const response = await axios.request(config);
-  //     // console.log(JSON.stringify(response.data));
-
-  //     if (response.data.status === 'success') {
-  //       console.log('Successfully added and removed from wishlist');
-  //     } else {
-  //       console.log('Error: Unexpected response format:', response);
-  //     }
-  //   } catch (error) {
-  //     console.log('Error deleting Wishlist Item:', error);
-  //   }
-  // };
+  }, [userToken]);
 
   const addToWishlist = async productId => {
     if (isDummyToken()) {
-      Alert.alert(
-        'Please Login',
-        'You need to login to add products to wishlist.',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Login',
-            onPress: () => {
-              setUserToken(null);
-              AsyncStorage.removeItem('userData');
-              navigation.reset({
-                index: 4, // Index of the Login screen
-                routes: [{name: 'Login'}],
-              });
-            },
-          },
-        ],
-      );
+      openLoginSheet();
       return;
     }
 
@@ -295,7 +221,6 @@ const Home = ({item}) => {
     try {
       const response = await axios.request(config);
       if (response.data.status === 'success') {
-        // Optionally refetch new arrivals and best-selling items to ensure data is up-to-date
         fetchNewArrivals();
         fetchBestSelling();
       } else {
@@ -303,7 +228,6 @@ const Home = ({item}) => {
       }
     } catch (error) {
       console.log('Error updating wishlist:', error);
-      // Optionally refetch new arrivals and best-selling items to ensure data is up-to-date if needed
       fetchNewArrivals();
       fetchBestSelling();
     }
@@ -313,21 +237,21 @@ const Home = ({item}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View>
-        <Text
-  style={{
-    color: '#000000',
-    fontSize: 22,
-    fontFamily: 'Gilroy-SemiBold',
-  }}>
-  Welcome{' '}
-  {userData &&
-    truncateText(
-      capitalizeFirstLetter(
-        JSON.parse(userData).user_data?.data?.user_login
-      ),
-      10 // Replace 10 with the maximum length you want
-    )}
-</Text>
+          <Text
+            style={{
+              color: '#000000',
+              fontSize: 22,
+              fontFamily: 'Gilroy-SemiBold',
+            }}>
+            Welcome{' '}
+            {userData &&
+              truncateText(
+                capitalizeFirstLetter(
+                  JSON.parse(userData).user_data?.data?.user_login,
+                ),
+                10,
+              )}
+          </Text>
         </View>
 
         <View
@@ -343,7 +267,7 @@ const Home = ({item}) => {
               style={styles.headericon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+          <TouchableOpacity onPress={() => navigation.navigate('Search')}>
             <Image
               source={require('../assets/search.png')}
               style={{height: 25, width: 25, tintColor: '#000000'}}
@@ -393,7 +317,7 @@ const Home = ({item}) => {
                   width: '70%',
                   textAlign: 'center',
                   position: 'absolute',
-                  height: 200, // Set the same height as the banner image
+                  height: 200,
                   fontFamily: 'Gilroy-Bold',
                 }}>
                 {banner?.banner_heading}
@@ -524,7 +448,7 @@ const Home = ({item}) => {
                     activeOpacity={0.92}
                     style={{width: imageWidth}}
                     onPress={() => {
-                      console.log('Product ID:', item.product_id); // Log the product ID
+                      console.log('Product ID:', item.product_id);
                       navigation.navigate('ProductDetails', {
                         productId: item.product_id,
                         productName: item.product_name,
@@ -589,52 +513,44 @@ const Home = ({item}) => {
                       <TouchableOpacity
                         onPress={() => {
                           if (isDummyToken()) {
-                            Alert.alert(
-                              'Please Login',
-                              'You need to login to add products to wishlist.',
-                              [
-                                {
-                                  text: 'Cancel',
-                                  style: 'cancel',
-                                },
-                                {
-                                  text: 'Login',
-                                  onPress: () => {
-                                    setUserToken(null);
-                                    AsyncStorage.removeItem('userData');
-                                    navigation.reset({
-                                      index: 4,
-                                      routes: [{name: 'Login'}],
-                                    });
-                                  },
-                                },
-                              ],
-                            );
+                            openLoginSheet();
                           } else if (!loading) {
                             addToWishlist(item.product_id);
                           }
                         }}
                         disabled={loading}
                         style={{}}>
-                        <Image
-                          source={
-                            isDummyToken()
-                              ? require('../assets/heart.png') // Always show placeholder when using dummy token
-                              : item.wishlist_status
-                              ? require('../assets/like.png')
-                              : require('../assets/heart.png')
-                          }
-                          style={[
-                            styles.icon,
-                            {
-                              tintColor:
-                                !isDummyToken() && item.wishlist_status
-                                  ? '#F10C18'
-                                  : '#000000',
-                              opacity: loading ? 0.5 : 1,
-                            },
-                          ]}
-                        />
+                        {loading ? (
+                          <Skeleton
+                            duration={1000}
+                            style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 12,
+                            }}
+                            skeletonHeight={20}
+                            skeletonWidth={20}
+                          />
+                        ) : (
+                          <Image
+                            source={
+                              isDummyToken()
+                                ? require('../assets/heart.png')
+                                : item.wishlist_status
+                                ? require('../assets/like.png')
+                                : require('../assets/heart.png')
+                            }
+                            style={[
+                              styles.icon,
+                              {
+                                tintColor:
+                                  !isDummyToken() && item.wishlist_status
+                                    ? '#F10C18'
+                                    : '#000000',
+                              },
+                            ]}
+                          />
+                        )}
                       </TouchableOpacity>
                     </View>
                     <View style={{justifyContent: 'center', marginTop: 10}}>
@@ -778,55 +694,48 @@ const Home = ({item}) => {
                           style={{tintColor: '#000000'}}
                         />
                       </TouchableOpacity> */}
-                     <TouchableOpacity
+                      <TouchableOpacity
                         onPress={() => {
                           if (isDummyToken()) {
-                            Alert.alert(
-                              'Please Login',
-                              'You need to login to add products to wishlist.',
-                              [
-                                {
-                                  text: 'Cancel',
-                                  style: 'cancel',
-                                },
-                                {
-                                  text: 'Login',
-                                  onPress: () => {
-                                    setUserToken(null);
-                                    AsyncStorage.removeItem('userData');
-                                    navigation.reset({
-                                      index: 4,
-                                      routes: [{name: 'Login'}],
-                                    });
-                                  },
-                                },
-                              ],
-                            );
+                            openLoginSheet();
                           } else if (!loading) {
                             addToWishlist(item.product_id);
                           }
                         }}
                         disabled={loading}
                         style={{}}>
-                        <Image
-                          source={
-                            isDummyToken()
-                              ? require('../assets/heart.png') // Always show placeholder when using dummy token
-                              : item.wishlist_status
-                              ? require('../assets/like.png')
-                              : require('../assets/heart.png')
-                          }
-                          style={[
-                            styles.icon,
-                            {
-                              tintColor:
-                                !isDummyToken() && item.wishlist_status
-                                  ? '#F10C18'
-                                  : '#000000',
-                              opacity: loading ? 0.5 : 1,
-                            },
-                          ]}
-                        />
+                        {loading ? (
+                          <Skeleton
+                            duration={1000}
+                            style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 12,
+                            }}
+                            skeletonHeight={20}
+                            skeletonWidth={20}
+                          />
+                        ) : (
+                          <Image
+                            source={
+                              isDummyToken()
+                                ? require('../assets/heart.png')
+                                : item.wishlist_status
+                                ? require('../assets/like.png')
+                                : require('../assets/heart.png')
+                            }
+                            style={[
+                              styles.icon,
+                              {
+                                tintColor:
+                                  !isDummyToken() && item.wishlist_status
+                                    ? '#F10C18'
+                                    : '#000000',
+                                opacity: loading ? 0.5 : 1,
+                              },
+                            ]}
+                          />
+                        )}
                       </TouchableOpacity>
                     </View>
                     <View style={{justifyContent: 'center', marginTop: 10}}>
@@ -853,7 +762,7 @@ const Home = ({item}) => {
                             marginLeft: 18,
                             fontFamily: 'Gilroy-SemiBold',
                           }}>
-                          ${item?.price}
+                          {item?.price}
                         </Text>
                       )}
                     </View>
@@ -865,6 +774,10 @@ const Home = ({item}) => {
           </View>
         </View>
       </ScrollView>
+      <LoginBottomSheet
+        bottomSheetRef={bottomSheetRef}
+        closeSheet={closeLoginSheet}
+      />
     </SafeAreaView>
   );
 };

@@ -7,6 +7,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
 import LinearGradient from 'react-native-linear-gradient';
 import he from "he";
+import LoginBottomSheet from '../Components/LoginBottomSheet';
 
 const { width } = Dimensions.get('window');
 
@@ -24,6 +25,10 @@ const Search = () => {
     navigation.goBack();
   };
 
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults(null);
+  };
   const handleSearch = () => {
     console.log("hello");
     setLoading(true);
@@ -97,15 +102,20 @@ const Search = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <Image source={require("../assets/search.png")} style={{height:24,width:24,tintColor:"#F10C18"}}/>
-       <View style={{justifyContent:"center",}}>
-       <TextInput
-          placeholder="Search here..."
-          placeholderTextColor="rgba(30, 30, 50, 0.6)"
-          style={styles.input}
-          value={searchQuery}
-          onChangeText={text => setSearchQuery(text)}
-        />
-       </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Search here..."
+            placeholderTextColor="rgba(30, 30, 50, 0.6)"
+            style={styles.input}
+            value={searchQuery}
+            onChangeText={text => setSearchQuery(text)}
+          />
+          {searchQuery ? (
+            <TouchableOpacity style={styles.clearButton} onPress={clearSearch}>
+              <Text style={styles.clearButtonText}>×</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
 
 
@@ -238,7 +248,28 @@ const styles = StyleSheet.create({
     width: 125,
     height: 145,
     resizeMode: "stretch"
-  }
+  },
+  clearButton: {
+  marginRight:20,
+
+  },
+  clearButtonText: {
+    fontSize: 24,
+    color: '#F10C18',
+  },
+  inputContainer: {
+  justifyContent:"space-between",
+  flexDirection:"row",
+  alignItems:"center"
+  },
+  input: {
+    flex: 1,
+    marginLeft: 10,
+    color: '#23233C',
+    fontFamily: 'Gilroy-Medium',
+    fontSize: 17,
+  },
+
 });
 
 export default Search;
