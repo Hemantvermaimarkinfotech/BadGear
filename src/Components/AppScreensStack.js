@@ -47,7 +47,7 @@ const BottomTabNav = () => (
       tabBarActiveTintColor: '#F10C18', 
       tabBarInactiveTintColor: '#000000',
       tabBarStyle: {
-        backgroundColor: 'white', 
+        backgroundColor: '#FFFFFF', 
         height: 90, 
         elevation: 5, 
    

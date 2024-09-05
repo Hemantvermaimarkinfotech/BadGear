@@ -44,19 +44,19 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BADGEAR/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BADGEAR/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BADGEAR/main.m; sourceTree = "<group>"; };
-		32210644AA3D41A79021E34F /* Gilroy-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Regular.ttf"; path = "../src/assets/Fonts/Gilroy-Regular.ttf"; sourceTree = "<group>"; };
-		540001B66C6544DAB6F08F09 /* Gilroy-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-SemiBold.ttf"; path = "../src/assets/Fonts/Gilroy-SemiBold.ttf"; sourceTree = "<group>"; };
-		73C82A0B57154B4AAFECAFB5 /* Gilroy-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Medium.ttf"; path = "../src/assets/Fonts/Gilroy-Medium.ttf"; sourceTree = "<group>"; };
+		32210644AA3D41A79021E34F /* Gilroy-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Regular.ttf"; path = "../src/assets/Fonts/Gilroy-Regular.ttf"; sourceTree = "<group>"; };
+		540001B66C6544DAB6F08F09 /* Gilroy-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-SemiBold.ttf"; path = "../src/assets/Fonts/Gilroy-SemiBold.ttf"; sourceTree = "<group>"; };
+		73C82A0B57154B4AAFECAFB5 /* Gilroy-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Medium.ttf"; path = "../src/assets/Fonts/Gilroy-Medium.ttf"; sourceTree = "<group>"; };
 		775D8A319DCF14F281ED275A /* Pods-BADGEAR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR.release.xcconfig"; path = "Target Support Files/Pods-BADGEAR/Pods-BADGEAR.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BADGEAR/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		81AF36556D0F4BD38D9649CE /* Gilroy-Heavy.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Heavy.ttf"; path = "../src/assets/Fonts/Gilroy-Heavy.ttf"; sourceTree = "<group>"; };
+		81AF36556D0F4BD38D9649CE /* Gilroy-Heavy.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Heavy.ttf"; path = "../src/assets/Fonts/Gilroy-Heavy.ttf"; sourceTree = "<group>"; };
 		84657E918C6F35F7F5F72AA5 /* libPods-BADGEAR.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BADGEAR.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		954BBD4B1ED344A38F740E08 /* Gilroy-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Light.ttf"; path = "../src/assets/Fonts/Gilroy-Light.ttf"; sourceTree = "<group>"; };
+		954BBD4B1ED344A38F740E08 /* Gilroy-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Light.ttf"; path = "../src/assets/Fonts/Gilroy-Light.ttf"; sourceTree = "<group>"; };
 		A78729414217348081A5E591 /* Pods-BADGEAR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR/Pods-BADGEAR.debug.xcconfig"; sourceTree = "<group>"; };
 		A892A6482C16BD4A006050F7 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
 		A8936BE62C21B5C9005BB821 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
 		C33FFA7D1C1F73F14266D3FE /* Pods-BADGEAR-BADGEARTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR-BADGEARTests.debug.xcconfig"; path = "Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests.debug.xcconfig"; sourceTree = "<group>"; };
-		D35497D97E3A47EDA55CB060 /* Gilroy-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Bold.ttf"; path = "../src/assets/Fonts/Gilroy-Bold.ttf"; sourceTree = "<group>"; };
+		D35497D97E3A47EDA55CB060 /* Gilroy-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Gilroy-Bold.ttf"; path = "../src/assets/Fonts/Gilroy-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F14D97BC20423D6F0D726C58 /* libPods-BADGEAR-BADGEARTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BADGEAR-BADGEARTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD3BB699DB393F785933B605 /* Pods-BADGEAR-BADGEARTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BADGEAR-BADGEARTests.release.xcconfig"; path = "Target Support Files/Pods-BADGEAR-BADGEARTests/Pods-BADGEAR-BADGEARTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -512,11 +512,9 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9VV5XQBV2D;
+				DEVELOPMENT_TEAM = TB7DRRK9NN;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BADGEAR/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
@@ -531,10 +529,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.badgear.badgear;
+				PRODUCT_BUNDLE_IDENTIFIER = com.imarkinfotech.BadGearApp;
 				PRODUCT_NAME = BADGEAR;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "BadGear dev2 profile";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -554,11 +551,9 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9VV5XQBV2D;
+				DEVELOPMENT_TEAM = TB7DRRK9NN;
 				INFOPLIST_FILE = BADGEAR/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -572,10 +567,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.badgear.badgear;
+				PRODUCT_BUNDLE_IDENTIFIER = com.imarkinfotech.BadGearApp;
 				PRODUCT_NAME = BADGEAR;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "BadGear dev2 profile";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -656,10 +650,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -728,10 +719,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

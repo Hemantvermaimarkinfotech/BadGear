@@ -1,6 +1,6 @@
 import React, {useEffect, useContext, useState} from 'react';
 import {
-  View,
+  View, 
   Text,
   Image,
   StyleSheet,
@@ -48,6 +48,10 @@ const Checkout = ({navigation, route}) => {
   const [pageloading, setPageloading] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+  const [couponMessage, setCouponMessage] = useState('');
+  const [isCouponAdded, setIsCouponAdded] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
 
   const handleClearText = () => {
     setCouponCode('');
@@ -71,55 +75,6 @@ const Checkout = ({navigation, route}) => {
     setModalVisible2(false);
   };
 
-  // useEffect(() => {
-  //   // Define the async function to fetch addresses
-  //   async function getAddressData() {
-  //     const tokenToUse =
-  //       userToken && userToken.token ? userToken.token : userToken;
-  //     try {
-  //       setPageloading(true);
-  //       // First API call to get billing address
-  //       let billingConfig = {
-  //         method: 'get',
-  //         maxBodyLength: Infinity,
-  //         url: 'https://bad-gear.com/wp-json/get-billing-address/v1/GetBillingAddress',
-  //         headers: {
-  //           Authorization: `${tokenToUse}`,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       };
-
-  //       const billingResponse = await axios(billingConfig);
-  //       console.log('Billing Address Data:', billingResponse.data);
-
-  //       // Update billing address state
-  //       setBillingAddress(billingResponse.data);
-
-  //       // Second API call to get shipping address
-  //       let shippingConfig = {
-  //         method: 'get',
-  //         maxBodyLength: Infinity,
-  //         url: 'https://bad-gear.com/wp-json/get-shipping-address/v1/GetShippingAddress',
-  //         headers: {
-  //           Authorization: `${tokenToUse}`,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       };
-
-  //       const shippingResponse = await axios(shippingConfig);
-  //       console.log('Shipping Address Data:', shippingResponse.data);
-
-  //       // Update shipping address state
-  //       setShippingAddress(shippingResponse.data);
-  //     } catch (error) {
-  //       console.log('Error fetching addresses:', error);
-  //     } finally {
-  //       setPageloading(false);
-  //     }
-  //   }
-  //   getAddressData();
-  // }, []);
-
   const order = [
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
     {name: 'Kenworth Red Skull Hoodie', price: '2000'},
@@ -127,6 +82,21 @@ const Checkout = ({navigation, route}) => {
   const {userToken} = useContext(AuthContext);
   const tokenToUse = userToken && userToken.token ? userToken.token : userToken;
   console.log('tokenuser', tokenToUse);
+  // const calculateTotal = () => {
+  //   let total = 0;
+
+  //   if (Array.isArray(cartItems)) {
+  //     cartItems.forEach(item => {
+  //       const price = parseFloat(item.price);
+  //       if (!isNaN(price)) {
+  //         total += price * item.quantity;
+  //       }
+  //     });
+  //   }
+
+  //   return total.toFixed(2); // Format total amount to two decimal places
+  // };
+
   const calculateTotal = () => {
     let total = 0;
 
@@ -139,6 +109,12 @@ const Checkout = ({navigation, route}) => {
       });
     }
 
+    // Apply discount if available and round the total to 2 decimal places
+    if (discount > 0) {
+      total = total - total * discount;
+      total = Math.round(total * 100) / 100; // Round to 2 decimal places
+    }
+
     return total.toFixed(2); // Format total amount to two decimal places
   };
 
@@ -147,33 +123,6 @@ const Checkout = ({navigation, route}) => {
     navigation.navigate('BottomTab');
   };
 
-  // const getCart = () => {
-  //   const tokenToUse =
-  //     userToken && userToken.token ? userToken.token : userToken;
-
-  //   let config = {
-  //     method: 'get',
-  //     url: 'https://bad-gear.com/wp-json/get-cart-items/v1/GetCartItems',
-  //     headers: {
-  //       Authorization: `${tokenToUse}`, // Ensure the token format matches the server's expectations
-  //     },
-  //   };
-
-  //   axios
-  //     .request(config)
-  //     .then(response => {
-  //       console.log(JSON.stringify(response.data));
-  //       setCartItems(response.data?.data);
-  //     })
-  //     .catch(error => {
-  //       console.log('Error fetching cart items:', error);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   console
-  //   getCart();
-  // }, []);
   // Define fetchData function
   const fetchData = async () => {
     setPageloading(true);
@@ -236,90 +185,6 @@ const Checkout = ({navigation, route}) => {
   const productprice = cartItems.map(item => item.price).join(',');
 
   //   const tokenToUse = userToken?.token || userToken;
-
-  //   // Check for required fields and handle validation
-  //   const requiredFields = [
-  //     productIdsString,
-  //     totalQuantity.toString(),
-  //     paymentDetails?.cardName,
-  //     billingAddress?.data?.billing_email,
-  //     productNamesString,
-  //     paymentDetails?.cardNumber,
-  //     paymentDetails?.expiryDate,
-  //     paymentDetails?.cvv,
-  //     billingAddress?.data?.billing_first_name,
-  //     billingAddress?.data?.billing_last_name,
-  //     billingAddress?.data?.billing_email,
-  //     billingAddress?.data?.billing_phone,
-  //     billingAddress?.data?.billing_company,
-  //     billingAddress?.data?.billing_address,
-  //     billingAddress?.data?.billing_city,
-  //     billingAddress?.data?.billing_state,
-  //     billingAddress?.data?.billing_postcode,
-  //     billingAddress?.data?.billing_country,
-  //     calculateTotal().toString(),
-  //   ];
-
-  //   console.log("requirfield",requiredFields)
-
-  //   const isFormValid = requiredFields.every(field => field && field.trim() !== '');
-
-  //   if (!isFormValid) {
-  //     console.log('Please fill all required fields.');
-  //     setsubmitLoading(false); // Ensure loading is stopped if form is invalid
-  //     return; // Stop execution if form is invalid
-  //   }
-
-  //   console.log('tokenToUse:', tokenToUse);
-  //   setsubmitLoading(true);
-  //   let data = new FormData();
-
-  //   // Append fields to FormData
-  //   data.append('product_ids', productIdsString || '');
-  //   data.append('quantities', totalQuantity.toString() || '');
-  //   data.append('product_price', productprice || ''); // Ensure productprice is a comma-separated string
-  //   data.append('card_holder_name', paymentDetails?.cardName || '');
-  //   data.append('customer_email', billingAddress?.data?.billing_email || '');
-  //   data.append('item_name', productNamesString || '');
-  //   data.append('card_number', paymentDetails?.cardNumber || '');
-  //   data.append('card_exp_date', paymentDetails?.expiryDate || '');
-  //   data.append('card_cvc', paymentDetails?.cvv || '');
-  //   data.append('billing_first_name', billingAddress?.data?.billing_first_name || '');
-  //   data.append('billing_last_name', billingAddress?.data?.billing_last_name || '');
-  //   data.append('billing_email', billingAddress?.data?.billing_email || '');
-  //   data.append('billing_phone', billingAddress?.data?.billing_phone || '');
-  //   data.append('billing_company', billingAddress?.data?.billing_company || '');
-  //   data.append('billing_address_1', billingAddress?.data?.billing_address || ''); // Use billing_address_1
-  //   data.append('billing_address_2', billingAddress?.data?.billing_address || ''); // Ensure this field exists
-  //   data.append('billing_city', billingAddress?.data?.billing_city || '');
-  //   data.append('billing_state', billingAddress?.data?.billing_state || '');
-  //   data.append('billing_zip', billingAddress?.data?.billing_postcode || '');
-  //   data.append('billing_country', billingAddress?.data?.billing_country || '');
-  //   data.append('total_amount', calculateTotal().toString() || '');
-
-  //   console.log('Total Quantity:', totalQuantity);
-  //   console.log('dataaaaa', data);
-
-  //   let config = {
-  //     method: 'post',
-  //     url: 'https://bad-gear.com/wp-json/payment_process/v1/payment',
-  //     headers: {
-  //       Authorization: `${tokenToUse}`, // Ensure proper format
-  //     },
-  //     data: data,
-  //   };
-
-  //   try {
-  //     const response = await axios(config);
-  //     console.log('API Response:', response.data);
-  //     setShowModal(true);
-  //   } catch (error) {
-  //     console.log('API Error:', error);
-  //     // Handle error cases, e.g., show error message
-  //   } finally {
-  //     setsubmitLoading(false); // Ensure loading state is set to false in all cases
-  //   }
-  // };
 
   const handleOrderSubmission = async () => {
     const tokenToUse =
@@ -419,7 +284,7 @@ const Checkout = ({navigation, route}) => {
       }
 
       const responseData = await response?.data;
-      console.log('API Response:', responseData);
+      console.log('API Response444444444444:', responseData);
       setShowModal(true);
     } catch (error) {
       console.log('API Error:', error.message);
@@ -430,6 +295,37 @@ const Checkout = ({navigation, route}) => {
 
   const toggleModal = () => {
     setShowModal(!showModal);
+  };
+
+  const addCoupon = couponCode => {
+    let config = {
+      method: 'get',
+      url: `https://bad-gear.com/wp-json/coupon_code/v1/coupon_code?coupon_code=${couponCode}`,
+    };
+
+    axios
+      .request(config)
+      .then(response => {
+        if (response.data.status === 'success') {
+          setIsCouponAdded(true);
+          setCouponMessage(response.data.success_msg);
+          setDiscount(0.2); // Set the discount to 20%
+        } else {
+          setIsCouponAdded(false);
+          setCouponMessage('Coupon doesn’t exist');
+          setDiscount(0); // No discount
+        }
+      })
+      .catch(error => {
+        setIsCouponAdded(false);
+        setCouponMessage('Coupon doesn’t exist');
+        setDiscount(0); // No discount
+        console.log(error);
+      });
+  };
+
+  const handleApplyCoupon = () => {
+    setIsCouponApplied(true); // Mark coupon as applied
   };
 
   return (
@@ -569,39 +465,69 @@ const Checkout = ({navigation, route}) => {
                 opacity: 0.3,
               }}
             />
-           <View style={{ marginTop: 10 }}>
-      <Text style={styles.couponText}>
-        Have a coupon code? Enter here
-      </Text>
-      <View style={styles.couponContainer}>
-        <View style={styles.inputContainer}>
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={handleClearText}
-          >
-            <Image
-              source={require('../assets/cut.png')}
-              style={styles.cutIcon}
-            />
-          </TouchableOpacity>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              placeholder="Enter your offer code"
-              placeholderTextColor="#6a6a6a"
-              value={couponCode}
-              onChangeText={setCouponCode}
-              style={styles.textInput}
-            />
-          </View>
-        </View>
-        <TouchableOpacity style={styles.arrowContainer}>
-          <Image
-            source={require('../assets/arrow-right.png')}
-            style={styles.arrowIcon}
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
+            <View style={{marginTop: 10}}>
+              <Text style={styles.couponText}>
+                Have a coupon code? Enter here
+              </Text>
+              <View style={styles.couponContainer}>
+                <View style={styles.inputContainer}>
+                  <TouchableOpacity
+                    style={styles.iconContainer}
+                    onPress={() => setCouponCode('')}>
+                    <Image
+                      source={require('../assets/cut.png')}
+                      style={styles.cutIcon}
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.textInputContainer}>
+                    <TextInput
+                      placeholder="Enter your offer code"
+                      placeholderTextColor="#6a6a6a"
+                      value={couponCode}
+                      onChangeText={setCouponCode}
+                      style={styles.textInput}
+                    />
+                  </View>
+                </View>
+                <TouchableOpacity
+                  style={styles.arrowContainer}
+                  onPress={() => addCoupon(couponCode)}>
+                  <Image
+                    source={require('../assets/arrow-right.png')}
+                    style={styles.arrowIcon}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* Show coupon message with conditional styling */}
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                {couponMessage ? (
+                  <Text
+                    style={{
+                      color: isCouponAdded ? 'green' : 'red',
+                      marginTop: 10,
+                      marginLeft: 10,
+                    }}>
+                    {couponMessage}
+                  </Text>
+                ) : null}
+
+                {/* Show "Apply Coupon" button if the coupon is valid */}
+                {isCouponAdded && !isCouponApplied ? (
+                  <TouchableOpacity
+                    style={{
+                      marginTop: 10,
+                      marginRight: 10,
+                    }}
+                    onPress={handleApplyCoupon}>
+                    <Text style={{color: 'green', fontSize: 16}}>
+                      Apply Coupon
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            </View>
 
             <View style={{marginTop: 20}}>
               {cartItems && cartItems.length > 0 ? (
@@ -632,17 +558,19 @@ const Checkout = ({navigation, route}) => {
                 <Text>No items in the cart</Text>
               )}
             </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: 10,
-              }}>
-              <Text style={styles.orderText}>Discount</Text>
-              <Text style={styles.orderText}>$ 0.00</Text>
-            </View>
-
+            {isCouponApplied && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 10,
+                }}>
+                <Text style={styles.orderText}>Discount</Text>
+                <Text style={styles.orderText}>
+                  $ {calculateTotal() * discount}
+                </Text>
+              </View>
+            )}
             <View
               style={{
                 flexDirection: 'row',

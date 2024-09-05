@@ -6,7 +6,6 @@ function BottomNavigator() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={Home} />
-     
     </Tab.Navigator>
   );
 }

@@ -133,10 +133,14 @@ const Setting = () => {
           <ScrollView>
             <View style={styles.accountheader}>
               <View style={styles.subaccount}>
-                <View>
-                  <Image
+                <View >
+                  {/* <Image
                     source={require('../assets/user-profile.jpg')}
                     style={{height: 70, width: 70, borderRadius: 35}}
+                  /> */}
+                    <Image
+                    source={require('../assets/avatar.png')}
+                    style={{height: 50, width: 50,tintColor:"#F10C18"}}
                   />
                 </View>
                 <View style={{marginLeft: 20}}>

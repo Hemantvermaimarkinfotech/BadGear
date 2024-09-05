@@ -70,9 +70,6 @@ const AddDeliveryAddress = ({navigation}) => {
     );
   };
 
-
-
-  
   const AddBillingAddress = async () => {
     setLoading(true); // Assuming setLoading is a function that sets loading state
   

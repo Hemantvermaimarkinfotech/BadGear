@@ -91,6 +91,13 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            // Configure your release keystore here
+            storeFile file('/Users/imarkadmin/Desktop/Hemant_Project/BADGEAR/android/my-release-key.keystore')  // Replace with your keystore file path
+            storePassword 'android'  // Replace with your keystore password
+            keyAlias 'your-key-alias'  // Replace with your key alias
+            keyPassword 'Tyden@1234'  // Replace with your key password
+        }
     }
     buildTypes {
         debug {
